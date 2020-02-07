@@ -25,12 +25,12 @@
 # To begin, [get your puzzle input](https://adventofcode.com/2019/day/1/input).
 
 
-# Your puzzle answer was 3325156.
+# Your puzzle answer was `3325156`.
 #
 # The first half of this puzzle is complete! It provides one gold star: *
 
 
-input="./day-1-input.txt"
+INPUT_FILE="./day-1-input.txt"
 
 total_fuel=0
 
@@ -41,6 +41,6 @@ do
   echo "mass: $line, fuel: $fuel"
 
   total_fuel=$(( total_fuel + fuel ))
-done < "$input"
+done < "$INPUT_FILE"
 
 echo "total: $total_fuel"
