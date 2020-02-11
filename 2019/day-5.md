@@ -52,3 +52,7 @@ Finally, the program will output a diagnostic code and immediately halt. This fi
 After providing 1 to the only input instruction and passing all the tests, what diagnostic code does the program produce?
 
 To begin, [get your puzzle input](https://adventofcode.com/2019/day/5/input).
+
+Your puzzle answer was `7265618`.
+
+The first half of this puzzle is complete! It provides one gold star: *
