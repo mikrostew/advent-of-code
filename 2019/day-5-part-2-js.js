@@ -2,8 +2,6 @@
 
 'use strict';
 
-// this should probably use classes and such to be nicer, but whatever
-
 const fs = require('fs');
 const process = require('process');
 const readline = require('readline');
@@ -18,6 +16,10 @@ const OPCODES = {
   MULT: 'mult',
   INPUT: 'input',
   OUTPUT: 'output',
+  JNZ: 'jump-if-not-zero',
+  JZ: 'jump-if-zero',
+  LT: 'less-than',
+  EQ: 'equals',
 }
 
 // enum of parameter modes
@@ -32,6 +34,10 @@ const OPCODE_INFO= {
   2: { code: OPCODES.MULT, length: 4 },
   3: { code: OPCODES.INPUT, length: 2 },
   4: { code: OPCODES.OUTPUT, length: 2 },
+  5: { code: OPCODES.JNZ, length: 3 },
+  6: { code: OPCODES.JZ, length: 3 },
+  7: { code: OPCODES.LT, length: 4 },
+  8: { code: OPCODES.EQ, length: 4 },
   99: { code: OPCODES.HALT, length: 1 },
 }
 
@@ -87,7 +93,10 @@ class Instruction {
 
   // execute the instruction against the input intcodes, returning the new intcodes
   // (have to pass in & return b/c of immutability in JS)
-  execute(intcodes) {
+  execute(intcodes, currentIP) {
+    // going to update the IP based on the opcode
+    let newIP;
+
     // figure out what to do based on the opcode
     switch (this.opcode) {
       case OPCODES.HALT:
@@ -98,12 +107,14 @@ class Instruction {
         // add param1 + param2, storing at param3
         // console.log(`pos ${this.params[2]} = ${this.getParam(0, intcodes)} + ${this.getParam(1, intcodes)}`);
         intcodes[this.params[2]] = this.getParam(0, intcodes) + this.getParam(1, intcodes);
+        newIP = currentIP + this.length;
         break;
 
       case OPCODES.MULT:
         // multiply param1 * param2, storing at param3
         // console.log(`pos ${this.params[2]} = ${this.getParam(0, intcodes)} * ${this.getParam(1, intcodes)}`);
         intcodes[this.params[2]] = this.getParam(0, intcodes) * this.getParam(1, intcodes);
+        newIP = currentIP + this.length;
         break;
 
       case OPCODES.INPUT:
@@ -112,29 +123,73 @@ class Instruction {
         let input_value = Number(prompt_sync('input value: '));
         // console.log(`pos ${this.params[0]} = '${input_value}'`);
         intcodes[this.params[0]] = input_value;
+        newIP = currentIP + this.length;
         break;
 
       case OPCODES.OUTPUT:
         // output a value
         let output_value = this.getParam(0, intcodes); // can be immediate or position for this
         console.log(`output: ${output_value}`);
+        newIP = currentIP + this.length;
+        break;
+
+      case OPCODES.JNZ:
+        // if param1 != zero, set the IP to param2, else do nothing
+        if (this.getParam(0, intcodes) != 0) {
+          newIP = this.getParam(1, intcodes);
+        } else {
+          newIP = currentIP + this.length;
+        }
+        break;
+
+      case OPCODES.JZ:
+        // if param1 == zero, set the IP to param2, else do nothing
+        if (this.getParam(0, intcodes) == 0) {
+          newIP = this.getParam(1, intcodes);
+        } else {
+          newIP = currentIP + this.length;
+        }
+        break;
+
+      case OPCODES.LT:
+        // if param1 < param2, store 1 in param3, else store 0
+        if (this.getParam(0, intcodes) < this.getParam(1, intcodes)) {
+          intcodes[this.params[2]] = 1;
+        } else {
+          intcodes[this.params[2]] = 0;
+        }
+        newIP = currentIP + this.length;
+        break;
+
+      case OPCODES.EQ:
+        // if param1 == param2, store 1 in param3, else store 0
+        if (this.getParam(0, intcodes) == this.getParam(1, intcodes)) {
+          intcodes[this.params[2]] = 1;
+        } else {
+          intcodes[this.params[2]] = 0;
+        }
+        newIP = currentIP + this.length;
         break;
     }
 
-    // return the modified program
-    return intcodes;
+    // return the modified program and instruction pointer
+    return { intcodes, newIP };
   }
 }
 
 
 class IntcodeProgram {
-  constructor(file) {
-    // read file as string
-    this.intcodes_str = fs.readFileSync(INPUT_FILE, "utf-8");
+  constructor(intcodes_str) {
     // split on comma and convert to ints
-    this.intcodes = this.intcodes_str.split(',').map(Number);
+    this.intcodes = intcodes_str.split(',').map(Number);
     this.instruction_pointer = 0;
     this.instruction = undefined;
+  }
+
+  static fromFile(file) {
+    // read file as string
+    let intcodes_str = fs.readFileSync(INPUT_FILE, "utf-8");
+    return new IntcodeProgram(intcodes_str);
   }
 
   run() {
@@ -143,8 +198,9 @@ class IntcodeProgram {
       this.instruction = this.parseCurrentInstruction();
       // check for halt
       if (this.instruction.isHalt()) { break; }
-      this.intcodes = this.instruction.execute(this.intcodes);
-      this.instruction_pointer += this.instruction.length;
+      let result = this.instruction.execute(this.intcodes, this.instruction_pointer);
+      this.intcodes = result.intcodes;
+      this.instruction_pointer = result.newIP;
     }
   }
 
@@ -154,5 +210,22 @@ class IntcodeProgram {
 }
 
 // input the program and run it
-const program = new IntcodeProgram(INPUT_FILE);
+const program = IntcodeProgram.fromFile(INPUT_FILE);
+
+// some test programs from the description:
+//
+// if the input == 8, output 1, else 0
+//const program = new IntcodeProgram('3,9,8,9,10,9,4,9,99,-1,8');
+// if the input < 8 output 1, else 0
+//const program = new IntcodeProgram('3,9,7,9,10,9,4,9,99,-1,8');
+// if the input == 8, output 1, else 0
+//const program = new IntcodeProgram('3,3,1108,-1,8,3,4,3,99');
+// if the input == 8, output 1, else 0
+//const program = new IntcodeProgram('3,3,1107,-1,8,3,4,3,99');
+// jump tests: output 0 if the input is 0, otherwise 1
+//const program = new IntcodeProgram('3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9');
+//const program = new IntcodeProgram('3,3,1105,-1,9,1101,0,0,12,4,12,99,1');
+// get input, then output 999 if < 8, 1000 if == 8, or 1001 if > 8
+//const program = new IntcodeProgram('3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99');
+
 program.run();

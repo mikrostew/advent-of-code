@@ -62,7 +62,7 @@ The first half of this puzzle is complete! It provides one gold star: *
 
 The air conditioner comes online! Its cold air feels good for a while, but then the TEST alarms start to go off. Since the air conditioner can't vent its heat anywhere but back into the spacecraft, it's actually making the air inside the ship warmer.
 
-Instead, you'll need to use the TEST to extend the thermal radiators. Fortunately, the diagnostic program (your puzzle input) is already equipped for this. Unfortunately, your Intcode computer is not.
+Instead, you'll need to use the TEST to extend the [thermal radiators](https://en.wikipedia.org/wiki/Spacecraft_thermal_control). Fortunately, the diagnostic program (your puzzle input) is already equipped for this. Unfortunately, your Intcode computer is not.
 
 Your computer is only missing a few opcodes:
 
@@ -98,3 +98,7 @@ The above example program uses an input instruction to ask for a single number. 
 This time, when the TEST diagnostic program runs its input instruction to get the ID of the system to test, provide it 5, the ID for the ship's thermal radiator controller. This diagnostic test suite only outputs one number, the diagnostic code.
 
 What is the diagnostic code for system ID 5?
+
+Your puzzle answer was `7731427`.
+
+Both parts of this puzzle are complete! They provide two gold stars: **
