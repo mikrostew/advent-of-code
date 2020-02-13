@@ -2,8 +2,6 @@
 
 'use strict';
 
-// this should probably use classes and such to be nicer, but whatever
-
 const fs = require('fs');
 const process = require('process');
 const readline = require('readline');
