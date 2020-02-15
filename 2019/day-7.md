@@ -1,6 +1,6 @@
 # --- Day 7: Amplification Circuit ---
 
-Based on the navigational maps, you're going to need to send more power to your ship's thrusters to reach Santa in time. To do this, you'll need to configure a series of amplifiers already installed on the ship.
+Based on the navigational maps, you're going to need to send more power to your ship's thrusters to reach Santa in time. To do this, you'll need to configure a series of [amplifiers](https://en.wikipedia.org/wiki/Amplifier) already installed on the ship.
 
 There are five amplifiers connected in series; each one receives an input signal and produces an output signal. They are connected such that the first amplifier's output leads to the second amplifier's input, the second amplifier's output leads to the third amplifier's input, and so on. The first amplifier's input value is 0, and the last amplifier's output leads to your ship's thrusters.
 
@@ -8,7 +8,7 @@ There are five amplifiers connected in series; each one receives an input signal
 0 ->| Amp A |->| Amp B |->| Amp C |->| Amp D |->| Amp E |-> (to thrusters)
     O-------O  O-------O  O-------O  O-------O  O-------O
 
-The Elves have sent you some Amplifier Controller Software (your puzzle input), a program that should run on your existing Intcode computer. Each amplifier will need to run a copy of the program.
+The Elves have sent you some Amplifier Controller Software (your puzzle input), a program that should run on your [existing Intcode computer](https://adventofcode.com/2019/day/5). Each amplifier will need to run a copy of the program.
 
 When a copy of the program starts running on an amplifier, it will first use an input instruction to ask the amplifier for its current phase setting (an integer from 0 to 4). Each phase setting is used exactly once, but the Elves can't remember which amplifier needs which phase setting.
 
