@@ -5,9 +5,9 @@
 const fs = require('fs');
 const process = require('process');
 const readline = require('readline');
-const prompt_sync = require('prompt-sync')();
+//const prompt_sync = require('prompt-sync')();
 
-const INPUT_FILE = './day-7-input.txt';
+const INPUT_FILE = './day-5-input.txt';
 
 // enum of opcode names
 const OPCODES = {
@@ -91,9 +91,20 @@ class Instruction {
     }
   }
 
+  // read a line of input
+  async readInputLine(rl) {
+    return new Promise(resolve => {
+      rl.on('line', (input) => {
+        //console.log(`Received: ${input}`);
+        resolve(input);
+      });
+    });
+
+  }
+
   // execute the instruction against the input intcodes, returning the new intcodes
   // (have to pass in & return b/c of immutability in JS)
-  execute(intcodes, currentIP) {
+  async execute(intcodes, currentIP, inputStream, outputStream) {
     // going to update the IP based on the opcode
     let newIP;
 
@@ -119,9 +130,14 @@ class Instruction {
 
       case OPCODES.INPUT:
         // take an input value, storing at param1 (assuming POS mode)
-        // (I would use readline, but it's async)
-        let input_value = Number(prompt_sync('input value: '));
-        // console.log(`pos ${this.params[0]} = '${input_value}'`);
+
+        const rl = readline.createInterface({input: inputStream, output: outputStream});
+
+        let input_value = Number(await this.readInputLine(rl));
+        // have to remember to close this or the program will hang
+        rl.close();
+
+        //console.log(`pos ${this.params[0]} = (input) '${input_value}'`);
         intcodes[this.params[0]] = input_value;
         newIP = currentIP + this.length;
         break;
@@ -129,7 +145,11 @@ class Instruction {
       case OPCODES.OUTPUT:
         // output a value
         let output_value = this.getParam(0, intcodes); // can be immediate or position for this
-        console.log(`output: ${output_value}`);
+
+        // add a newline because this does not
+        outputStream.write(`${output_value}\n`);
+
+        //console.log(`output: ${output_value}`);
         newIP = currentIP + this.length;
         break;
 
@@ -178,27 +198,30 @@ class Instruction {
 }
 
 
+// program that uses streams to read input and write output
 class IntcodeProgram {
-  constructor(intcodes_str) {
+  constructor(intcodesStr, inputStream, outputStream) {
     // split on comma and convert to ints
-    this.intcodes = intcodes_str.split(',').map(Number);
+    this.intcodes = intcodesStr.split(',').map(Number);
     this.instruction_pointer = 0;
     this.instruction = undefined;
+    this.inputStream = inputStream;
+    this.outputStream = outputStream;
   }
 
-  static fromFile(file) {
+  static fromFile(file, inputStream, outputStream) {
     // read file as string
-    let intcodes_str = fs.readFileSync(INPUT_FILE, "utf-8");
-    return new IntcodeProgram(intcodes_str);
+    let intcodesStr = fs.readFileSync(INPUT_FILE, "utf-8");
+    return new IntcodeProgram(intcodesStr, inputStream, outputStream);
   }
 
-  run() {
+  async run() {
     // main program loop
     while(true) {
       this.instruction = this.parseCurrentInstruction();
       // check for halt
       if (this.instruction.isHalt()) { break; }
-      let result = this.instruction.execute(this.intcodes, this.instruction_pointer);
+      let result = await this.instruction.execute(this.intcodes, this.instruction_pointer, this.inputStream, this.outputStream);
       this.intcodes = result.intcodes;
       this.instruction_pointer = result.newIP;
     }
@@ -210,23 +233,38 @@ class IntcodeProgram {
 }
 
 
+class AmplifierChain {
+  constructor(intcodesStr) {
+    this.intcodesStr = intcodesStr;
+  }
+
+  static fromFile(file) {
+    // do it here, so we only read the file once
+    let intcodesStr = fs.readFileSync(INPUT_FILE, "utf-8");
+    return new AmplifierChain(intcodesStr);
+  }
+
+  // 5 amplifiers, each with a unique phase setting 0-4
+  // what is the largest output?
+  findLargestOutput() {
+    // TODO - try every possible combination, and find the largest one
+    // (5*5*5*5*5 = 3125, which is not that bad)
+  }
+}
+
+
 // input the program and run it
-const program = IntcodeProgram.fromFile(INPUT_FILE);
+const program = IntcodeProgram.fromFile(INPUT_FILE, process.stdin, process.stdout);
 
 // some test programs from the description:
 //
-// if the input == 8, output 1, else 0
-//const program = new IntcodeProgram('3,9,8,9,10,9,4,9,99,-1,8');
-// if the input < 8 output 1, else 0
-//const program = new IntcodeProgram('3,9,7,9,10,9,4,9,99,-1,8');
-// if the input == 8, output 1, else 0
-//const program = new IntcodeProgram('3,3,1108,-1,8,3,4,3,99');
-// if the input == 8, output 1, else 0
-//const program = new IntcodeProgram('3,3,1107,-1,8,3,4,3,99');
-// jump tests: output 0 if the input is 0, otherwise 1
-//const program = new IntcodeProgram('3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9');
-//const program = new IntcodeProgram('3,3,1105,-1,9,1101,0,0,12,4,12,99,1');
-// get input, then output 999 if < 8, 1000 if == 8, or 1001 if > 8
-//const program = new IntcodeProgram('3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99');
+// max signal should be 43210 (from sequence 4,3,2,1,0)
+// '3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0'
+//
+// max signal should be 54321 (from sequence 0,1,2,3,4)
+// '3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0'
+//
+// max signal should be 65210 (from sequence 1,0,4,3,2)
+// '3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0'
 
 program.run();
