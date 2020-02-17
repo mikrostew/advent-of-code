@@ -5,7 +5,7 @@
 const fs = require('fs');
 const process = require('process');
 const readline = require('readline');
-//const prompt_sync = require('prompt-sync')();
+const stream = require('stream');
 
 const INPUT_FILE = './day-5-input.txt';
 
@@ -211,7 +211,7 @@ class IntcodeProgram {
 
   static fromFile(file, inputStream, outputStream) {
     // read file as string
-    let intcodesStr = fs.readFileSync(INPUT_FILE, "utf-8");
+    let intcodesStr = fs.readFileSync(file, "utf-8");
     return new IntcodeProgram(intcodesStr, inputStream, outputStream);
   }
 
@@ -232,6 +232,48 @@ class IntcodeProgram {
   }
 }
 
+class AmplifierInputStream extends stream.Readable {
+  // https://nodejs.org/api/stream.html#stream_class_stream_readable
+  constructor(phase, inputValue) {
+    super();
+    this.inputs = [ `${phase}\n`, `${inputValue}\n` ];
+  }
+
+  // have to implement this function
+  _read(size) {
+    // no more data
+    if (this.inputs.length == 0) {
+      setImmediate(() => this.push(null));
+    } else {
+      // remove the first input, and push that on the next event loop
+      let input = this.inputs[0];
+      this.inputs = this.inputs.slice(1);
+      setImmediate(() => this.push(input));
+    }
+  }
+}
+
+// Writable stream that parses Intcode output to Numbers
+// (https://stackoverflow.com/a/21583831)
+class IntcodeOutputStream extends stream.Writable {
+  // https://nodejs.org/api/stream.html#stream_class_stream_writable
+  constructor() {
+    super();
+    this.outputs = [];
+  }
+
+  // override _write()
+  _write(chunk, enc, next) {
+    //console.log(`got output chunk: '${chunk.toString()}'`);
+    this.outputs.push(Number(chunk.toString()));
+    //console.log(`current outputs: ${this.outputs}`);
+    next();
+  }
+
+  getOutputs() {
+    return this.outputs;
+  }
+}
 
 class AmplifierChain {
   constructor(intcodesStr) {
@@ -240,26 +282,64 @@ class AmplifierChain {
 
   static fromFile(file) {
     // do it here, so we only read the file once
-    let intcodesStr = fs.readFileSync(INPUT_FILE, "utf-8");
+    let intcodesStr = fs.readFileSync(file, "utf-8");
     return new AmplifierChain(intcodesStr);
+  }
+
+  async runAmp(phase, inputValue) {
+    // setup input and output streams for this amp
+    let ampInput = new AmplifierInputStream(phase, inputValue);
+    let ampOutput = new IntcodeOutputStream();
+
+    // run the amp
+    let ampProgram = new IntcodeProgram(this.intcodesStr, ampInput, ampOutput);
+    await ampProgram.run();
+
+    // get the output value from the stream, somehow
+    let ampOutputs = ampOutput.getOutputs();
+    //console.log(ampOutputs);
+    return ampOutputs[0];
   }
 
   // 5 amplifiers, each with a unique phase setting 0-4
   // what is the largest output?
-  findLargestOutput() {
-    // TODO - try every possible combination, and find the largest one
+  async findLargestOutput() {
+    let largestOutput = 0;
+    // try every possible combination, and find the largest one
     // (5*5*5*5*5 = 3125, which is not that bad)
+    for (let a = 0; a < 5; a++) {
+      // initial input is 0 - then pipe that thru each amp
+      let outputValue0 = await this.runAmp(a, 0);
+      for (let b = 0; b < 5; b++) {
+        let outputValue1 = await this.runAmp(b, outputValue0);
+        for (let c = 0; c < 5; c++) {
+          let outputValue2 = await this.runAmp(c, outputValue1);
+          for (let d = 0; d < 5; d++) {
+            let outputValue3 = await this.runAmp(d, outputValue2);
+            for (let e = 0; e < 5; e++) {
+              let outputValue4 = await this.runAmp(e, outputValue3);
+              console.log(`${a}${b}${c}${d}${e} --> ${outputValue4}`);
+              if (outputValue4 > largestOutput) {
+                largestOutput = outputValue4;
+              }
+            }
+          }
+        }
+      }
+    }
+    console.log(`largest output: ${largestOutput}`);
   }
 }
 
-
 // input the program and run it
-const program = IntcodeProgram.fromFile(INPUT_FILE, process.stdin, process.stdout);
+//const program = IntcodeProgram.fromFile(INPUT_FILE, process.stdin, process.stdout);
+//program.run();
 
 // some test programs from the description:
 //
 // max signal should be 43210 (from sequence 4,3,2,1,0)
 // '3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0'
+const chain = new AmplifierChain('3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0');
 //
 // max signal should be 54321 (from sequence 0,1,2,3,4)
 // '3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0'
@@ -267,4 +347,4 @@ const program = IntcodeProgram.fromFile(INPUT_FILE, process.stdin, process.stdou
 // max signal should be 65210 (from sequence 1,0,4,3,2)
 // '3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0'
 
-program.run();
+chain.findLargestOutput();
