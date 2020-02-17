@@ -310,31 +310,23 @@ class AmplifierChain {
     const aPhases = [0, 1, 2, 3, 4];
 
     for (let a = 0; a < aPhases.length; a++) {
-      // initial input is 0 - then pipe that thru each amp
-      let outputValue0 = await this.runAmp(aPhases[a], 0);
-
       // only use phases that are not being used already
       let bPhases = aPhases.filter((el, i) => i != a);
-
       for (let b = 0; b < bPhases.length; b++) {
-        let outputValue1 = await this.runAmp(bPhases[b], outputValue0);
-
         // only use phases that are not being used already
         let cPhases = bPhases.filter((el, i) => i != b);
-
         for (let c = 0; c < cPhases.length; c++) {
-          let outputValue2 = await this.runAmp(cPhases[c], outputValue1);
-
           // only use phases that are not being used already
           let dPhases = cPhases.filter((el, i) => i != c);
-
           for (let d = 0; d < dPhases.length; d++) {
-            let outputValue3 = await this.runAmp(dPhases[d], outputValue2);
-
             // at this point E can only be one thing, but whatever I like the symmetry here
             let ePhases = dPhases.filter((el, i) => i != d);
-
             for (let e = 0; e < ePhases.length; e++) {
+              // initial input is 0 - then pipe that thru each amp
+              let outputValue0 = await this.runAmp(aPhases[a], 0);
+              let outputValue1 = await this.runAmp(bPhases[b], outputValue0);
+              let outputValue2 = await this.runAmp(cPhases[c], outputValue1);
+              let outputValue3 = await this.runAmp(dPhases[d], outputValue2);
               let outputValue4 = await this.runAmp(ePhases[e], outputValue3);
 
               console.log(`${aPhases[a]}${bPhases[b]}${cPhases[c]}${dPhases[d]}${ePhases[e]} --> ${outputValue4}`);
@@ -355,16 +347,12 @@ const chain = AmplifierChain.fromFile(INPUT_FILE);
 
 // some test programs from the description:
 //
-// max signal should be 43210 (from sequence 4,3,2,1,0)
-// '3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0'
-// const chain = new AmplifierChain('3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0');
+// max signal should be 139629729 (from sequence 9,8,7,6,5)
+// '3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5'
+// const chain = new AmplifierChain('3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5');
 //
-// max signal should be 54321 (from sequence 0,1,2,3,4)
-// '3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0'
-// const chain = new AmplifierChain('3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0');
-//
-// max signal should be 65210 (from sequence 1,0,4,3,2)
-// '3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0'
-// const chain = new AmplifierChain('3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0');
+// max signal should be 18216 (from sequence 9,7,8,5,6)
+// '3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10'
+// const chain = new AmplifierChain('3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10');
 
 chain.findLargestOutput();
