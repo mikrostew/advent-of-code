@@ -7,7 +7,7 @@ const process = require('process');
 const readline = require('readline');
 const stream = require('stream');
 
-const INPUT_FILE = './day-5-input.txt';
+const INPUT_FILE = './day-7-input.txt';
 
 // enum of opcode names
 const OPCODES = {
@@ -305,20 +305,39 @@ class AmplifierChain {
   // what is the largest output?
   async findLargestOutput() {
     let largestOutput = 0;
-    // try every possible combination, and find the largest one
-    // (5*5*5*5*5 = 3125, which is not that bad)
-    for (let a = 0; a < 5; a++) {
+    // try every possible permutation, and find the largest one
+    // (5*4*3*2*1 = 120, so not bad at all, even though the nested for loops looks scary)
+    const aPhases = [0, 1, 2, 3, 4];
+
+    for (let a = 0; a < aPhases.length; a++) {
       // initial input is 0 - then pipe that thru each amp
-      let outputValue0 = await this.runAmp(a, 0);
-      for (let b = 0; b < 5; b++) {
-        let outputValue1 = await this.runAmp(b, outputValue0);
-        for (let c = 0; c < 5; c++) {
-          let outputValue2 = await this.runAmp(c, outputValue1);
-          for (let d = 0; d < 5; d++) {
-            let outputValue3 = await this.runAmp(d, outputValue2);
-            for (let e = 0; e < 5; e++) {
-              let outputValue4 = await this.runAmp(e, outputValue3);
-              console.log(`${a}${b}${c}${d}${e} --> ${outputValue4}`);
+      let outputValue0 = await this.runAmp(aPhases[a], 0);
+
+      // only use phases that are not being used already
+      let bPhases = aPhases.filter((el, i) => i != a);
+
+      for (let b = 0; b < bPhases.length; b++) {
+        let outputValue1 = await this.runAmp(bPhases[b], outputValue0);
+
+        // only use phases that are not being used already
+        let cPhases = bPhases.filter((el, i) => i != b);
+
+        for (let c = 0; c < cPhases.length; c++) {
+          let outputValue2 = await this.runAmp(cPhases[c], outputValue1);
+
+          // only use phases that are not being used already
+          let dPhases = cPhases.filter((el, i) => i != c);
+
+          for (let d = 0; d < dPhases.length; d++) {
+            let outputValue3 = await this.runAmp(dPhases[d], outputValue2);
+
+            // at this point E can only be one thing, but whatever I like the symmetry here
+            let ePhases = dPhases.filter((el, i) => i != d);
+
+            for (let e = 0; e < ePhases.length; e++) {
+              let outputValue4 = await this.runAmp(ePhases[e], outputValue3);
+
+              console.log(`${aPhases[a]}${bPhases[b]}${cPhases[c]}${dPhases[d]}${ePhases[e]} --> ${outputValue4}`);
               if (outputValue4 > largestOutput) {
                 largestOutput = outputValue4;
               }
@@ -332,19 +351,20 @@ class AmplifierChain {
 }
 
 // input the program and run it
-//const program = IntcodeProgram.fromFile(INPUT_FILE, process.stdin, process.stdout);
-//program.run();
+const chain = AmplifierChain.fromFile(INPUT_FILE);
 
 // some test programs from the description:
 //
 // max signal should be 43210 (from sequence 4,3,2,1,0)
 // '3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0'
-const chain = new AmplifierChain('3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0');
+// const chain = new AmplifierChain('3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0');
 //
 // max signal should be 54321 (from sequence 0,1,2,3,4)
 // '3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0'
+// const chain = new AmplifierChain('3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0');
 //
 // max signal should be 65210 (from sequence 1,0,4,3,2)
 // '3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0'
+// const chain = new AmplifierChain('3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0');
 
 chain.findLargestOutput();

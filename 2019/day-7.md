@@ -41,3 +41,6 @@ Here are some example programs:
 
 Try every combination of phase settings on the amplifiers. What is the highest signal that can be sent to the thrusters?
 
+Your puzzle answer was `359142`.
+
+The first half of this puzzle is complete! It provides one gold star: *
