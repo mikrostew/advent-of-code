@@ -253,6 +253,42 @@ class AmplifierInputStream extends stream.Readable {
   }
 }
 
+
+// https://nodejs.org/api/stream.html#stream_implementing_a_duplex_stream
+class AmplifierInOutStream extends stream.Duplex {
+  constructor(initialInputs) {
+    super();
+    this.inputs = initialInputs;
+    // set this, even though it will probably change
+    this.lastInput = initialInputs[initialInputs.length - 1];
+  }
+
+  // for reading, just push an input
+  // (don't send null for this one, because more data may be coming, even if there are currently no inputs)
+  _read(size) {
+    if (this.inputs.length != 0) {
+      // remove the first input, and push that on the next event loop
+      let input = this.inputs[0];
+      this.inputs = this.inputs.slice(1);
+      // have to send with a newline
+      setImmediate(() => this.push(`${input}\n`));
+    }
+  }
+
+  // when this gets input data, update the inputs array and the last value
+  _write(chunk, enc, callback) {
+    //console.log(`got output chunk: '${chunk.toString()}'`);
+    this.inputs.push(chunk.toString().trim());
+    this.lastInput = Number(chunk.toString());
+    //console.log(`current outputs: ${this.outputs}`);
+    callback();
+  }
+
+  getLastValue() {
+    return this.lastInput;
+  }
+}
+
 // Writable stream that parses Intcode output to Numbers
 // (https://stackoverflow.com/a/21583831)
 class IntcodeOutputStream extends stream.Writable {
@@ -286,6 +322,7 @@ class AmplifierChain {
     return new AmplifierChain(intcodesStr);
   }
 
+  // NOTE: used in the previous part but not this one
   async runAmp(phase, inputValue) {
     // setup input and output streams for this amp
     let ampInput = new AmplifierInputStream(phase, inputValue);
@@ -322,16 +359,11 @@ class AmplifierChain {
             // at this point E can only be one thing, but whatever I like the symmetry here
             let ePhases = dPhases.filter((el, i) => i != d);
             for (let e = 0; e < ePhases.length; e++) {
-              // initial input is 0 - then pipe that thru each amp
-              let outputValue0 = await this.runAmp(aPhases[a], 0);
-              let outputValue1 = await this.runAmp(bPhases[b], outputValue0);
-              let outputValue2 = await this.runAmp(cPhases[c], outputValue1);
-              let outputValue3 = await this.runAmp(dPhases[d], outputValue2);
-              let outputValue4 = await this.runAmp(ePhases[e], outputValue3);
+              let feedbackOutput = await this.runFeedbackChain(aPhases[a], bPhases[b], cPhases[c], dPhases[d], ePhases[e]);
+              console.log(`${aPhases[a]}${bPhases[b]}${cPhases[c]}${dPhases[d]}${ePhases[e]} --> ${feedbackOutput}`);
 
-              console.log(`${aPhases[a]}${bPhases[b]}${cPhases[c]}${dPhases[d]}${ePhases[e]} --> ${outputValue4}`);
-              if (outputValue4 > largestOutput) {
-                largestOutput = outputValue4;
+              if (feedbackOutput > largestOutput) {
+                largestOutput = feedbackOutput;
               }
             }
           }
@@ -340,16 +372,37 @@ class AmplifierChain {
     }
     console.log(`largest output: ${largestOutput}`);
   }
+
+  // run feedback chain based on the input phases
+  async runFeedbackChain(p0, p1, p2, p3, p4) {
+    // setup all the input/output streams between amps
+    // first amp (0) gets phase and initial value, the rest are just phase
+    const streamOut0In1 = new AmplifierInOutStream([p0]);
+    const streamOut1In2 = new AmplifierInOutStream([p1]);
+    const streamOut2In3 = new AmplifierInOutStream([p2]);
+    const streamOut3In4 = new AmplifierInOutStream([p3]);
+    const streamOut4In0 = new AmplifierInOutStream([p4, 0]);
+    // setup all the amps
+    let amp0 = new IntcodeProgram(this.intcodesStr, streamOut4In0, streamOut0In1);
+    let amp1 = new IntcodeProgram(this.intcodesStr, streamOut0In1, streamOut1In2);
+    let amp2 = new IntcodeProgram(this.intcodesStr, streamOut1In2, streamOut2In3);
+    let amp3 = new IntcodeProgram(this.intcodesStr, streamOut2In3, streamOut3In4);
+    let amp4 = new IntcodeProgram(this.intcodesStr, streamOut3In4, streamOut4In0);
+    // wait for all amps to complete running
+    return Promise.all([amp0.run(), amp1.run(), amp2.run(), amp3.run(), amp4.run()])
+      // then read the last output value from the last amp
+      .then(() => streamOut4In0.getLastValue());
+  }
 }
 
 // input the program and run it
-const chain = AmplifierChain.fromFile(INPUT_FILE);
+//const chain = AmplifierChain.fromFile(INPUT_FILE);
 
 // some test programs from the description:
 //
 // max signal should be 139629729 (from sequence 9,8,7,6,5)
 // '3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5'
-// const chain = new AmplifierChain('3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5');
+const chain = new AmplifierChain('3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5');
 //
 // max signal should be 18216 (from sequence 9,7,8,5,6)
 // '3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10'
