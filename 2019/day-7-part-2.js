@@ -275,10 +275,10 @@ class AmplifierInOutStream extends stream.Duplex {
     }
   }
 
-  // when this gets input data, update the inputs array and the last value
+  // when this gets input data, go ahead and push it, and update the last value
   _write(chunk, enc, callback) {
     //console.log(`got output chunk: '${chunk.toString()}'`);
-    this.inputs.push(chunk.toString().trim());
+    setImmediate(() => this.push(`${Number(chunk.toString())}\n`));
     this.lastInput = Number(chunk.toString());
     //console.log(`current outputs: ${this.outputs}`);
     callback();
@@ -344,7 +344,7 @@ class AmplifierChain {
     let largestOutput = 0;
     // try every possible permutation, and find the largest one
     // (5*4*3*2*1 = 120, so not bad at all, even though the nested for loops looks scary)
-    const aPhases = [0, 1, 2, 3, 4];
+    const aPhases = [5, 6, 7, 8, 9];
 
     for (let a = 0; a < aPhases.length; a++) {
       // only use phases that are not being used already
@@ -396,16 +396,16 @@ class AmplifierChain {
 }
 
 // input the program and run it
-//const chain = AmplifierChain.fromFile(INPUT_FILE);
+const chain = AmplifierChain.fromFile(INPUT_FILE);
 
 // some test programs from the description:
 //
 // max signal should be 139629729 (from sequence 9,8,7,6,5)
 // '3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5'
-const chain = new AmplifierChain('3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5');
+//const chain = new AmplifierChain('3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5');
 //
 // max signal should be 18216 (from sequence 9,7,8,5,6)
 // '3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10'
-// const chain = new AmplifierChain('3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10');
+//const chain = new AmplifierChain('3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10');
 
 chain.findLargestOutput();
