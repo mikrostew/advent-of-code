@@ -8,16 +8,39 @@ const process = require('process');
 const INPUT_FILE = './day-10-input.txt';
 
 
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
 // program that uses streams to read input and write output
 class AsteroidMap {
   constructor(mapStr) {
-    // TODO
+    this.points = this.parseToPoints(mapStr);
   }
 
   static fromFile(file) {
     // read file as string
     let mapStr = fs.readFileSync(file, "utf-8").trim();
     return new AsteroidMap(mapStr);
+  }
+
+  // parse the ASCII characters to x,y coordinates
+  parseToPoints(mapStr) {
+    let points = [];
+    // split by lines
+    mapStr.split(/[\r\n]+/).forEach((line, lineIndex) => {
+      // then split by chars
+      line.split('').forEach((c, charIndex) => {
+        // check for asteroid and add its position
+        if (c == '#') {
+          points.push(new Point(charIndex, lineIndex));
+        }
+      });
+    });
+    return points;
   }
 
   findBestLocation() {
