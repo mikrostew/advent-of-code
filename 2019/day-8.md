@@ -23,3 +23,7 @@ The image you received is 25 pixels wide and 6 pixels tall.
 To make sure the image wasn't corrupted during transmission, the Elves would like you to find the layer that contains the fewest 0 digits. On that layer, what is the number of 1 digits multiplied by the number of 2 digits?
 
 To begin, [get your puzzle input](https://adventofcode.com/2019/day/8/input0).
+
+Your puzzle answer was `1596`.
+
+The first half of this puzzle is complete! It provides one gold star: *
