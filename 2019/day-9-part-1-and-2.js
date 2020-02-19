@@ -82,6 +82,7 @@ class Instruction {
             break;
           default:
             console.error(`Unknown parameter mode '${parameter_modes.charAt(i)}', at position ${position}`);
+            process.exit(1);
             break
         }
       }
@@ -104,10 +105,31 @@ class Instruction {
       return this.params[number];
     } else if (this.modes[number] === PARAM_MODES.REL) {
       // use the relative base to get the value
-      return intcodes[relativeBase + this.params[number]];
+      let address = relativeBase + this.params[number];
+      // if this the first access, need to initialize the memory
+      if (intcodes[address] === undefined) { intcodes[address] = 0; }
+      return intcodes[address];
     } else {
-      // else get it from a position in the code
-      return intcodes[this.params[number]];
+      // else get it from an absolute position in the code
+      let address = this.params[number];
+      // if this the first access, need to initialize the memory
+      if (intcodes[address] === undefined) { intcodes[address] = 0; }
+      return intcodes[address];
+    }
+  }
+
+  // calculate the address that should be used to store a result
+  paramAddress(number, relativeBase) {
+    if (this.modes[number] === PARAM_MODES.IMM) {
+      // this should not be a thing - error for this one
+      console.error(`Error: immediate mode is not valid for storage address at position ${position}, from instruction '${instruction}'`);
+      process.exit(1);
+    } else if (this.modes[number] === PARAM_MODES.REL) {
+      // use the relative base and offset with the input param
+      return relativeBase + this.params[number];
+    } else {
+      // else the param is an absolute position in memory
+      return this.params[number];
     }
   }
 
@@ -129,6 +151,7 @@ class Instruction {
     let newIP;
     // update the relative base for that opcode
     let newBase = currentBase;
+    let writeAddress;
 
     // figure out what to do based on the opcode
     switch (this.opcode) {
@@ -138,39 +161,35 @@ class Instruction {
 
       case OPCODES.ADD:
         // add param1 + param2, storing at param3
-        // console.log(`pos ${this.params[2]} = ${this.getParam(0, intcodes)} + ${this.getParam(1, intcodes)}`);
-        intcodes[this.params[2]] = this.getParam(0, currentBase, intcodes) + this.getParam(1, currentBase, intcodes);
+        writeAddress = this.paramAddress(2, currentBase);
+        intcodes[writeAddress] = this.getParam(0, currentBase, intcodes) + this.getParam(1, currentBase, intcodes);
         newIP = currentIP + this.length;
         break;
 
       case OPCODES.MULT:
         // multiply param1 * param2, storing at param3
-        // console.log(`pos ${this.params[2]} = ${this.getParam(0, intcodes)} * ${this.getParam(1, intcodes)}`);
-        intcodes[this.params[2]] = this.getParam(0, currentBase, intcodes) * this.getParam(1, currentBase, intcodes);
+        writeAddress = this.paramAddress(2, currentBase);
+        intcodes[writeAddress] = this.getParam(0, currentBase, intcodes) * this.getParam(1, currentBase, intcodes);
         newIP = currentIP + this.length;
         break;
 
       case OPCODES.INPUT:
-        // take an input value, storing at param1 (assuming POS mode)
-
+        // take an input value, storing at param1
         const rl = readline.createInterface({input: inputStream, output: outputStream});
-
         let input_value = Number(await this.readInputLine(rl));
         // have to remember to close this or the program will hang
         rl.close();
-
         //console.log(`pos ${this.params[0]} = (input) '${input_value}'`);
-        intcodes[this.params[0]] = input_value;
+        writeAddress = this.paramAddress(0, currentBase);
+        intcodes[writeAddress] = input_value;
         newIP = currentIP + this.length;
         break;
 
       case OPCODES.OUTPUT:
         // output a value
         let output_value = this.getParam(0, currentBase, intcodes); // can be immediate or position for this
-
         // add a newline because this does not
         outputStream.write(`${output_value}\n`);
-
         //console.log(`output: ${output_value}`);
         newIP = currentIP + this.length;
         break;
@@ -195,20 +214,22 @@ class Instruction {
 
       case OPCODES.LT:
         // if param1 < param2, store 1 in param3, else store 0
+        writeAddress = this.paramAddress(2, currentBase);
         if (this.getParam(0, currentBase, intcodes) < this.getParam(1, currentBase, intcodes)) {
-          intcodes[this.params[2]] = 1;
+          intcodes[writeAddress] = 1;
         } else {
-          intcodes[this.params[2]] = 0;
+          intcodes[writeAddress] = 0;
         }
         newIP = currentIP + this.length;
         break;
 
       case OPCODES.EQ:
         // if param1 == param2, store 1 in param3, else store 0
+        writeAddress = this.paramAddress(2, currentBase);
         if (this.getParam(0, currentBase, intcodes) == this.getParam(1, currentBase, intcodes)) {
-          intcodes[this.params[2]] = 1;
+          intcodes[writeAddress] = 1;
         } else {
-          intcodes[this.params[2]] = 0;
+          intcodes[writeAddress] = 0;
         }
         newIP = currentIP + this.length;
         break;
@@ -216,7 +237,6 @@ class Instruction {
       case OPCODES.ADJ:
         // adjust relative base by param1
         newBase = currentBase + this.getParam(0, currentBase, intcodes);
-
         newIP = currentIP + this.length;
         break;
     }
@@ -264,13 +284,12 @@ class IntcodeProgram {
 }
 
 // input the program and run it
-//const program = IntcodeProgram.fromFile(INPUT_FILE, process.stdin, process.stdout);
+const program = IntcodeProgram.fromFile(INPUT_FILE, process.stdin, process.stdout);
 
 // some test programs from the description:
 //
 // should produce a copy of itself as output
-// TODO: prints a ton of undefined's
-const program = new IntcodeProgram('109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99', process.stdin, process.stdout);
+//const program = new IntcodeProgram('109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99', process.stdin, process.stdout);
 //
 // should output a 16-digit number - OK
 //const program = new IntcodeProgram('1102,34915192,34915192,7,4,7,99,0', process.stdin, process.stdout);
