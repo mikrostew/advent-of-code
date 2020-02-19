@@ -63,3 +63,6 @@ So, the final image looks like this:
 
 What message is produced after decoding your image?
 
+Your puzzle answer was `LBRCE`.
+
+Both parts of this puzzle are complete! They provide two gold stars: **
