@@ -20,13 +20,14 @@ const OPCODES = {
   JZ: 'jump-if-zero',
   LT: 'less-than',
   EQ: 'equals',
+  ADJ: 'adjust-relative-base',
 }
 
 // enum of parameter modes
 const PARAM_MODES = {
   POS: 'position', // treat parameter as a position in the intcodes
   IMM: 'immediate', // treat parameter as an immediate value
-  // TODO: relative
+  REL: 'relative', // treat parameter as relative to the current base
 }
 
 // map of opcode values to info
@@ -39,6 +40,7 @@ const OPCODE_INFO= {
   6: { code: OPCODES.JZ, length: 3 },
   7: { code: OPCODES.LT, length: 4 },
   8: { code: OPCODES.EQ, length: 4 },
+  9: { code: OPCODES.ADJ, length: 2 },
   99: { code: OPCODES.HALT, length: 1 },
 }
 
@@ -66,8 +68,22 @@ class Instruction {
       // and the modes of those params
       this.modes = [];
       for (let i = 0; i < this.params.length; i++) {
-        // assume anything that is not 1 is a zero
-        this.modes.push( parameter_modes.charAt(i) === '1' ? PARAM_MODES.IMM : PARAM_MODES.POS );
+        // TODO: do this in a simpler way?
+        switch (parameter_modes.charAt(i)) {
+          case '0':
+          case '':
+            this.modes.push(PARAM_MODES.POS);
+            break;
+          case '1':
+            this.modes.push(PARAM_MODES.IMM);
+            break;
+          case '2':
+            this.modes.push(PARAM_MODES.REL);
+            break;
+          default:
+            console.error(`Unknown parameter mode '${parameter_modes.charAt(i)}', at position ${position}`);
+            break
+        }
       }
       // console.log(`instr: ${instruction} ${this.params}`);
       // console.log(`opcode: ${this.opcode}`);
@@ -82,10 +98,13 @@ class Instruction {
   }
 
   // get param based on it's mode
-  getParam(number, intcodes) {
+  getParam(number, relativeBase, intcodes) {
     if (this.modes[number] === PARAM_MODES.IMM) {
       // just return the immediate value
       return this.params[number];
+    } else if (this.modes[number] === PARAM_MODES.REL) {
+      // use the relative base to get the value
+      return intcodes[relativeBase + this.params[number]];
     } else {
       // else get it from a position in the code
       return intcodes[this.params[number]];
@@ -105,9 +124,11 @@ class Instruction {
 
   // execute the instruction against the input intcodes, returning the new intcodes
   // (have to pass in & return b/c of immutability in JS)
-  async execute(intcodes, currentIP, inputStream, outputStream) {
+  async execute(intcodes, currentIP, currentBase, inputStream, outputStream) {
     // going to update the IP based on the opcode
     let newIP;
+    // update the relative base for that opcode
+    let newBase = currentBase;
 
     // figure out what to do based on the opcode
     switch (this.opcode) {
@@ -118,14 +139,14 @@ class Instruction {
       case OPCODES.ADD:
         // add param1 + param2, storing at param3
         // console.log(`pos ${this.params[2]} = ${this.getParam(0, intcodes)} + ${this.getParam(1, intcodes)}`);
-        intcodes[this.params[2]] = this.getParam(0, intcodes) + this.getParam(1, intcodes);
+        intcodes[this.params[2]] = this.getParam(0, currentBase, intcodes) + this.getParam(1, currentBase, intcodes);
         newIP = currentIP + this.length;
         break;
 
       case OPCODES.MULT:
         // multiply param1 * param2, storing at param3
         // console.log(`pos ${this.params[2]} = ${this.getParam(0, intcodes)} * ${this.getParam(1, intcodes)}`);
-        intcodes[this.params[2]] = this.getParam(0, intcodes) * this.getParam(1, intcodes);
+        intcodes[this.params[2]] = this.getParam(0, currentBase, intcodes) * this.getParam(1, currentBase, intcodes);
         newIP = currentIP + this.length;
         break;
 
@@ -145,7 +166,7 @@ class Instruction {
 
       case OPCODES.OUTPUT:
         // output a value
-        let output_value = this.getParam(0, intcodes); // can be immediate or position for this
+        let output_value = this.getParam(0, currentBase, intcodes); // can be immediate or position for this
 
         // add a newline because this does not
         outputStream.write(`${output_value}\n`);
@@ -156,8 +177,8 @@ class Instruction {
 
       case OPCODES.JNZ:
         // if param1 != zero, set the IP to param2, else do nothing
-        if (this.getParam(0, intcodes) != 0) {
-          newIP = this.getParam(1, intcodes);
+        if (this.getParam(0, currentBase, intcodes) != 0) {
+          newIP = this.getParam(1, currentBase, intcodes);
         } else {
           newIP = currentIP + this.length;
         }
@@ -165,8 +186,8 @@ class Instruction {
 
       case OPCODES.JZ:
         // if param1 == zero, set the IP to param2, else do nothing
-        if (this.getParam(0, intcodes) == 0) {
-          newIP = this.getParam(1, intcodes);
+        if (this.getParam(0, currentBase, intcodes) == 0) {
+          newIP = this.getParam(1, currentBase, intcodes);
         } else {
           newIP = currentIP + this.length;
         }
@@ -174,7 +195,7 @@ class Instruction {
 
       case OPCODES.LT:
         // if param1 < param2, store 1 in param3, else store 0
-        if (this.getParam(0, intcodes) < this.getParam(1, intcodes)) {
+        if (this.getParam(0, currentBase, intcodes) < this.getParam(1, currentBase, intcodes)) {
           intcodes[this.params[2]] = 1;
         } else {
           intcodes[this.params[2]] = 0;
@@ -184,17 +205,24 @@ class Instruction {
 
       case OPCODES.EQ:
         // if param1 == param2, store 1 in param3, else store 0
-        if (this.getParam(0, intcodes) == this.getParam(1, intcodes)) {
+        if (this.getParam(0, currentBase, intcodes) == this.getParam(1, currentBase, intcodes)) {
           intcodes[this.params[2]] = 1;
         } else {
           intcodes[this.params[2]] = 0;
         }
         newIP = currentIP + this.length;
         break;
+
+      case OPCODES.ADJ:
+        // adjust relative base by param1
+        newBase = currentBase + this.getParam(0, currentBase, intcodes);
+
+        newIP = currentIP + this.length;
+        break;
     }
 
     // return the modified program and instruction pointer
-    return { intcodes, newIP };
+    return { intcodes, newIP, newBase };
   }
 }
 
@@ -205,6 +233,7 @@ class IntcodeProgram {
     // split on comma and convert to ints
     this.intcodes = intcodesStr.split(',').map(Number);
     this.instruction_pointer = 0;
+    this.relative_base = 0;
     this.instruction = undefined;
     this.inputStream = inputStream;
     this.outputStream = outputStream;
@@ -222,9 +251,10 @@ class IntcodeProgram {
       this.instruction = this.parseCurrentInstruction();
       // check for halt
       if (this.instruction.isHalt()) { break; }
-      let result = await this.instruction.execute(this.intcodes, this.instruction_pointer, this.inputStream, this.outputStream);
+      let result = await this.instruction.execute(this.intcodes, this.instruction_pointer, this.relative_base, this.inputStream, this.outputStream);
       this.intcodes = result.intcodes;
       this.instruction_pointer = result.newIP;
+      this.relative_base = result.newBase;
     }
   }
 
@@ -239,8 +269,8 @@ class IntcodeProgram {
 // some test programs from the description:
 //
 // should produce a copy of itself as output
-// TODO: unknown opcode
-//const program = new IntcodeProgram('109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99', process.stdin, process.stdout);
+// TODO: prints a ton of undefined's
+const program = new IntcodeProgram('109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99', process.stdin, process.stdout);
 //
 // should output a 16-digit number - OK
 //const program = new IntcodeProgram('1102,34915192,34915192,7,4,7,99,0', process.stdin, process.stdout);
