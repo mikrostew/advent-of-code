@@ -310,8 +310,9 @@ class Position {
   moveDown() { this.y -= 1; }
 
   // move 1 step in the input direction
-  advanceOne(direction) {
-    switch (direction) {
+  advanceOne(robotDirection) {
+    console.log(`moving one step in direction ${robotDirection.direction}`);
+    switch (robotDirection.direction) {
       case DIRECTION.UP:
         this.moveUp();
         break;
@@ -324,7 +325,11 @@ class Position {
       case DIRECTION.LEFT:
         this.moveLeft();
         break;
+      default:
+        console.error(`Unknown direction ${robotDirection.direction} - something is wrong`);
+        process.exit(1);
     }
+    console.log(`[debug] position is now (${this.x}, ${this.y})`);
   }
 
   // will be used for the key to store these in the map of painted panels
@@ -474,6 +479,7 @@ class HullPaintingRobot {
 
   paintCurrentPanel(color) {
     if (color == 0 || color == 1) {
+      console.log(`[debug] painting panel ${this.robotPosition} color ${color}`);
       this.panels[this.robotPosition] = color;
     } else {
       console.error(`Received invalid color ${color} from the robot - something is wrong`);
@@ -490,6 +496,7 @@ class HullPaintingRobot {
       currentColor = this.panels[this.robotPosition];
     }
     // send it!
+    console.log(`[debug] sending color ${currentColor} from position ${this.robotPosition}`);
     this.robotInput.write(`${currentColor}\n`);
   }
 
@@ -513,5 +520,6 @@ const robot = new HullPaintingRobot(INPUT_FILE);
 // should output the large number in the middle - OK
 //const program = new IntcodeProgram('104,1125899906842624,99', process.stdin, process.stdout);
 
-robot.paintPanels();
-robot.getNumberOfPaintedPanels();
+robot.paintPanels().then(() => {
+  console.log(`painted panels: ${robot.getNumberOfPaintedPanels()}`);
+});
