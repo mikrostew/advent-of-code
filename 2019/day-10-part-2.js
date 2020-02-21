@@ -2,6 +2,7 @@
 
 'use strict';
 
+const assert = require('assert');
 const fs = require('fs');
 const process = require('process');
 
@@ -13,6 +14,10 @@ class Point {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+  }
+
+  equals(anotherPoint) {
+    return (this.x == anotherPoint.x && this.y == anotherPoint.y);
   }
 
   toString() {
@@ -69,7 +74,8 @@ class AsteroidMap {
       line.split('').forEach((c, charIndex) => {
         // check for asteroid and add its position
         if (c == '#') {
-          points.push(new Point(charIndex, lineIndex));
+          // y-coords are negated so this aligns to the normal cartesian plane, where radians work nicely
+          points.push(new Point(charIndex, lineIndex * -1));
         }
       });
     });
@@ -77,6 +83,7 @@ class AsteroidMap {
     return points;
   }
 
+  // NOTE: not using this function this time
   findBestLocation() {
     let maxAsteroids = 0;
     let bestPoint = undefined;
@@ -104,67 +111,62 @@ class AsteroidMap {
     console.log();
     console.log(`Best asteroid is ${bestPoint}, which can detect ${maxAsteroids} asteroids`);
   }
+
+  // get the order that the asteroids would be vaporized
+  // starting at 12:00, and proceeding clockwise
+  getVaporizationOrder(stationPosition) {
+    // TODO:
+    return [];
+  }
 }
 
 // some test programs from the description:
-let mapStr, map;
+let mapStr, stationPos, map;
 
-// The best location is 3,4 because it can detect 8 asteroids:
-mapStr = `.#..#
-.....
-#####
-....#
-...##`;
+// For example, consider the following map, where the asteroid with the new monitoring station (and laser) is marked X:
+mapStr = `.#....#####...#..
+##...##.#####..##
+##...#...#.#####.
+..#.....X...###..
+..#.#.....#....##`;
+stationPos = new Point(8, -3);
 map = new AsteroidMap(mapStr);
-map.findBestLocation();
-console.log("^^ expected (3,4) and 8 asteroids");
+map.getVaporizationOrder(stationPos);
 
-// Best is 5,8 with 33 other asteroids detected:
-mapStr = `......#.#.
-#..#.#....
-..#######.
-.#.#.###..
-.#..#.....
-..#....#.#
-#..#....#.
-.##.#..###
-##...#..#.
-.#....####`;
-map = new AsteroidMap(mapStr);
-map.findBestLocation();
-console.log("^^ expected (5,8) and 33 asteroids");
+// TODO:
+// The first nine asteroids to get vaporized, in order, would be:
+//
+// .#....###24...#..
+// ##...##.13#67..9#
+// ##...#...5.8####.
+// ..#.....X...###..
+// ..#.#.....#....##
+//
+// Note that some asteroids (the ones behind the asteroids marked 1, 5, and 7) won't have a chance to be vaporized until the next full rotation. The laser continues rotating; the next nine to be vaporized are:
+//
+// .#....###.....#..
+// ##...##...#.....#
+// ##...#......1234.
+// ..#.....X...5##..
+// ..#.9.....8....76
+//
+// The next nine to be vaporized are then:
+//
+// .8....###.....#..
+// 56...9#...#.....#
+// 34...7...........
+// ..2.....X....##..
+// ..1..............
+//
+// Finally, the laser completes its first full rotation (1 through 3), a second rotation (4 through 8), and vaporizes the last asteroid (9) partway through its third rotation:
+//
+// ......234.....6..
+// ......1...5.....7
+// .................
+// ........X....89..
+// .................
 
-// Best is 1,2 with 35 other asteroids detected:
-mapStr = `#.#...#.#.
-.###....#.
-.#....#...
-##.#.#.#.#
-....#.#.#.
-.##..###.#
-..#...##..
-..##....##
-......#...
-.####.###.`;
-map = new AsteroidMap(mapStr);
-map.findBestLocation();
-console.log("^^ expected (1,2) and 35 asteroids");
-
-// Best is 6,3 with 41 other asteroids detected:
-mapStr = `.#..#..###
-####.###.#
-....###.#.
-..###.##.#
-##.##.#.#.
-....###..#
-..#.#..#.#
-#..#.#.###
-.##...##.#
-.....#.#..`;
-map = new AsteroidMap(mapStr);
-map.findBestLocation();
-console.log("^^ expected (6,3) and 41 asteroids");
-
-// Best is 11,13 with 210 other asteroids detected:
+// In the large example above (the one with the best monitoring station location at 11,13):
 mapStr = `.#..##.###...#######
 ##.############..##.
 .#.######.########.#
@@ -185,11 +187,26 @@ mapStr = `.#..##.###...#######
 .#.#.###########.###
 #.#.#.#####.####.###
 ###.##.####.##.#..##`;
+stationPos = new Point(11, -13);
 map = new AsteroidMap(mapStr);
-map.findBestLocation();
-console.log("^^ expected (11,13) and 210 asteroids");
+map.getVaporizationOrder(stationPos);
 
+// TODO:
+// The 1st asteroid to be vaporized is at 11,12.
+// The 2nd asteroid to be vaporized is at 12,1.
+// The 3rd asteroid to be vaporized is at 12,2.
+// The 10th asteroid to be vaporized is at 12,8.
+// The 20th asteroid to be vaporized is at 16,0.
+// The 50th asteroid to be vaporized is at 16,9.
+// The 100th asteroid to be vaporized is at 10,16.
+// The 199th asteroid to be vaporized is at 9,6.
+// The 200th asteroid to be vaporized is at 8,2.
+// The 201st asteroid to be vaporized is at 10,9.
+// The 299th and final asteroid to be vaporized is at 11,1.
 
+// TODO:
 // input the program and run it
 map = AsteroidMap.fromFile(INPUT_FILE);
-map.findBestLocation();
+// answer from last time
+stationPos = new Point(22, -25);
+map.getVaporizationOrder(stationPos);
