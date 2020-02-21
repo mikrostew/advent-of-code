@@ -464,7 +464,7 @@ class HullPaintingRobot {
         //console.log(this.panels);
         this.robotDirection.turn(outputDirection);
         this.robotPosition.advanceOne(this.robotDirection);
-        // TODO: track min and max limits
+        this.adjustMinMaxLimits();
         this.sendCurrentPositionColor();
         // clear out the captured values
         outputPanelColor = undefined;
@@ -475,8 +475,9 @@ class HullPaintingRobot {
       }
     });
 
-    // send the initial input to the robot to kick this off (should be 0)
-    // TODO: start on a white panel
+    // start on a white panel this time
+    this.panels[new Position(0,0)] = 1;
+    // send the initial input to the robot to kick this off
     this.sendCurrentPositionColor();
     // run the robot and see what it does...
     await this.program.run();
@@ -494,6 +495,14 @@ class HullPaintingRobot {
       console.error(`Received invalid color ${color} from the robot - something is wrong`);
       process.exit(1);
     }
+  }
+
+  // update min and max limits so I can paint this
+  adjustMinMaxLimits() {
+    if (this.robotPosition.x < this.minX) { this.minX = this.robotPosition.x; }
+    if (this.robotPosition.x > this.maxX) { this.maxX = this.robotPosition.x; }
+    if (this.robotPosition.y < this.minY) { this.minY = this.robotPosition.y; }
+    if (this.robotPosition.y > this.maxY) { this.maxY = this.robotPosition.y; }
   }
 
   // send the robot the color of the current position
@@ -516,11 +525,26 @@ class HullPaintingRobot {
 
   // print out the panels to see
   printPanels() {
-    // TODO: print this out using the min and max limits
-    // blank for black pixels, full block for white ones (easier to see)
-    //finalPixels[i] = (p == 0 ? ' ' : '█');
     console.log("panel printout:");
-    console.log("TODO");
+    // print this out using the min and max limits
+    // Y goes top to bottom
+    for (let y = this.maxY; y >= this.minY; y--) {
+      // capture the panels for this row
+      let rowPanels = [];
+      let currentPosition;
+      for (let x = this.minX; x <= this.maxX; x++) {
+        currentPosition = new Position(x, y);
+        if (this.panels[currentPosition] !== undefined) {
+          // blank for black pixels, full block for white ones (easier to see)
+          rowPanels.push(this.panels[currentPosition] == 0 ? ' ' : '█');
+        } else {
+          // black panel
+          rowPanels.push(' ');
+        }
+      }
+      // print out the row
+      console.log(rowPanels.join(''));
+    }
   }
 }
 
@@ -542,3 +566,13 @@ robot.paintPanels().then(() => {
   console.log(`painted panels: ${robot.getNumberOfPaintedPanels()}`);
   robot.printPanels();
 });
+
+// prints this out:
+// painted panels: 248
+// panel printout:
+//  █  █ ███  ████ ████  ██    ██ █  █ ███
+//  █ █  █  █    █ █    █  █    █ █  █ █  █
+//  ██   █  █   █  ███  █  █    █ ████ ███
+//  █ █  ███   █   █    ████    █ █  █ █  █
+//  █ █  █ █  █    █    █  █ █  █ █  █ █  █
+//  █  █ █  █ ████ ████ █  █  ██  █  █ ███
