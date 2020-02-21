@@ -145,30 +145,45 @@ class AsteroidMap {
         allVectors.push(vector);
       }
     }
-    // sort those by the angle, starting at 0 radians (12:00)
+    // initial sort - by angle, starting at 0 radians (12:00)
+    // (at this point asteroids "behind" other asteroids are in the wrong order)
     let sortedVectors = allVectors.sort((a, b) => a.compare(b));
-    // TODO: this is not right yet, but print things out as a check
-    sortedVectors.forEach((v, i) => {
-      console.log(`${i}: ${v.endPoint}`);
-    });
-    return [];
+
+    // iterate through and shift the asteroids that are "behind"
+    let vectorsToProcess = sortedVectors;
+    let currentAngle = undefined;
+    let vaporizationOrder = [];
+    while (vectorsToProcess.length > 0) {
+      let currentVector = vectorsToProcess.shift();
+      // if the angles are the same, this asteroid is "behind" the last one
+      // move it to the end, to be processed on the next rotation
+      // (and increment its angle accordingly, so the angle comparison works)
+      if (currentVector.angle == currentAngle) {
+        currentVector.angle += 2 * Math.PI;
+        vectorsToProcess.push(currentVector);
+      } else {
+        // found the next one that will be vaporized - add the point
+        currentAngle = currentVector.angle;
+        vaporizationOrder.push(currentVector.endPoint);
+      }
+    }
+    return vaporizationOrder;
   }
 }
 
-// some test programs from the description:
+// some test inputs from the description:
 let mapStr, stationPos, map;
 
 // For example, consider the following map, where the asteroid with the new monitoring station (and laser) is marked X:
-mapStr = `.#....#####...#..
-##...##.#####..##
-##...#...#.#####.
-..#.....X...###..
-..#.#.....#....##`;
-stationPos = new Point(8, -3);
-map = new AsteroidMap(mapStr);
-map.getVaporizationOrder(stationPos);
-
-// TODO:
+// mapStr = `.#....#####...#..
+// ##...##.#####..##
+// ##...#...#.#####.
+// ..#.....X...###..
+// ..#.#.....#....##`;
+// stationPos = new Point(8, -3);
+// map = new AsteroidMap(mapStr);
+// console.log(map.getVaporizationOrder(stationPos));
+//
 // The first nine asteroids to get vaporized, in order, would be:
 //
 // .#....###24...#..
@@ -232,9 +247,8 @@ map.getVaporizationOrder(stationPos);
 // ###.##.####.##.#..##`;
 // stationPos = new Point(11, -13);
 // map = new AsteroidMap(mapStr);
-// map.getVaporizationOrder(stationPos);
-
-// TODO:
+// let order = map.getVaporizationOrder(stationPos);
+//
 // The 1st asteroid to be vaporized is at 11,12.
 // The 2nd asteroid to be vaporized is at 12,1.
 // The 3rd asteroid to be vaporized is at 12,2.
@@ -246,9 +260,21 @@ map.getVaporizationOrder(stationPos);
 // The 200th asteroid to be vaporized is at 8,2.
 // The 201st asteroid to be vaporized is at 10,9.
 // The 299th and final asteroid to be vaporized is at 11,1.
+// console.log(`(11,12) --> ${order[0]}`);
+// console.log(`(12,1) --> ${order[1]}`);
+// console.log(`(12,2) --> ${order[2]}`);
+// console.log(`(12,8) --> ${order[9]}`);
+// console.log(`(16,0) --> ${order[19]}`);
+// console.log(`(16,9) --> ${order[49]}`);
+// console.log(`(10,16) --> ${order[99]}`);
+// console.log(`(9,6) --> ${order[198]}`);
+// console.log(`(8,2) --> ${order[199]}`);
+// console.log(`(10,9) --> ${order[200]}`);
+// console.log(`(11,1) --> ${order[298]}`);
 
-// TODO:
 // input the program and run it
-// map = AsteroidMap.fromFile(INPUT_FILE);
-// stationPos = new Point(22, -25); // answer from last time
-// map.getVaporizationOrder(stationPos);
+map = AsteroidMap.fromFile(INPUT_FILE);
+stationPos = new Point(22, -25); // answer from last time
+let order = map.getVaporizationOrder(stationPos);
+
+console.log(`200th position: ${order[199]}`);
