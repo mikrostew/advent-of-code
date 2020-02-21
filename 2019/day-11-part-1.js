@@ -187,7 +187,7 @@ class Instruction {
         let input_value = Number(await this.readInputLine(rl));
         // have to remember to close this or the program will hang
         rl.close();
-        //console.log(`pos ${this.params[0]} = (input) '${input_value}'`);
+        console.log(`pos ${this.params[0]} = (input) '${input_value}'`);
         writeAddress = this.paramAddress(0, currentBase);
         intcodes[writeAddress] = input_value;
         newIP = currentIP + this.length;
@@ -441,7 +441,7 @@ class HullPaintingRobot {
     let outputDirection = '';
 
     readRobotOuptut.on('line', (input) => {
-      console.log(`Received: ${input}`);
+      console.log(`[debug] output from robot: ${input}`);
       // figure out which input this is
       if (outputPanelColor == '') {
         // just capture the panel color, still have to wait for the direction
@@ -469,7 +469,7 @@ class HullPaintingRobot {
     await this.program.run();
 
     // (have to close this or the program will hang)
-    rl.close();
+    readRobotOuptut.close();
   }
 
   paintCurrentPanel(color) {
@@ -490,7 +490,7 @@ class HullPaintingRobot {
       currentColor = this.panels[this.robotPosition];
     }
     // send it!
-    this.robotInput.write('${currentColor}\n');
+    this.robotInput.write(`${currentColor}\n`);
   }
 
   getNumberOfPaintedPanels() {
