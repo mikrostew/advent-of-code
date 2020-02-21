@@ -38,6 +38,16 @@ class Vector {
   constructor(p1, p2) {
     this.x = p2.x - p1.x;
     this.y = p2.y - p1.y;
+    // save start and end points
+    this.startPoint = p1;
+    this.endPoint = p2;
+    // calculate magnitude, and angle in radians
+    this.magnitude = Math.sqrt(this.x * this.x + this.y * this.y);
+    this.angle = Math.atan2(this.x, this.y);
+    // (adjust to be positive, because atan2 uses negative radians for these and that doesn't work well here)
+    if (this.x < 0) {
+      this.angle += 2 * Math.PI;
+    }
   }
 
   // use Euclid's algorithm to scale this down to the lowest integer representation
@@ -46,6 +56,17 @@ class Vector {
     let gcd = findGCD(Math.abs(this.x), Math.abs(this.y));
     this.x /= gcd;
     this.y /= gcd;
+  }
+
+  // sort by angle, then use magnitude if angles are equal
+  compare(v2) {
+    if (this.angle < v2.angle) { return -1; }
+    if (this.angle > v2.angle) { return 1; }
+    // angles are equal, compare the magnitudes
+    if (this.magnitude < v2.magnitude) { return -1; }
+    if (this.magnitude > v2.magnitude) { return 1; }
+    // they are equal
+    return 0;
   }
 
   toString() {
@@ -115,7 +136,21 @@ class AsteroidMap {
   // get the order that the asteroids would be vaporized
   // starting at 12:00, and proceeding clockwise
   getVaporizationOrder(stationPosition) {
-    // TODO:
+    // figure out all the vectors to the other asteroids
+    let allVectors = [];
+    for (let i = 0; i < this.points.length; i++) {
+      // skipping the station position point
+      if (!this.points[i].equals(stationPosition)) {
+        let vector = new Vector(stationPosition, this.points[i]);
+        allVectors.push(vector);
+      }
+    }
+    // sort those by the angle, starting at 0 radians (12:00)
+    let sortedVectors = allVectors.sort((a, b) => a.compare(b));
+    // TODO: this is not right yet, but print things out as a check
+    sortedVectors.forEach((v, i) => {
+      console.log(`${i}: ${v.endPoint}`);
+    });
     return [];
   }
 }
@@ -142,6 +177,8 @@ map.getVaporizationOrder(stationPos);
 // ..#.....X...###..
 // ..#.#.....#....##
 //
+// which is: (8,1) (9,0) (9,1) (10,0) (9,2) (11,1) (12,1) (11,2) (15,1)
+//
 // Note that some asteroids (the ones behind the asteroids marked 1, 5, and 7) won't have a chance to be vaporized until the next full rotation. The laser continues rotating; the next nine to be vaporized are:
 //
 // .#....###.....#..
@@ -149,6 +186,8 @@ map.getVaporizationOrder(stationPos);
 // ##...#......1234.
 // ..#.....X...5##..
 // ..#.9.....8....76
+//
+// which is: (12,2) (13,2) (14,2) (15,2) (12,3) (16,4) (15,4) (10,4) (4,4)
 //
 // The next nine to be vaporized are then:
 //
@@ -158,6 +197,8 @@ map.getVaporizationOrder(stationPos);
 // ..2.....X....##..
 // ..1..............
 //
+// which is: (2,4) (2,3) (0,2) (1,2) (0,1) (1,1) (5,2) (1,0) (5,1)
+//
 // Finally, the laser completes its first full rotation (1 through 3), a second rotation (4 through 8), and vaporizes the last asteroid (9) partway through its third rotation:
 //
 // ......234.....6..
@@ -165,31 +206,33 @@ map.getVaporizationOrder(stationPos);
 // .................
 // ........X....89..
 // .................
+//
+// which is: (6,1) (6,0) (7,0) (8,0) (10,1) (14,0) (16,1) (13,3) (14,3)
 
 // In the large example above (the one with the best monitoring station location at 11,13):
-mapStr = `.#..##.###...#######
-##.############..##.
-.#.######.########.#
-.###.#######.####.#.
-#####.##.#.##.###.##
-..#####..#.#########
-####################
-#.####....###.#.#.##
-##.#################
-#####.##.###..####..
-..######..##.#######
-####.##.####...##..#
-.#####..#.######.###
-##...#.##########...
-#.##########.#######
-.####.#.###.###.#.##
-....##.##.###..#####
-.#.#.###########.###
-#.#.#.#####.####.###
-###.##.####.##.#..##`;
-stationPos = new Point(11, -13);
-map = new AsteroidMap(mapStr);
-map.getVaporizationOrder(stationPos);
+// mapStr = `.#..##.###...#######
+// ##.############..##.
+// .#.######.########.#
+// .###.#######.####.#.
+// #####.##.#.##.###.##
+// ..#####..#.#########
+// ####################
+// #.####....###.#.#.##
+// ##.#################
+// #####.##.###..####..
+// ..######..##.#######
+// ####.##.####...##..#
+// .#####..#.######.###
+// ##...#.##########...
+// #.##########.#######
+// .####.#.###.###.#.##
+// ....##.##.###..#####
+// .#.#.###########.###
+// #.#.#.#####.####.###
+// ###.##.####.##.#..##`;
+// stationPos = new Point(11, -13);
+// map = new AsteroidMap(mapStr);
+// map.getVaporizationOrder(stationPos);
 
 // TODO:
 // The 1st asteroid to be vaporized is at 11,12.
@@ -206,7 +249,6 @@ map.getVaporizationOrder(stationPos);
 
 // TODO:
 // input the program and run it
-map = AsteroidMap.fromFile(INPUT_FILE);
-// answer from last time
-stationPos = new Point(22, -25);
-map.getVaporizationOrder(stationPos);
+// map = AsteroidMap.fromFile(INPUT_FILE);
+// stationPos = new Point(22, -25); // answer from last time
+// map.getVaporizationOrder(stationPos);
