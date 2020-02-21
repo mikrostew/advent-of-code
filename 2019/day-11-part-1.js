@@ -9,6 +9,14 @@ const stream = require('stream');
 
 const INPUT_FILE = './day-11-input.txt';
 
+// robot directions
+const DIRECTION = {
+  UP: 'up',
+  RIGHT: 'right',
+  DOWN: 'down',
+  LEFT: 'left',
+}
+
 // enum of opcode names
 const OPCODES = {
   HALT: 'halt',
@@ -68,7 +76,7 @@ class Instruction {
       // and the modes of those params
       this.modes = [];
       for (let i = 0; i < this.params.length; i++) {
-        // TODO: do this in a simpler way?
+        // could do this in a simpler way, but whatever
         switch (parameter_modes.charAt(i)) {
           case '0':
           case '':
@@ -284,8 +292,8 @@ class IntcodeProgram {
 }
 
 // class to track points that are painted or not
-// (copied from yesterday's problem)
-class Point {
+// (copied & modified from yesterday's problem)
+class Position {
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -296,14 +304,78 @@ class Point {
   }
 
   // to make changing positions a little nicer
-  incX() { this.x += 1; }
-  decX() { this.x -= 1; }
-  incY() { this.y += 1; }
-  dexY() { this.y -= 1; }
+  moveRight() { this.x += 1; }
+  moveLeft() { this.x -= 1; }
+  moveUp() { this.y += 1; }
+  moveDown() { this.y -= 1; }
+
+  // move 1 step in the input direction
+  advanceOne(direction) {
+    switch (direction) {
+      case DIRECTION.UP:
+        this.moveUp();
+        break;
+      case DIRECTION.RIGHT:
+        this.moveRight();
+        break;
+      case DIRECTION.DOWN:
+        this.moveDown();
+        break;
+      case DIRECTION.LEFT:
+        this.moveLeft();
+        break;
+    }
+  }
 
   // will be used for the key to store these in the map of painted panels
   toString() {
-    return `Point<${this.x},${this.y}>`;
+    return `Position<${this.x},${this.y}>`;
+  }
+}
+
+// track the robot's direction
+class RobotDirection {
+  constructor() {
+    this.direction = DIRECTION.UP;
+  }
+
+  // how to change directions
+  turn(leftOrRight) {
+    if (leftOrRight != 0 && leftOrRight != 1) {
+      console.error(`Invalid direction ${leftOrRight} - something is wrong`);
+      process.exit(1);
+    }
+    // 0 means left, 1 means right
+    switch (this.direction) {
+      case DIRECTION.UP:
+        if (leftOrRight == 0) { // turn left
+          this.direction = DIRECTION.LEFT;
+        } else {  // turn right
+          this.direction = DIRECTION.RIGHT;
+        }
+        break;
+      case DIRECTION.RIGHT:
+        if (leftOrRight == 0) { // turn left
+          this.direction = DIRECTION.UP;
+        } else {  // turn right
+          this.direction = DIRECTION.DOWN;
+        }
+        break;
+      case DIRECTION.DOWN:
+        if (leftOrRight == 0) { // turn left
+          this.direction = DIRECTION.RIGHT;
+        } else {  // turn right
+          this.direction = DIRECTION.LEFT;
+        }
+        break;
+      case DIRECTION.LEFT:
+        if (leftOrRight == 0) { // turn left
+          this.direction = DIRECTION.DOWN;
+        } else {  // turn right
+          this.direction = DIRECTION.UP;
+        }
+        break;
+    }
   }
 }
 
@@ -350,16 +422,75 @@ class HullPaintingRobot {
     this.program = IntcodeProgram.fromFile(INPUT_FILE, this.robotInput, this.robotOutput);
     // initialize this map - start out with no panels painted
     this.panels = {};
-    // keep track of robot position, as well as min and max limits for each axis (X and Y)
-    this.robotPosition = new Point(0,0);
+    // keep track of robot position and direction
+    this.robotPosition = new Position(0,0);
+    this.robotDirection = new RobotDirection();
+    // as well as min and max limits for each axis (X and Y)
     this.minX = 0;
     this.maxX = 0;
     this.minY = 0;
     this.maxY = 0;
   }
 
-  paintPanels() {
-    // TODO
+  async paintPanels() {
+    // setup listener to handle ouput from the robot
+    // (send any stray output to stdout, so I don't pollute the robot input)
+    const readRobotOuptut = readline.createInterface({input: this.robotOutput, output: process.stdoud});
+    // the robot will send two lines of output, in this order
+    let outputPanelColor = '';
+    let outputDirection = '';
+
+    readRobotOuptut.on('line', (input) => {
+      console.log(`Received: ${input}`);
+      // figure out which input this is
+      if (outputPanelColor == '') {
+        // just capture the panel color, still have to wait for the direction
+        outputPanelColor = Number(input);
+      } else if (outputDirection == '') {
+        outputDirection = Number(input);
+        // now we have all the inputs we need
+        this.paintCurrentPanel(outputPanelColor);
+        this.robotDirection.turn(outputDirection);
+        this.robotPosition.advanceOne(this.robotDirection);
+        // TODO: track min and max limits
+        this.sendCurrentPositionColor();
+        // clear out the captured values
+        outputPanelColor = '';
+        outputDirection = '';
+      } else {
+        console.error("I screwed up something with my logic here, time to debug");
+        process.exit(1);
+      }
+    });
+
+    // send the initial input to the robot to kick this off (should be 0)
+    this.sendCurrentPositionColor();
+    // run the robot and see what it does...
+    await this.program.run();
+
+    // (have to close this or the program will hang)
+    rl.close();
+  }
+
+  paintCurrentPanel(color) {
+    if (color == 0 || color == 1) {
+      this.panels[this.robotPosition] = color;
+    } else {
+      console.error(`Received invalid color ${color} from the robot - something is wrong`);
+      process.exit(1);
+    }
+  }
+
+  // send the robot the color of the current position
+  sendCurrentPositionColor() {
+    // assume the current position has not been painted
+    let currentColor = 0;
+    // but if it has been painted, send that
+    if (this.panels[this.robotPosition] !== undefined) {
+      currentColor = this.panels[this.robotPosition];
+    }
+    // send it!
+    this.robotInput.write('${currentColor}\n');
   }
 
   getNumberOfPaintedPanels() {
