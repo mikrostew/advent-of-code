@@ -187,7 +187,7 @@ class Instruction {
         let input_value = Number(await this.readInputLine(rl));
         // have to remember to close this or the program will hang
         rl.close();
-        console.log(`pos ${this.params[0]} = (input) '${input_value}'`);
+        //console.log(`pos ${this.params[0]} = (input) '${input_value}'`);
         writeAddress = this.paramAddress(0, currentBase);
         intcodes[writeAddress] = input_value;
         newIP = currentIP + this.length;
@@ -311,7 +311,7 @@ class Position {
 
   // move 1 step in the input direction
   advanceOne(robotDirection) {
-    console.log(`moving one step in direction ${robotDirection.direction}`);
+    //console.log(`[debug] moving one step in direction ${robotDirection.direction}`);
     switch (robotDirection.direction) {
       case DIRECTION.UP:
         this.moveUp();
@@ -329,7 +329,7 @@ class Position {
         console.error(`Unknown direction ${robotDirection.direction} - something is wrong`);
         process.exit(1);
     }
-    console.log(`[debug] position is now (${this.x}, ${this.y})`);
+    //console.log(`[debug] position is now (${this.x}, ${this.y})`);
   }
 
   // will be used for the key to store these in the map of painted panels
@@ -350,6 +350,7 @@ class RobotDirection {
       console.error(`Invalid direction ${leftOrRight} - something is wrong`);
       process.exit(1);
     }
+    //console.log(`[debug] current direction is '${this.direction},' going to turn '${leftOrRight}' (0 = left, 1 = right)`);
     // 0 means left, 1 means right
     switch (this.direction) {
       case DIRECTION.UP:
@@ -380,7 +381,11 @@ class RobotDirection {
           this.direction = DIRECTION.UP;
         }
         break;
+      default:
+        console.error(`Unknown direction ${this.direction} - something is wrong`);
+        process.exit(1);
     }
+    //console.log(`[debug] new direction is ${this.direction}`);
   }
 }
 
@@ -442,26 +447,28 @@ class HullPaintingRobot {
     // (send any stray output to stdout, so I don't pollute the robot input)
     const readRobotOuptut = readline.createInterface({input: this.robotOutput, output: process.stdoud});
     // the robot will send two lines of output, in this order
-    let outputPanelColor = '';
-    let outputDirection = '';
+    let outputPanelColor = undefined;
+    let outputDirection = undefined;
 
     readRobotOuptut.on('line', (input) => {
-      console.log(`[debug] output from robot: ${input}`);
+      //console.log(`[debug] output from robot: ${input}`);
       // figure out which input this is
-      if (outputPanelColor == '') {
+      if (outputPanelColor == undefined) {
         // just capture the panel color, still have to wait for the direction
         outputPanelColor = Number(input);
-      } else if (outputDirection == '') {
+      } else if (outputDirection == undefined) {
         outputDirection = Number(input);
         // now we have all the inputs we need
         this.paintCurrentPanel(outputPanelColor);
+        //console.log(`[debug] current panels:`);
+        //console.log(this.panels);
         this.robotDirection.turn(outputDirection);
         this.robotPosition.advanceOne(this.robotDirection);
         // TODO: track min and max limits
         this.sendCurrentPositionColor();
         // clear out the captured values
-        outputPanelColor = '';
-        outputDirection = '';
+        outputPanelColor = undefined;
+        outputDirection = undefined;
       } else {
         console.error("I screwed up something with my logic here, time to debug");
         process.exit(1);
@@ -472,6 +479,7 @@ class HullPaintingRobot {
     this.sendCurrentPositionColor();
     // run the robot and see what it does...
     await this.program.run();
+    //console.log('[debug] robot is done running');
 
     // (have to close this or the program will hang)
     readRobotOuptut.close();
@@ -479,7 +487,7 @@ class HullPaintingRobot {
 
   paintCurrentPanel(color) {
     if (color == 0 || color == 1) {
-      console.log(`[debug] painting panel ${this.robotPosition} color ${color}`);
+      //console.log(`[debug] painting panel ${this.robotPosition} color ${color}`);
       this.panels[this.robotPosition] = color;
     } else {
       console.error(`Received invalid color ${color} from the robot - something is wrong`);
@@ -496,13 +504,13 @@ class HullPaintingRobot {
       currentColor = this.panels[this.robotPosition];
     }
     // send it!
-    console.log(`[debug] sending color ${currentColor} from position ${this.robotPosition}`);
+    //console.log(`[debug] sending color ${currentColor} from ${this.robotPosition}`);
     this.robotInput.write(`${currentColor}\n`);
   }
 
   getNumberOfPaintedPanels() {
     // because none of these keys are set until they are painted
-    return Object.keys(this.panels);
+    return Object.keys(this.panels).length;
   }
 }
 
