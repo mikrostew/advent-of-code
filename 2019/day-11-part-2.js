@@ -464,6 +464,7 @@ class HullPaintingRobot {
         //console.log(this.panels);
         this.robotDirection.turn(outputDirection);
         this.robotPosition.advanceOne(this.robotDirection);
+        // TODO: track min and max limits
         this.sendCurrentPositionColor();
         // clear out the captured values
         outputPanelColor = undefined;
@@ -475,6 +476,7 @@ class HullPaintingRobot {
     });
 
     // send the initial input to the robot to kick this off (should be 0)
+    // TODO: start on a white panel
     this.sendCurrentPositionColor();
     // run the robot and see what it does...
     await this.program.run();
@@ -511,6 +513,15 @@ class HullPaintingRobot {
     // because none of these keys are set until they are painted
     return Object.keys(this.panels).length;
   }
+
+  // print out the panels to see
+  printPanels() {
+    // TODO: print this out using the min and max limits
+    // blank for black pixels, full block for white ones (easier to see)
+    //finalPixels[i] = (p == 0 ? ' ' : '█');
+    console.log("panel printout:");
+    console.log("TODO");
+  }
 }
 
 // input the program and run it
@@ -529,4 +540,5 @@ const robot = new HullPaintingRobot(INPUT_FILE);
 
 robot.paintPanels().then(() => {
   console.log(`painted panels: ${robot.getNumberOfPaintedPanels()}`);
+  robot.printPanels();
 });
