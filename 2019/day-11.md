@@ -63,3 +63,7 @@ Before you deploy the robot, you should probably have an estimate of the area it
 Build a new emergency hull painting robot and run the Intcode program on it. How many panels does it paint at least once?
 
 To begin, [get your puzzle input](https://adventofcode.com/2019/day/11/input).
+
+Your puzzle answer was `2054`.
+
+The first half of this puzzle is complete! It provides one gold star: *
