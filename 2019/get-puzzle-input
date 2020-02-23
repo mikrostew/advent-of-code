@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+# Getting the puzzle inputs manually is tedious - let's automate that
+
+# (first, some helper stuff, to output red text for errors)
+COLOR_FG_RED='\033[0;31m'
+COLOR_RESET='\033[0m'
+echo_err ()
+{
+  echo -e "${COLOR_FG_RED}$@${COLOR_RESET}" 1>&2
+}
+
+
+# This doesn't work:
+#  $ curl https://adventofcode.com/2019/day/12/input
+#  Puzzle inputs differ by user.  Please log in to get your puzzle input.
+
+# So, let's save my cookies and use those
+#  - open the network tab in the devtools console
+#  - reload the page
+#  - right click the request and "copy as cURL"
+
+# That will look something like this (I replaced my actually session cookie with <session-cookie>):
+#  curl 'https://adventofcode.com/2019/day/12/input' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Referer: https://adventofcode.com/2019/day/12' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Cookie: session=<session-cookie>' -H 'Upgrade-Insecure-Requests: 1' -H 'Cache-Control: max-age=0'
+
+# First test that it works (I don't think all of those headers are necessary):
+HEADER_USER_AGENT="User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0"
+HEADER_ACCEPT="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+#curl 'https://adventofcode.com/2019/day/12/input' -H "User-Agent: $HEADER_USER_AGENT" -H "Accept: $HEADER_ACCEPT" -H 'Cookie: session=<session-cookie>'
+
+# That works, so now we should input the day - optional, prompt if not specified
+if [ -z "$1" ]
+then
+  echo -n "What day? "
+  read input_day
+  # if nothing input, that's an error - have to know what day
+  if [ -z "$input_day" ]
+  then
+    echo_err "No day given, exiting..."
+    exit 1
+  else
+    aoc_day="$input_day"
+  fi
+else
+  aoc_day="$1"
+fi
+
+# Now this should work
+#curl "https://adventofcode.com/2019/day/$aoc_day/input" -H "User-Agent: $HEADER_USER_AGENT" -H "Accept: $HEADER_ACCEPT" -H "Cookie: session=<session-cookie>"
+
+# That works, so next thing is adding the session cookie to the OSX keychain, so I can use it programmatically:
+#  $ security add-generic-password -U -T "" -a aoc-session-cookie -s aoc-session-cookie -w <session-cookie>
+
+# get session cookie from the keychain (will have to input my password)
+session_cookie="$(security find-generic-password -ga aoc-session-cookie -w)"
+if [ -z "$session_cookie" ]
+then
+  echo_err "Unable to get the session cookie"
+  exit 1
+fi
+
+# And the final thing is output to a file
+output_filename="day-$aoc_day-input.txt"
+
+# So this is the final command
+curl "https://adventofcode.com/2019/day/$aoc_day/input" -H "User-Agent: $HEADER_USER_AGENT" -H "Accept: $HEADER_ACCEPT" -H "Cookie: session=$session_cookie" -o "$output_filename"
+
+# check for error
+if [ "$?" -ne 0 ]
+then
+  echo_err "Got a non-zero exit code - something went wrong"
+else
+  echo "Puzzle input written to file '$output_filename'"
+fi
