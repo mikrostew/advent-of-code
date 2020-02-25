@@ -183,3 +183,7 @@ Sum of total energy: 290 + 608 + 574 + 468 = 1940
 What is the total energy in the system after simulating the moons given in your scan for 1000 steps?
 
 To begin, [get your puzzle input](https://adventofcode.com/2019/day/12/input).
+
+Your puzzle answer was `14780`.
+
+The first half of this puzzle is complete! It provides one gold star: *

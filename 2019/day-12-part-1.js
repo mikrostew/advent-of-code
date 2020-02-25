@@ -48,6 +48,18 @@ class Moon {
     this.posY += this.velY;
     this.posZ += this.velZ;
   }
+
+  totalEnergy() {
+    return this.potentialEnergy() * this.kineticEnergy();
+  }
+
+  potentialEnergy() {
+    return Math.abs(this.posX) + Math.abs(this.posY) + Math.abs(this.posZ);
+  }
+
+  kineticEnergy() {
+    return Math.abs(this.velX) + Math.abs(this.velY) + Math.abs(this.velZ);
+  }
 }
 
 // system of moons
@@ -151,6 +163,16 @@ class MoonSystem {
         this.moons.forEach(m => console.log(m));
       }
     }
+    console.log();
+    console.log(`Total energy of the system: ${this.totalEnergy()}`);
+  }
+
+  totalEnergy() {
+    let energy = 0;
+    this.moons.forEach(m => {
+      energy += m.totalEnergy();
+    });
+    return energy;
   }
 }
 
@@ -158,14 +180,20 @@ class MoonSystem {
 // test programs from the description
 let positionStr, moons;
 
-positionStr = `<x=-1, y=0, z=2>
-<x=2, y=-10, z=-7>
-<x=4, y=-8, z=8>
-<x=3, y=5, z=-1>`;
-moons = new MoonSystem(positionStr, {debug: true});
-moons.simulateSteps(10);
+// positionStr = `<x=-1, y=0, z=2>
+// <x=2, y=-10, z=-7>
+// <x=4, y=-8, z=8>
+// <x=3, y=5, z=-1>`;
+// moons = new MoonSystem(positionStr, {debug: true});
+// moons.simulateSteps(10);
+
+// positionStr = `<x=-8, y=-10, z=0>
+// <x=5, y=5, z=10>
+// <x=2, y=-7, z=3>
+// <x=9, y=-8, z=-3>`;
+// moons = new MoonSystem(positionStr, {debug: true});
+// moons.simulateSteps(100);
 
 // input the program and run it
-//moons = MoonSystem.fromFile(INPUT_FILE);
-//moons.simulateSteps(1000);
-//console.log(`Total energy of the system: ${moons.systemEnergy()}`);
+moons = MoonSystem.fromFile(INPUT_FILE);
+moons.simulateSteps(1000);
