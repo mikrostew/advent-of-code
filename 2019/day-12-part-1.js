@@ -8,26 +8,46 @@ const process = require('process');
 const INPUT_FILE = './day-12-input.txt';
 
 
-// simple point class
-class Point {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
+// return all possible permutations (b/c we care about order) of 2 items in the input set of items
+function getPermutations(items) {
+  // can't do this with less than 2 items
+  if (items.length < 2) { return []; }
 
-  toString() {
-    return `Point<${this.x},${this.y}>`;
-  }
+  let permutations = [];
+  let firstItem = items[0];
+  let remainingItems = items.slice(1);
+  remainingItems.forEach(item => permutations.push([firstItem, item]));
+  // recursively get the rest of the possible permutations
+  let otherPermutations = getPermutations(remainingItems);
+  return permutations.concat(otherPermutations);
 }
 
 // a single moon
 class Moon {
   constructor(x, y, z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
+    // set initial position - make sure these are numbers
+    this.posX = Number(x);
+    this.posY = Number(y);
+    this.posZ = Number(z);
+    // initial velocity is zero
+    this.velX = 0;
+    this.velY = 0;
+    this.velZ = 0;
   }
 
+  // update velocity of this moon for each dimension
+  updateVelocity(x, y, z) {
+    this.velX += x;
+    this.velY += y;
+    this.velZ += z;
+  }
+
+  // apply velocity to this moon's position
+  applyVelocity() {
+    this.posX += this.velX;
+    this.posY += this.velY;
+    this.posZ += this.velZ;
+  }
 }
 
 // system of moons
@@ -39,7 +59,7 @@ class MoonSystem {
     }
     // then parse this info
     this.moons = this.parseMoonInfo(positionStr);
-    if (this.debug) { console.log(this.moons); }
+    //if (this.debug) { console.log(this.moons); }
   }
 
   static fromFile(file) {
@@ -57,7 +77,7 @@ class MoonSystem {
     // <x=3, y=5, z=-1>
     // split by lines, then use regex
     positionStr.split(/[\r\n]+/).forEach(line => {
-      if (this.debug) { console.log(`line: ${line}`); }
+      //if (this.debug) { console.log(`line: ${line}`); }
       let match = line.match(/<x=(-?\d+), y=(-?\d+), z=(-?\d+)>/);
       //if (this.debug) { console.log(match); }
       moons.push(new Moon(match[1], match[2], match[3]));
@@ -66,7 +86,28 @@ class MoonSystem {
   }
 
   simulateSteps(numSteps) {
-    // TODO
+    // the permutations will be the same every time, so take that out of the loop
+    // (array of 0..N -- see https://stackoverflow.com/a/33352604)
+    let moonIndices = Array.from(Array(this.moons.length).keys());
+    let moonPermutations = getPermutations(moonIndices);
+    console.log("possible permutations:");
+    console.log(moonPermutations);
+
+    for (let i = 0; i < numSteps; i++) {
+      // for each pair of moons, apply gravity to modify velocities
+      moonPermutations.forEach(indices => {
+        // TODO: adjust velocities
+        console.log(`${indices[0]}, ${indices[1]}`);
+      });
+
+      // after that, apply velocities to modify positions
+      this.moons.forEach(m => m.applyVelocity());
+      if (this.debug) {
+        console.log();
+        console.log(`step ${i}:`);
+        this.moons.forEach(m => console.log(m));
+      }
+    }
   }
 }
 
