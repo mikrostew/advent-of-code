@@ -90,21 +90,64 @@ class MoonSystem {
     // (array of 0..N -- see https://stackoverflow.com/a/33352604)
     let moonIndices = Array.from(Array(this.moons.length).keys());
     let moonPermutations = getPermutations(moonIndices);
-    console.log("possible permutations:");
-    console.log(moonPermutations);
+    //console.log("possible permutations:");
+    //console.log(moonPermutations);
+    if (this.debug) {
+      console.log();
+      console.log(`step 0:`);
+      this.moons.forEach(m => console.log(m));
+    }
 
     for (let i = 0; i < numSteps; i++) {
       // for each pair of moons, apply gravity to modify velocities
       moonPermutations.forEach(indices => {
-        // TODO: adjust velocities
-        console.log(`${indices[0]}, ${indices[1]}`);
+        //console.log(`${indices[0]}, ${indices[1]}`);
+        // the values that will be used to adjust velocity
+        let m0Vel = [0, 0, 0];
+        let m1Vel = [0, 0, 0];
+
+        // adjust velocities
+        let m0 = this.moons[indices[0]];
+        let m1 = this.moons[indices[1]];
+        // x
+        if (m0.posX > m1.posX) {
+          m0Vel[0] = -1;
+          m1Vel[0] = 1;
+        } else if (m0.posX < m1.posX) {
+          m0Vel[0] = 1;
+          m1Vel[0] = -1;
+        } else {
+          // equal, no change
+        }
+        // y
+        if (m0.posY > m1.posY) {
+          m0Vel[1] = -1;
+          m1Vel[1] = 1;
+        } else if (m0.posY < m1.posY) {
+          m0Vel[1] = 1;
+          m1Vel[1] = -1;
+        } else {
+          // equal, no change
+        }
+        // z
+        if (m0.posZ > m1.posZ) {
+          m0Vel[2] = -1;
+          m1Vel[2] = 1;
+        } else if (m0.posZ < m1.posZ) {
+          m0Vel[2] = 1;
+          m1Vel[2] = -1;
+        } else {
+          // equal, no change
+        }
+        m0.updateVelocity(...m0Vel);
+        m1.updateVelocity(...m1Vel);
       });
 
       // after that, apply velocities to modify positions
       this.moons.forEach(m => m.applyVelocity());
       if (this.debug) {
         console.log();
-        console.log(`step ${i}:`);
+        console.log(`step ${i+1}:`);
         this.moons.forEach(m => console.log(m));
       }
     }
