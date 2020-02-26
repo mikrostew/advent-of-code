@@ -41,40 +41,32 @@ function gcd(n1, n2) {
 class Moon {
   constructor(x, y, z) {
     // set initial position - make sure these are numbers
-    this.posX = Number(x);
-    this.posY = Number(y);
-    this.posZ = Number(z);
-    // initial velocity is zero
-    this.velX = 0;
-    this.velY = 0;
-    this.velZ = 0;
+    // for this part, use an object so I can more easily access in a loop
+    this.pos = {
+      x: Number(x),
+      y: Number(y),
+      z: Number(z),
+    };
+    // initial velocities are zero
+    this.vel = {
+      x: 0,
+      y: 0,
+      z: 0,
+    };
   }
 
   // update velocity of this moon for each dimension
-  updateVelocity(x, y, z) {
-    this.velX += x;
-    this.velY += y;
-    this.velZ += z;
+  updateVelocity(dimension, velocity) {
+    this.vel[dimension] += velocity;
   }
 
   // apply velocity to this moon's position
   applyVelocity() {
-    this.posX += this.velX;
-    this.posY += this.velY;
-    this.posZ += this.velZ;
+    this.pos['x'] += this.vel['x'];
+    this.pos['y'] += this.vel['y'];
+    this.pos['z'] += this.vel['z'];
   }
 
-  totalEnergy() {
-    return this.potentialEnergy() * this.kineticEnergy();
-  }
-
-  potentialEnergy() {
-    return Math.abs(this.posX) + Math.abs(this.posY) + Math.abs(this.posZ);
-  }
-
-  kineticEnergy() {
-    return Math.abs(this.velX) + Math.abs(this.velY) + Math.abs(this.velZ);
-  }
 }
 
 // system of moons
@@ -112,102 +104,89 @@ class MoonSystem {
     return moons;
   }
 
-  simulateSteps(numSteps) {
+  // string representing the current state of the system, on a single axis
+  stateString(dimension) {
+    return `Pos<${this.moons.map(m => m.pos[dimension]).join('|')}> Vel<${this.moons.map(m => m.vel[dimension]).join('|')}>`;
+  }
+
+  // figure out how many steps this takes to repeat
+  stepsToRepeat() {
+    // independently figure out the repeat interval for each dimension (X, Y, and Z),
+    // then find the LCM of that to get our answer
+
     // the permutations will be the same every time, so take that out of the loop
     // (array of 0..N -- see https://stackoverflow.com/a/33352604)
     let moonIndices = Array.from(Array(this.moons.length).keys());
     let moonPermutations = getPermutations(moonIndices);
-    //console.log("possible permutations:");
-    //console.log(moonPermutations);
-    if (this.debug) {
-      console.log();
-      console.log(`step 0:`);
-      this.moons.forEach(m => console.log(m));
-    }
 
-    for (let i = 0; i < numSteps; i++) {
-      // for each pair of moons, apply gravity to modify velocities
-      moonPermutations.forEach(indices => {
-        //console.log(`${indices[0]}, ${indices[1]}`);
-        // the values that will be used to adjust velocity
-        let m0Vel = [0, 0, 0];
-        let m1Vel = [0, 0, 0];
+    let stepsForEachDim = [];
 
-        // adjust velocities
-        let m0 = this.moons[indices[0]];
-        let m1 = this.moons[indices[1]];
-        // x
-        if (m0.posX > m1.posX) {
-          m0Vel[0] = -1;
-          m1Vel[0] = 1;
-        } else if (m0.posX < m1.posX) {
-          m0Vel[0] = 1;
-          m1Vel[0] = -1;
-        } else {
-          // equal, no change
-        }
-        // y
-        if (m0.posY > m1.posY) {
-          m0Vel[1] = -1;
-          m1Vel[1] = 1;
-        } else if (m0.posY < m1.posY) {
-          m0Vel[1] = 1;
-          m1Vel[1] = -1;
-        } else {
-          // equal, no change
-        }
-        // z
-        if (m0.posZ > m1.posZ) {
-          m0Vel[2] = -1;
-          m1Vel[2] = 1;
-        } else if (m0.posZ < m1.posZ) {
-          m0Vel[2] = 1;
-          m1Vel[2] = -1;
-        } else {
-          // equal, no change
-        }
-        m0.updateVelocity(...m0Vel);
-        m1.updateVelocity(...m1Vel);
-      });
+    // do this for all 3 dimensions
+    ['x', 'y', 'z'].forEach(currentDimension => {
 
-      // after that, apply velocities to modify positions
-      this.moons.forEach(m => m.applyVelocity());
-      if (this.debug) {
-        console.log();
-        console.log(`step ${i+1}:`);
-        this.moons.forEach(m => console.log(m));
+      let i;
+      let currentState = '';
+      let initialState = this.stateString(currentDimension);
+      console.log(`initial state: ${initialState}`);
+
+      for (i = 0; currentState != initialState; i++) {
+        // for each pair of moons, apply gravity to modify velocities
+        moonPermutations.forEach(indices => {
+          // the values that will be used to adjust velocity
+          let m0Vel = 0;
+          let m1Vel = 0;
+
+          // adjust velocities
+          let m0 = this.moons[indices[0]];
+          let m1 = this.moons[indices[1]];
+          // x
+          if (m0.pos[currentDimension] > m1.pos[currentDimension]) {
+            m0Vel = -1;
+            m1Vel = 1;
+          } else if (m0.pos[currentDimension] < m1.pos[currentDimension]) {
+            m0Vel = 1;
+            m1Vel = -1;
+          } else {
+            // equal, no change
+          }
+
+          m0.updateVelocity(currentDimension, m0Vel);
+          m1.updateVelocity(currentDimension, m1Vel);
+        });
+
+        // after that, apply velocities to modify positions
+        this.moons.forEach(m => m.applyVelocity());
+        currentState = this.stateString(currentDimension);
       }
-    }
-    console.log();
-    console.log(`Total energy of the system: ${this.totalEnergy()}`);
-  }
 
-  totalEnergy() {
-    let energy = 0;
-    this.moons.forEach(m => {
-      energy += m.totalEnergy();
+      console.log(`'${currentDimension}' took ${i} steps`);
+      stepsForEachDim.push(i);
     });
-    return energy;
+
+    // figure out the LCM
+    let totalSteps = lcm(stepsForEachDim[0], lcm(stepsForEachDim[1], stepsForEachDim[2]));
+    console.log(`Total steps to repeat: ${totalSteps}`);
   }
 }
 
 // test programs from the description
-// let positionStr, moons;
+let positionStr, moons;
 
 // positionStr = `<x=-1, y=0, z=2>
 // <x=2, y=-10, z=-7>
 // <x=4, y=-8, z=8>
 // <x=3, y=5, z=-1>`;
 // moons = new MoonSystem(positionStr, {debug: true});
-// moons.simulateSteps(10);
+// moons.stepsToRepeat();
 
 // positionStr = `<x=-8, y=-10, z=0>
 // <x=5, y=5, z=10>
 // <x=2, y=-7, z=3>
 // <x=9, y=-8, z=-3>`;
 // moons = new MoonSystem(positionStr, {debug: true});
-// moons.simulateSteps(100);
+// moons.stepsToRepeat();
+
 
 // input the program and run it
-//moons = MoonSystem.fromFile(INPUT_FILE);
-//moons.simulateSteps(1000);
+moons = MoonSystem.fromFile(INPUT_FILE);
+moons.stepsToRepeat();

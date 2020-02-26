@@ -231,3 +231,7 @@ Of course, the universe might last for a very long time before repeating. Here's
 This set of initial positions takes 4686774924 steps before it repeats a previous state! Clearly, you might need to find a more efficient way to simulate the universe.
 
 How many steps does it take to reach the first state that exactly matches a previous state?
+
+Your puzzle answer was `279751820342592`.
+
+Both parts of this puzzle are complete! They provide two gold stars: **
