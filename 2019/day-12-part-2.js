@@ -22,6 +22,21 @@ function getPermutations(items) {
   return permutations.concat(otherPermutations);
 }
 
+// find the least common multiple
+function lcm(n1, n2) {
+  // LCM is just product divided by gcd
+  return (n1 * n2) / gcd(n1, n2);
+}
+
+// find the greatest common divisor
+function gcd(n1, n2) {
+  // base cases
+  if (n1 === 0) { return n2; }
+  if (n2 === 0) { return n1; }
+  // otherwise continue the algorithm
+  return gcd(n2, n1 % n2);
+}
+
 // a single moon
 class Moon {
   constructor(x, y, z) {
@@ -176,9 +191,8 @@ class MoonSystem {
   }
 }
 
-
 // test programs from the description
-let positionStr, moons;
+// let positionStr, moons;
 
 // positionStr = `<x=-1, y=0, z=2>
 // <x=2, y=-10, z=-7>
@@ -195,5 +209,5 @@ let positionStr, moons;
 // moons.simulateSteps(100);
 
 // input the program and run it
-moons = MoonSystem.fromFile(INPUT_FILE);
-moons.simulateSteps(1000);
+//moons = MoonSystem.fromFile(INPUT_FILE);
+//moons.simulateSteps(1000);
