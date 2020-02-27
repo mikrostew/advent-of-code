@@ -29,7 +29,10 @@ class ArcadeCabinet {
     let newProgramStr = programStr.replace('1', '2'); // put in the quarters
     this.program = new IntcodeProgram(newProgramStr, this.gameInput, this.gameOutput);
     //this.program = new IntcodeProgram(newProgramStr, process.stdin, this.gameOutput);
-    this.joystickPosition = 0;
+    //this.joystickPosition = 0;
+    // track ball and paddle positions (columns)
+    this.ballX = 0;
+    this.paddleX = 0;
   }
 
   static fromFile(file) {
@@ -47,6 +50,12 @@ class ArcadeCabinet {
   }
 
   putTileAtPosition(x, y, tileID) {
+    // track ball and paddle positions
+    if (tileID === 3) {
+      this.paddleX = x;
+    } else if (tileID === 4) {
+      this.ballX = x;
+    }
     // the order here is line then column, which is why Y is first
     process.stdout.write(`\x1b[${y};${x}H${this.tileIdToChar(tileID)}`);
   }
@@ -56,40 +65,54 @@ class ArcadeCabinet {
     process.stdout.write(`\x1b[${y};${x}H${text}`);
   }
 
-  setupJoystickInput() {
-    // don't wait for enter to be pressed to get characters
-    process.stdin.setRawMode(true);
-
-    // resume stdin in the parent process
-    // (so this won't quit unless an error or process.exit() happens)
-    process.stdin.resume();
-
-    // get hex values (makes reading the arrow key values easier)
-    process.stdin.setEncoding('hex');
-
-    // on any data into stdin
-    process.stdin.on('data', key => {
-      // Ctrl-C or Ctrl-D (end of text) exits this program
-      if (key === '03' || key === '04') {
-        process.exit();
-      }
-
-      if (key === '1b5b44') { // left
-        this.joystickPosition = -1;
-      } else if (key === '1b5b43') { // right
-        this.joystickPosition = 1;
-      }
-    });
-  }
+  // this was a nice idea
+  // setupJoystickInput() {
+  //   // don't wait for enter to be pressed to get characters
+  //   process.stdin.setRawMode(true);
+  //
+  //   // resume stdin in the parent process
+  //   // (so this won't quit unless an error or process.exit() happens)
+  //   process.stdin.resume();
+  //
+  //   // get hex values (makes reading the arrow key values easier)
+  //   process.stdin.setEncoding('hex');
+  //
+  //   // on any data into stdin
+  //   process.stdin.on('data', key => {
+  //     // Ctrl-C or Ctrl-D (end of text) exits this program
+  //     if (key === '03' || key === '04') {
+  //       process.exit();
+  //     }
+  //
+  //     if (key === '1b5b44') { // left
+  //       this.joystickPosition = -1;
+  //     } else if (key === '1b5b43') { // right
+  //       this.joystickPosition = 1;
+  //     }
+  //   });
+  // }
 
   setupGameLoop() {
     // new frame of the game every 1/2 second
     setInterval(() => {
       // all I have to do is read what the joystick input is, then write that to the game
-      let jp = this.joystickPosition;
-      this.gameInput.write(`${jp}\n`);
+      //let jp = this.joystickPosition;
+      //this.gameInput.write(`${jp}\n`);
       // and reset the position
-      this.joystickPosition = 0;
+      //this.joystickPosition = 0;
+
+      // no ^^
+      // figure out where to move the paddle based on the positions of the paddle and ball
+      if (this.ballX > this.paddleX) {
+        // move right
+        this.gameInput.write(`1\n`);
+      } else if (this.ballX < this.paddleX) {
+        // move left
+        this.gameInput.write(`-1\n`);
+      } else {
+        // same column, probably have to anticipate the ball's movements but whatever
+        this.gameInput.write(`0\n`);
+      }
     }, 500);
   }
 
@@ -133,7 +156,7 @@ class ArcadeCabinet {
     });
 
     // setup input from the arrow keys
-    this.setupJoystickInput();
+    //this.setupJoystickInput();
 
     // clear the screen first
     this.clearScreen();
