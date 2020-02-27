@@ -23,8 +23,11 @@ const TILES = {
 class ArcadeCabinet {
   constructor(programStr) {
     // setup output stream
+    this.gameInput = new IntcodeInOutStream();
     this.gameOutput = new IntcodeInOutStream();
-    this.program = new IntcodeProgram(programStr, process.stdin, this.gameOutput);
+    // this is a bit of a hack, because I know the first char is '1'
+    let newProgramStr = programStr.replace('1', '2'); // put in the quarters
+    this.program = new IntcodeProgram(newProgramStr, this.gameInput, this.gameOutput);
     this.joystickPosition = 0;
   }
 
@@ -45,6 +48,11 @@ class ArcadeCabinet {
   putTileAtPosition(x, y, tileID) {
     // the order here is line then column, which is why Y is first
     process.stdout.write(`\x1b[${y};${x}H${this.tileIdToChar(tileID)}`);
+  }
+
+  putTextAtPosition(x, y, text) {
+    // the order here is line then column, which is why Y is first
+    process.stdout.write(`\x1b[${y};${x}H${text}`);
   }
 
   setupJoystickInput() {
@@ -73,6 +81,17 @@ class ArcadeCabinet {
     });
   }
 
+  setupGameLoop() {
+    // new frame of the game every 1/2 second
+    setTimeout(() => {
+      // all I have to do is read what the joystick input is, then write that to the game
+      let jp = this.joystickPosition;
+      this.gameInput.write(`${jp}\n`);
+      // and reset the position
+      this.joystickPosition = 0;
+    }, 500);
+  }
+
   async runGame() {
     // handle output from the game
     const readGameOutput = readline.createInterface({
@@ -80,14 +99,13 @@ class ArcadeCabinet {
       output: undefined, // so that it doesn't echo the outputs it receives, WTF
     });
 
-    let [xPos, yPos, tileID] = [undefined, undefined, undefined];
+    let [xPos, yPos, tileIDOrScore] = [undefined, undefined, undefined];
     // track height of the game area
     let maxY = 0;
     // track number of blocks, see if it matches
     //let numBlocks = 0;
 
     readGameOutput.on('line', input => {
-      // TODO: handle segment output
       // figure out which input this is
       if (xPos == undefined) {
         // just capture the x position
@@ -98,13 +116,18 @@ class ArcadeCabinet {
         if (yPos > maxY) { maxY = yPos; }
       } else {
         // assume I did this right
-        tileID = Number(input);
+        tileIDOrScore = Number(input);
         // now we have all the inputs, so draw on the screen
-        //console.log(`put tile ${tileID} at position ${xPos},${yPos}`);
-        //if (tileID == 2) { numBlocks++; }
-        this.putTileAtPosition(xPos, yPos, tileID);
+        // unless this is a segment display command (the current score)
+        if (xPos === -1 && yPos === 0) {
+          this.putTextAtPosition(0, maxY+1, `score: ${tileIDOrScore}`); // this is actually the current score
+        } else {
+          //console.log(`put tile ${tileIDOrScore} at position ${xPos},${yPos}`);
+          //if (tileIDOrScore == 2) { numBlocks++; }
+          this.putTileAtPosition(xPos, yPos, tileIDOrScore);
+        }
         // clear these out to start over
-        [xPos, yPos, tileID] = [undefined, undefined, undefined];
+        [xPos, yPos, tileIDOrScore] = [undefined, undefined, undefined];
       }
     });
 
@@ -114,15 +137,14 @@ class ArcadeCabinet {
     // clear the screen first
     this.clearScreen();
 
-    // TODO: then start the main game loop
+    // then start the main game loop
+    this.setupGameLoop();
 
     // don't have to send any input, at least not this time...
     await this.program.run();
 
-    // TODO: wait for output stream to be cleared out
-
-    // move the cursor after running this (add a blank tile below the game)
-    this.putTileAtPosition(0, maxY+1, 0);
+    // move the cursor after running this (add a blank tile below the game and the score)
+    this.putTileAtPosition(0, maxY+2, 0);
     //setTimeout(() => console.log(`number of blocks: ${numBlocks}`), 500);
 
     // close this or it will hang?
