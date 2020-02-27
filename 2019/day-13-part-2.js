@@ -28,6 +28,7 @@ class ArcadeCabinet {
     // this is a bit of a hack, because I know the first char is '1'
     let newProgramStr = programStr.replace('1', '2'); // put in the quarters
     this.program = new IntcodeProgram(newProgramStr, this.gameInput, this.gameOutput);
+    //this.program = new IntcodeProgram(newProgramStr, process.stdin, this.gameOutput);
     this.joystickPosition = 0;
   }
 
@@ -83,7 +84,7 @@ class ArcadeCabinet {
 
   setupGameLoop() {
     // new frame of the game every 1/2 second
-    setTimeout(() => {
+    setInterval(() => {
       // all I have to do is read what the joystick input is, then write that to the game
       let jp = this.joystickPosition;
       this.gameInput.write(`${jp}\n`);
@@ -148,7 +149,9 @@ class ArcadeCabinet {
     //setTimeout(() => console.log(`number of blocks: ${numBlocks}`), 500);
 
     // close this or it will hang?
-    readGameOutput.close();
+    //readGameOutput.close();
+    // or I could do this
+    process.exit();
   }
 }
 
@@ -156,6 +159,4 @@ class ArcadeCabinet {
 // input the program and run it
 let arcade = ArcadeCabinet.fromFile(INPUT_FILE);
 //let arcade = new ArcadeCabinet('104,1,104,2,104,3,104,6,104,5,104,4,99');
-//arcade.runGame();
-
-
+arcade.runGame();
