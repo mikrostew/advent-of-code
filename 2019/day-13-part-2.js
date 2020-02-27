@@ -113,7 +113,7 @@ class ArcadeCabinet {
         // same column, probably have to anticipate the ball's movements but whatever
         this.gameInput.write(`0\n`);
       }
-    }, 500);
+    }, 10);
   }
 
   async runGame() {
@@ -166,6 +166,9 @@ class ArcadeCabinet {
 
     // don't have to send any input, at least not this time...
     await this.program.run();
+
+    // wait for any remaining outputs to be rendered
+    await new Promise(resolve => setTimeout(resolve, 20));
 
     // move the cursor after running this (add a blank tile below the game and the score)
     this.putTileAtPosition(0, maxY+2, 0);

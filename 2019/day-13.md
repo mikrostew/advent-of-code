@@ -36,3 +36,7 @@ The arcade cabinet has a joystick that can move left and right. The software rea
 The arcade cabinet also has a segment display capable of showing a single number that represents the player's current score. When three output instructions specify X=-1, Y=0, the third output instruction is not a tile; the value instead specifies the new score to show in the segment display. For example, a sequence of output values like -1,0,12345 would show 12345 as the player's current score.
 
 Beat the game by breaking all the blocks. What is your score after the last block is broken?
+
+Your puzzle answer was `15909`.
+
+Both parts of this puzzle are complete! They provide two gold stars: **
