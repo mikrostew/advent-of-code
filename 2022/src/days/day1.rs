@@ -1,13 +1,12 @@
-use std::fmt::Debug;
-use std::fs;
 use std::path::Path;
 
-super::run_parts!();
+use super::{read_file, run_parts};
 
-fn part1<P: AsRef<Path> + Debug>(path: P) -> () {
-    println!("File {:?}", path);
+run_parts!();
 
-    let file_contents = fs::read_to_string(path).expect("failed to read file");
+fn part1<P: AsRef<Path>>(path: P) -> () {
+    read_file!(file_contents, path);
+
     let mut current_total: i32 = 0;
     let mut max_value: i32 = 0;
 
@@ -37,8 +36,8 @@ fn part1<P: AsRef<Path> + Debug>(path: P) -> () {
     println!("max value: {}", max_value);
 }
 
-fn part2<P: AsRef<Path> + Debug>(path: P) -> () {
-    let file_contents = fs::read_to_string(path).expect("failed to read file");
+fn part2<P: AsRef<Path>>(path: P) -> () {
+    read_file!(file_contents, path);
 
     let mut current_total: i32 = 0;
     let mut totals: Vec<i32> = vec![];

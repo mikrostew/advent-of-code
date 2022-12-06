@@ -1,8 +1,8 @@
-use std::fmt::Debug;
-use std::fs;
 use std::path::Path;
 
-super::run_parts!();
+use super::{read_file, run_parts};
+
+run_parts!();
 
 enum Choice {
     Rock,
@@ -83,10 +83,8 @@ fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> i32 {
     }
 }
 
-fn part1<P: AsRef<Path> + Debug>(path: P) -> () {
-    println!("File {:?}", path);
-
-    let file_contents = fs::read_to_string(path).expect("failed to read file");
+fn part1<P: AsRef<Path>>(path: P) -> () {
+    read_file!(file_contents, path);
 
     let total_score: i32 = file_contents
         .lines()
@@ -96,10 +94,8 @@ fn part1<P: AsRef<Path> + Debug>(path: P) -> () {
     println!("Total score: {}", total_score);
 }
 
-fn part2<P: AsRef<Path> + Debug>(path: P) -> () {
-    println!("File {:?}", path);
-
-    let file_contents = fs::read_to_string(path).expect("failed to read file");
+fn part2<P: AsRef<Path>>(path: P) -> () {
+    read_file!(file_contents, path);
 
     let total_score: i32 = file_contents
         .lines()
