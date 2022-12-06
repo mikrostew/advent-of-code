@@ -2,15 +2,7 @@ use std::fmt::Debug;
 use std::fs;
 use std::path::Path;
 
-use crate::cli::Part;
-
-pub fn run<P: AsRef<Path> + Debug>(part: Part, path: P) -> () {
-    println!("Part {}", part);
-    match part {
-        Part::One => part1(path),
-        Part::Two => part2(path),
-    }
-}
+super::run_parts!();
 
 fn part1<P: AsRef<Path> + Debug>(path: P) -> () {
     println!("File {:?}", path);

@@ -5,14 +5,13 @@ mod days;
 
 fn main() {
     let args = cli::Args::parse();
+    println!("Day {}", args.day);
 
     // validate days and parts
     match args.day {
-        1 => {
-            println!("Day {}", args.day);
-            days::day1::run(args.part, args.file);
-        }
-        2..=25 => {
+        1 => days::day1::run(args.part, args.file),
+        2 => days::day2::run(args.part, args.file),
+        3..=25 => {
             println!(
                 "Day {}, part {}, reading file '{}'",
                 args.day,
