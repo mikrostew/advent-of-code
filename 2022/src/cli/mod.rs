@@ -7,8 +7,6 @@ use clap::{Parser, ValueEnum};
 #[command(author, version, about = "Advent of Code 2022", long_about = None)]
 pub struct Args {
     /// Which day is this (1-25)
-    // TODO: validate this
-    // https://docs.rs/clap/latest/clap/_derive/_tutorial/#validated-values
     #[arg(short, long)]
     pub day: u8,
 
