@@ -15,7 +15,8 @@ fn main() {
         4 => days::day4::run(args.part, args.file),
         5 => days::day5::run(args.part, args.file),
         6 => days::day6::run(args.part, args.file),
-        7..=25 => {
+        7 => days::day7::run(args.part, args.file),
+        8..=25 => {
             println!(
                 "Day {}, part {}, reading file '{}'",
                 args.day,
