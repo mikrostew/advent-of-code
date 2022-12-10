@@ -1,6 +1,8 @@
+use super::parse_usize;
+
 pub fn part1(file_contents: String) -> String {
-    let mut current_total: i32 = 0;
-    let mut max_value: i32 = 0;
+    let mut current_total: usize = 0;
+    let mut max_value: usize = 0;
 
     file_contents.lines().for_each(|line| match line {
         "" => {
@@ -12,7 +14,7 @@ pub fn part1(file_contents: String) -> String {
         }
         _ => {
             println!("line: {}", line);
-            let as_int = line.parse::<i32>().expect("failed to parse int");
+            let as_int = parse_usize!(line);
             current_total += as_int;
         }
     });
@@ -30,8 +32,8 @@ pub fn part1(file_contents: String) -> String {
 }
 
 pub fn part2(file_contents: String) -> String {
-    let mut current_total: i32 = 0;
-    let mut totals: Vec<i32> = vec![];
+    let mut current_total: usize = 0;
+    let mut totals: Vec<usize> = vec![];
 
     file_contents.lines().for_each(|line| match line {
         "" => {
@@ -41,7 +43,7 @@ pub fn part2(file_contents: String) -> String {
         }
         _ => {
             println!("line: {}", line);
-            let as_int = line.parse::<i32>().expect("failed to parse int");
+            let as_int = parse_usize!(line);
             current_total += as_int;
         }
     });
@@ -54,7 +56,7 @@ pub fn part2(file_contents: String) -> String {
     // get total of the top 3
     totals.sort();
     totals.reverse();
-    let sum: i32 = totals[0..=2].iter().sum();
+    let sum: usize = totals[0..=2].iter().sum();
 
     println!("");
     println!("total of top 3: {:?}", sum);

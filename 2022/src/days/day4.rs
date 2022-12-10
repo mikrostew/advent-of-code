@@ -3,10 +3,12 @@ use nom::character::complete::digit1;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
+use super::parse_usize;
+
 #[derive(Debug)]
 struct Range {
-    start: i32,
-    end: i32,
+    start: usize,
+    end: usize,
 }
 
 impl Range {
@@ -27,8 +29,8 @@ fn range(input: &str) -> IResult<&str, Range> {
         (
             next_input,
             Range {
-                start: d1.parse::<i32>().expect("failed to parse i32"),
-                end: d2.parse::<i32>().expect("failed to parse i32"),
+                start: parse_usize!(d1),
+                end: parse_usize!(d2),
             },
         )
     })

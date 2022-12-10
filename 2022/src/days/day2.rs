@@ -40,19 +40,19 @@ fn my_choice_based_on_outcome(opponent_choice: &Choice, character: &str) -> Choi
     }
 }
 
-fn score_for_round(round_str: &str) -> i32 {
+fn score_for_round(round_str: &str) -> usize {
     let opponent_choice = opponent_str_to_choice(&round_str[0..1]);
     let my_choice = my_str_to_choice(&round_str[2..3]);
     score_for_choice(&my_choice) + score_for_outcome(my_choice, opponent_choice)
 }
 
-fn score_for_round_2(round_str: &str) -> i32 {
+fn score_for_round_2(round_str: &str) -> usize {
     let opponent_choice = opponent_str_to_choice(&round_str[0..1]);
     let my_choice = my_choice_based_on_outcome(&opponent_choice, &round_str[2..3]);
     score_for_choice(&my_choice) + score_for_outcome(my_choice, opponent_choice)
 }
 
-fn score_for_choice(choice: &Choice) -> i32 {
+fn score_for_choice(choice: &Choice) -> usize {
     match choice {
         Choice::Rock => 1,
         Choice::Paper => 2,
@@ -60,7 +60,7 @@ fn score_for_choice(choice: &Choice) -> i32 {
     }
 }
 
-fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> i32 {
+fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> usize {
     match (my_choice, opponent_choice) {
         // win
         (Choice::Rock, Choice::Scissors) => 6,
@@ -78,7 +78,7 @@ fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> i32 {
 }
 
 pub fn part1(file_contents: String) -> String {
-    let total_score: i32 = file_contents
+    let total_score: usize = file_contents
         .lines()
         .map(|line| score_for_round(line))
         .sum();
@@ -88,7 +88,7 @@ pub fn part1(file_contents: String) -> String {
 }
 
 pub fn part2(file_contents: String) -> String {
-    let total_score: i32 = file_contents
+    let total_score: usize = file_contents
         .lines()
         .map(|line| score_for_round_2(line))
         .sum();
