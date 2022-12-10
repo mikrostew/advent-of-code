@@ -1,12 +1,8 @@
-use std::path::Path;
-
-use super::{read_file, run_parts};
+use super::run_parts;
 
 run_parts!();
 
-fn part1<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part1(file_contents: String) -> () {
     let mut current_total: i32 = 0;
     let mut max_value: i32 = 0;
 
@@ -36,9 +32,7 @@ fn part1<P: AsRef<Path>>(path: P) -> () {
     println!("max value: {}", max_value);
 }
 
-fn part2<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part2(file_contents: String) -> () {
     let mut current_total: i32 = 0;
     let mut totals: Vec<i32> = vec![];
 

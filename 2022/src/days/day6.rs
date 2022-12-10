@@ -1,7 +1,6 @@
 use std::collections::HashSet;
-use std::path::Path;
 
-use super::{read_file, run_parts};
+use super::run_parts;
 
 run_parts!();
 
@@ -67,15 +66,13 @@ fn find_start_of_message_marker(line: &str) -> usize {
     panic!("start of packet marker not found");
 }
 
-fn part1<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
+fn part1(file_contents: String) -> () {
     // input is a single line
     let position = find_start_of_packet_marker(&file_contents);
     println!("position: {}", position);
 }
 
-fn part2<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
+fn part2(file_contents: String) -> () {
     // input is a single line
     let position = find_start_of_message_marker(&file_contents);
     println!("position: {}", position);

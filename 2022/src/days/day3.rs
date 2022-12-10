@@ -1,7 +1,6 @@
 use std::collections::HashSet;
-use std::path::Path;
 
-use super::{read_file, run_parts};
+use super::run_parts;
 
 run_parts!();
 
@@ -75,9 +74,7 @@ fn priority_for_char(c: char) -> u32 {
     }
 }
 
-fn part1<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part1(file_contents: String) -> () {
     let item_priorities: Vec<u32> = file_contents
         .lines()
         .map(|line| find_item_priority(line))
@@ -87,9 +84,7 @@ fn part1<P: AsRef<Path>>(path: P) -> () {
     println!("Total priority: {}", item_priorities.iter().sum::<u32>());
 }
 
-fn part2<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part2(file_contents: String) -> () {
     // process this in groups of 3
     let badge_priorities: Vec<u32> = file_contents
         .lines()

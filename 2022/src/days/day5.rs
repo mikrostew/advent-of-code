@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::alpha1;
@@ -11,7 +9,7 @@ use nom::sequence::delimited;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::{read_file, run_parts};
+use super::run_parts;
 
 run_parts!();
 
@@ -196,9 +194,7 @@ fn move_instr(input: &str) -> IResult<&str, ParsedLine> {
     })
 }
 
-fn part1<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part1(file_contents: String) -> () {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing
@@ -239,9 +235,7 @@ fn part1<P: AsRef<Path>>(path: P) -> () {
     stacks.print_tops();
 }
 
-fn part2<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part2(file_contents: String) -> () {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing

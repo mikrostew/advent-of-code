@@ -1,7 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::path::Path;
 
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -13,7 +12,7 @@ use nom::sequence::preceded;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::{parse_usize, read_file, run_parts};
+use super::{parse_usize, run_parts};
 
 run_parts!();
 
@@ -267,8 +266,7 @@ impl Filesystem {
     }
 }
 
-fn part1<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
+fn part1(file_contents: String) -> () {
     //println!("{}", file_contents);
 
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
@@ -295,9 +293,7 @@ fn part1<P: AsRef<Path>>(path: P) -> () {
     println!("sum of those: {}", sum_of_sizes);
 }
 
-fn part2<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part2(file_contents: String) -> () {
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
 
     file_contents.lines().for_each(|line| {

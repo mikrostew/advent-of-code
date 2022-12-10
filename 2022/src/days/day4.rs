@@ -1,11 +1,9 @@
-use std::path::Path;
-
 use nom::bytes::complete::tag;
 use nom::character::complete::digit1;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::{read_file, run_parts};
+use super::run_parts;
 
 run_parts!();
 
@@ -53,9 +51,7 @@ fn ranges_overlap(r1: &Range, r2: &Range) -> bool {
     r1.overlaps(r2) || r2.overlaps(r1)
 }
 
-fn part1<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part1(file_contents: String) -> () {
     let contained: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {
@@ -71,9 +67,7 @@ fn part1<P: AsRef<Path>>(path: P) -> () {
     println!("total: {}", contained.len());
 }
 
-fn part2<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part2(file_contents: String) -> () {
     let overlap: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {

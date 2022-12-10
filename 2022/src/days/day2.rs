@@ -1,6 +1,4 @@
-use std::path::Path;
-
-use super::{read_file, run_parts};
+use super::run_parts;
 
 run_parts!();
 
@@ -83,9 +81,7 @@ fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> i32 {
     }
 }
 
-fn part1<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part1(file_contents: String) -> () {
     let total_score: i32 = file_contents
         .lines()
         .map(|line| score_for_round(line))
@@ -94,9 +90,7 @@ fn part1<P: AsRef<Path>>(path: P) -> () {
     println!("Total score: {}", total_score);
 }
 
-fn part2<P: AsRef<Path>>(path: P) -> () {
-    read_file!(file_contents, path);
-
+fn part2(file_contents: String) -> () {
     let total_score: i32 = file_contents
         .lines()
         .map(|line| score_for_round_2(line))
