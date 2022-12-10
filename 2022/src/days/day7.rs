@@ -12,9 +12,7 @@ use nom::sequence::preceded;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::{parse_usize, run_parts};
-
-run_parts!();
+use super::parse_usize;
 
 #[derive(Clone, Debug)]
 enum TermOutput {
@@ -266,7 +264,7 @@ impl Filesystem {
     }
 }
 
-fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String) -> String {
     //println!("{}", file_contents);
 
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
@@ -294,7 +292,7 @@ fn part1(file_contents: String) -> String {
     format!("{}", sum_of_sizes)
 }
 
-fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String) -> String {
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
 
     file_contents.lines().for_each(|line| {

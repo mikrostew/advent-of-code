@@ -9,10 +9,6 @@ use nom::sequence::delimited;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::run_parts;
-
-run_parts!();
-
 // holds a single move instruction
 #[derive(Debug)]
 struct Move {
@@ -193,7 +189,7 @@ fn move_instr(input: &str) -> IResult<&str, ParsedLine> {
     })
 }
 
-fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String) -> String {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing
@@ -236,7 +232,7 @@ fn part1(file_contents: String) -> String {
     tops
 }
 
-fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String) -> String {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing

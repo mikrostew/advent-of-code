@@ -1,11 +1,9 @@
-use super::run_parts;
-
-run_parts!();
-
-fn part1(file_contents: String) -> () {
+pub fn part1(file_contents: String) -> String {
     println!("{}", file_contents);
+    "TODO".to_string()
 }
 
-fn part2(file_contents: String) -> () {
+pub fn part2(file_contents: String) -> String {
     println!("{}", file_contents);
+    "TODO".to_string()
 }

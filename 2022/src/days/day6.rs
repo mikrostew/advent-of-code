@@ -1,9 +1,5 @@
 use std::collections::HashSet;
 
-use super::run_parts;
-
-run_parts!();
-
 // 4 distinct chars
 fn find_start_of_packet_marker(line: &str) -> usize {
     for end_pos in 4..line.len() {
@@ -66,14 +62,14 @@ fn find_start_of_message_marker(line: &str) -> usize {
     panic!("start of packet marker not found");
 }
 
-fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String) -> String {
     // input is a single line
     let position = find_start_of_packet_marker(&file_contents);
     println!("position: {}", position);
     format!("{}", position)
 }
 
-fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String) -> String {
     // input is a single line
     let position = find_start_of_message_marker(&file_contents);
     println!("position: {}", position);

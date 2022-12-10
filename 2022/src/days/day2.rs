@@ -1,7 +1,3 @@
-use super::run_parts;
-
-run_parts!();
-
 enum Choice {
     Rock,
     Paper,
@@ -81,7 +77,7 @@ fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> i32 {
     }
 }
 
-fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String) -> String {
     let total_score: i32 = file_contents
         .lines()
         .map(|line| score_for_round(line))
@@ -91,7 +87,7 @@ fn part1(file_contents: String) -> String {
     format!("{}", total_score)
 }
 
-fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String) -> String {
     let total_score: i32 = file_contents
         .lines()
         .map(|line| score_for_round_2(line))

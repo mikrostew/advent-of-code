@@ -3,10 +3,6 @@ use nom::character::complete::digit1;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::run_parts;
-
-run_parts!();
-
 #[derive(Debug)]
 struct Range {
     start: i32,
@@ -51,7 +47,7 @@ fn ranges_overlap(r1: &Range, r2: &Range) -> bool {
     r1.overlaps(r2) || r2.overlaps(r1)
 }
 
-fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String) -> String {
     let contained: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {
@@ -68,7 +64,7 @@ fn part1(file_contents: String) -> String {
     format!("{}", contained.len())
 }
 
-fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String) -> String {
     let overlap: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {

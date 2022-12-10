@@ -1,9 +1,5 @@
 use std::collections::HashSet;
 
-use super::run_parts;
-
-run_parts!();
-
 fn find_item_priority(line: &str) -> u32 {
     let line_len = line.len();
     if line_len % 2 != 0 {
@@ -74,7 +70,7 @@ fn priority_for_char(c: char) -> u32 {
     }
 }
 
-fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String) -> String {
     let item_priorities: Vec<u32> = file_contents
         .lines()
         .map(|line| find_item_priority(line))
@@ -85,7 +81,7 @@ fn part1(file_contents: String) -> String {
     format!("{}", item_priorities.iter().sum::<u32>())
 }
 
-fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String) -> String {
     // process this in groups of 3
     let badge_priorities: Vec<u32> = file_contents
         .lines()

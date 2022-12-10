@@ -1,8 +1,4 @@
-use super::run_parts;
-
-run_parts!();
-
-fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String) -> String {
     let mut current_total: i32 = 0;
     let mut max_value: i32 = 0;
 
@@ -33,7 +29,7 @@ fn part1(file_contents: String) -> String {
     format!("{}", max_value)
 }
 
-fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String) -> String {
     let mut current_total: i32 = 0;
     let mut totals: Vec<i32> = vec![];
 
