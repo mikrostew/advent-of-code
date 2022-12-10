@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::path::Path;
@@ -150,6 +151,12 @@ impl Dir {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
+struct DirSize {
+    name: String,
+    size: usize,
+}
+
 // where to go from the current dir
 #[derive(Debug, Eq, PartialEq)]
 enum Go {
@@ -190,7 +197,7 @@ impl Filesystem {
                 where_to_go = match next_thing {
                     TermOutput::Cmd(c) => match c {
                         Command::Cd(cd) => {
-                            println!("cd {:?}", cd);
+                            //println!("cd {:?}", cd);
                             match cd {
                                 ChangeDir::Root => Go::Root,
                                 ChangeDir::Up => {
@@ -223,12 +230,12 @@ impl Filesystem {
                     },
                     TermOutput::Output(e) => match e {
                         Entry::File(f) => {
-                            println!("create file {:?}", f);
+                            //println!("create file {:?}", f);
                             in_dir.add_file(f);
                             Go::Here
                         }
                         Entry::Dir(d) => {
-                            println!("create dir {:?}", d);
+                            //println!("create dir {:?}", d);
                             in_dir.add_child_name(d);
                             Go::Here
                         }
@@ -240,6 +247,23 @@ impl Filesystem {
             //println!("go: {:?}", where_to_go);
         }
         (in_dir, term_output, where_to_go)
+    }
+
+    fn find_all_dir_sizes(&self, d: &Dir) -> (Vec<DirSize>, usize) {
+        let mut self_size = d.files.iter().map(|(_k, f)| f.size).sum();
+        let mut self_and_child_dirs: Vec<DirSize> = vec![];
+        println!("file size for {}: {}", d.name, self_size);
+
+        for (_k, dir) in d.dirs.iter() {
+            let (mut child_dirs, tot_size) = self.find_all_dir_sizes(dir);
+            self_and_child_dirs.append(&mut child_dirs);
+            self_size += tot_size;
+        }
+        self_and_child_dirs.push(DirSize {
+            name: d.name.clone(),
+            size: self_size,
+        });
+        (self_and_child_dirs, self_size)
     }
 }
 
@@ -259,9 +283,67 @@ fn part1<P: AsRef<Path>>(path: P) -> () {
 
     let mut filesystem = Filesystem::new();
     filesystem.build(term_output);
+
+    let (all_dirs, size) = filesystem.find_all_dir_sizes(&filesystem.root);
+    println!("all dirs: {:?}", all_dirs);
+    println!("total size: {}", size);
+
+    // find dirs with size <= 100,000
+    let dirs_100k: Vec<&DirSize> = all_dirs.iter().filter(|d| d.size <= 100_000).collect();
+    println!("dirs <= 100k: {:?}", dirs_100k);
+    let sum_of_sizes: usize = dirs_100k.iter().map(|d| d.size).sum();
+    println!("sum of those: {}", sum_of_sizes);
 }
 
 fn part2<P: AsRef<Path>>(path: P) -> () {
     read_file!(file_contents, path);
-    println!("{}", file_contents);
+
+    let mut term_output: VecDeque<TermOutput> = VecDeque::new();
+
+    file_contents.lines().for_each(|line| {
+        let (leftover, result) = parse_line(line).expect("failed to parse line");
+        assert_eq!(leftover, "");
+        term_output.push_back(result);
+    });
+
+    let mut filesystem = Filesystem::new();
+    filesystem.build(term_output);
+
+    let (all_dirs, total_size) = filesystem.find_all_dir_sizes(&filesystem.root);
+    println!("all dirs: {:?}", all_dirs);
+    println!("total size: {}", total_size);
+
+    // find which dir to delete
+    let total_space = 70_000_000;
+    let needed_space = 30_000_000;
+
+    let current_unused = total_space - total_size;
+    println!("current unused: {}", current_unused);
+    let need_to_delete = needed_space - current_unused;
+    println!("need to delete: {}", need_to_delete);
+
+    // find dirs of at least that size
+    let mut deletion_candidates: Vec<&DirSize> = all_dirs
+        .iter()
+        .filter(|d| d.size >= need_to_delete)
+        .collect();
+    println!("candidates for deletion: {:?}", deletion_candidates);
+    deletion_candidates.sort_by(|a, b| {
+        if a.size < b.size {
+            Ordering::Less
+        } else if a.size > b.size {
+            Ordering::Greater
+        } else {
+            Ordering::Equal
+        }
+    });
+    println!("sorted: {:?}", deletion_candidates);
+    println!(
+        "dir to delete: {:?}",
+        deletion_candidates.first().expect("no dir??")
+    );
+    println!(
+        "size of that: {}",
+        deletion_candidates.first().expect("no dir??").size
+    );
 }
