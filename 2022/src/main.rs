@@ -32,10 +32,23 @@ fn main() {
         6 => run_for_day!(day6, args.part, file_contents),
         7 => run_for_day!(day7, args.part, file_contents),
         8 => run_for_day!(day8, args.part, file_contents),
-        9..=25 => {
-            println!("Day {}, part {}", args.day, args.part,);
-            unimplemented!("Haven't done that day yet")
-        }
+        9 => run_for_day!(day9, args.part, file_contents),
+        10 => run_for_day!(day10, args.part, file_contents),
+        11 => run_for_day!(day11, args.part, file_contents),
+        12 => run_for_day!(day12, args.part, file_contents),
+        13 => run_for_day!(day13, args.part, file_contents),
+        14 => run_for_day!(day14, args.part, file_contents),
+        15 => run_for_day!(day15, args.part, file_contents),
+        16 => run_for_day!(day16, args.part, file_contents),
+        17 => run_for_day!(day17, args.part, file_contents),
+        18 => run_for_day!(day18, args.part, file_contents),
+        19 => run_for_day!(day19, args.part, file_contents),
+        20 => run_for_day!(day20, args.part, file_contents),
+        21 => run_for_day!(day21, args.part, file_contents),
+        22 => run_for_day!(day22, args.part, file_contents),
+        23 => run_for_day!(day23, args.part, file_contents),
+        24 => run_for_day!(day24, args.part, file_contents),
+        25 => run_for_day!(day25, args.part, file_contents),
         _ => panic!("Day {} is out of range", args.day),
     };
 
