@@ -51,7 +51,7 @@ fn ranges_overlap(r1: &Range, r2: &Range) -> bool {
     r1.overlaps(r2) || r2.overlaps(r1)
 }
 
-fn part1(file_contents: String) -> () {
+fn part1(file_contents: String) -> String {
     let contained: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {
@@ -65,9 +65,10 @@ fn part1(file_contents: String) -> () {
 
     //println!("contained: {:?}", contained);
     println!("total: {}", contained.len());
+    format!("{}", contained.len())
 }
 
-fn part2(file_contents: String) -> () {
+fn part2(file_contents: String) -> String {
     let overlap: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {
@@ -81,4 +82,35 @@ fn part2(file_contents: String) -> () {
 
     //println!("overlap: {:?}", overlap);
     println!("total: {}", overlap.len());
+    format!("{}", overlap.len())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{part1, part2};
+    use crate::days::read_input_file;
+
+    #[test]
+    fn part1_example() {
+        let input = read_input_file("inputs/day4-example.txt");
+        assert_eq!(part1(input), "2".to_string());
+    }
+
+    #[test]
+    fn part1_input() {
+        let input = read_input_file("inputs/day4-input.txt");
+        assert_eq!(part1(input), "538".to_string());
+    }
+
+    #[test]
+    fn part2_example() {
+        let input = read_input_file("inputs/day4-example.txt");
+        assert_eq!(part2(input), "4".to_string());
+    }
+
+    #[test]
+    fn part2_input() {
+        let input = read_input_file("inputs/day4-input.txt");
+        assert_eq!(part2(input), "792".to_string());
+    }
 }

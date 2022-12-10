@@ -74,12 +74,11 @@ impl<'a> Stacks<'a> {
         println!("");
     }
 
-    fn print_tops(&self) -> () {
-        print!("tops: ");
-        for i in 0..self.size {
-            print!("{}", self.stacks[i][self.stacks[i].len() - 1]);
-        }
-        println!("");
+    fn get_tops(&self) -> String {
+        (0..self.size)
+            .map(|i| self.stacks[i][self.stacks[i].len() - 1])
+            .collect::<Vec<&str>>()
+            .join("")
     }
 
     fn do_moves(&mut self, vm: Vec<Move>) -> () {
@@ -194,7 +193,7 @@ fn move_instr(input: &str) -> IResult<&str, ParsedLine> {
     })
 }
 
-fn part1(file_contents: String) -> () {
+fn part1(file_contents: String) -> String {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing
@@ -232,10 +231,12 @@ fn part1(file_contents: String) -> () {
     stacks.print();
 
     stacks.do_moves(moves);
-    stacks.print_tops();
+    let tops = stacks.get_tops();
+    println!("tops: {}", tops);
+    tops
 }
 
-fn part2(file_contents: String) -> () {
+fn part2(file_contents: String) -> String {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing
@@ -273,5 +274,37 @@ fn part2(file_contents: String) -> () {
     stacks.print();
 
     stacks.do_moves_2(moves);
-    stacks.print_tops();
+    let tops = stacks.get_tops();
+    println!("tops: {}", tops);
+    tops
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{part1, part2};
+    use crate::days::read_input_file;
+
+    #[test]
+    fn part1_example() {
+        let input = read_input_file("inputs/day5-example.txt");
+        assert_eq!(part1(input), "CMZ".to_string());
+    }
+
+    #[test]
+    fn part1_input() {
+        let input = read_input_file("inputs/day5-input.txt");
+        assert_eq!(part1(input), "TLNGFGMFN".to_string());
+    }
+
+    #[test]
+    fn part2_example() {
+        let input = read_input_file("inputs/day5-example.txt");
+        assert_eq!(part2(input), "MCD".to_string());
+    }
+
+    #[test]
+    fn part2_input() {
+        let input = read_input_file("inputs/day5-input.txt");
+        assert_eq!(part2(input), "FGLQJCMBD".to_string());
+    }
 }

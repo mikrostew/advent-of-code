@@ -2,7 +2,7 @@ use super::run_parts;
 
 run_parts!();
 
-fn part1(file_contents: String) -> () {
+fn part1(file_contents: String) -> String {
     let mut current_total: i32 = 0;
     let mut max_value: i32 = 0;
 
@@ -30,9 +30,10 @@ fn part1(file_contents: String) -> () {
 
     println!("");
     println!("max value: {}", max_value);
+    format!("{}", max_value)
 }
 
-fn part2(file_contents: String) -> () {
+fn part2(file_contents: String) -> String {
     let mut current_total: i32 = 0;
     let mut totals: Vec<i32> = vec![];
 
@@ -61,4 +62,35 @@ fn part2(file_contents: String) -> () {
 
     println!("");
     println!("total of top 3: {:?}", sum);
+    format!("{}", sum)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{part1, part2};
+    use crate::days::read_input_file;
+
+    #[test]
+    fn part1_example() {
+        let input = read_input_file("inputs/day1-example.txt");
+        assert_eq!(part1(input), "24000".to_string());
+    }
+
+    #[test]
+    fn part1_input() {
+        let input = read_input_file("inputs/day1-input.txt");
+        assert_eq!(part1(input), "67016".to_string());
+    }
+
+    #[test]
+    fn part2_example() {
+        let input = read_input_file("inputs/day1-example.txt");
+        assert_eq!(part2(input), "45000".to_string());
+    }
+
+    #[test]
+    fn part2_input() {
+        let input = read_input_file("inputs/day1-input.txt");
+        assert_eq!(part2(input), "200116".to_string());
+    }
 }

@@ -266,7 +266,7 @@ impl Filesystem {
     }
 }
 
-fn part1(file_contents: String) -> () {
+fn part1(file_contents: String) -> String {
     //println!("{}", file_contents);
 
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
@@ -291,9 +291,10 @@ fn part1(file_contents: String) -> () {
     println!("dirs <= 100k: {:?}", dirs_100k);
     let sum_of_sizes: usize = dirs_100k.iter().map(|d| d.size).sum();
     println!("sum of those: {}", sum_of_sizes);
+    format!("{}", sum_of_sizes)
 }
 
-fn part2(file_contents: String) -> () {
+fn part2(file_contents: String) -> String {
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
 
     file_contents.lines().for_each(|line| {
@@ -342,4 +343,35 @@ fn part2(file_contents: String) -> () {
         "size of that: {}",
         deletion_candidates.first().expect("no dir??").size
     );
+    format!("{}", deletion_candidates.first().expect("no dir??").size)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{part1, part2};
+    use crate::days::read_input_file;
+
+    #[test]
+    fn part1_example() {
+        let input = read_input_file("inputs/day7-example.txt");
+        assert_eq!(part1(input), "95437".to_string());
+    }
+
+    #[test]
+    fn part1_input() {
+        let input = read_input_file("inputs/day7-input.txt");
+        assert_eq!(part1(input), "1582412".to_string());
+    }
+
+    #[test]
+    fn part2_example() {
+        let input = read_input_file("inputs/day7-example.txt");
+        assert_eq!(part2(input), "24933642".to_string());
+    }
+
+    #[test]
+    fn part2_input() {
+        let input = read_input_file("inputs/day7-input.txt");
+        assert_eq!(part2(input), "3696336".to_string());
+    }
 }

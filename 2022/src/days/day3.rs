@@ -74,7 +74,7 @@ fn priority_for_char(c: char) -> u32 {
     }
 }
 
-fn part1(file_contents: String) -> () {
+fn part1(file_contents: String) -> String {
     let item_priorities: Vec<u32> = file_contents
         .lines()
         .map(|line| find_item_priority(line))
@@ -82,9 +82,10 @@ fn part1(file_contents: String) -> () {
 
     println!("Item priorities: {:?}", item_priorities);
     println!("Total priority: {}", item_priorities.iter().sum::<u32>());
+    format!("{}", item_priorities.iter().sum::<u32>())
 }
 
-fn part2(file_contents: String) -> () {
+fn part2(file_contents: String) -> String {
     // process this in groups of 3
     let badge_priorities: Vec<u32> = file_contents
         .lines()
@@ -102,4 +103,35 @@ fn part2(file_contents: String) -> () {
 
     println!("Badge priorities: {:?}", badge_priorities);
     println!("Total priority: {}", badge_priorities.iter().sum::<u32>());
+    format!("{}", badge_priorities.iter().sum::<u32>())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{part1, part2};
+    use crate::days::read_input_file;
+
+    #[test]
+    fn part1_example() {
+        let input = read_input_file("inputs/day3-example.txt");
+        assert_eq!(part1(input), "157".to_string());
+    }
+
+    #[test]
+    fn part1_input() {
+        let input = read_input_file("inputs/day3-input.txt");
+        assert_eq!(part1(input), "8105".to_string());
+    }
+
+    #[test]
+    fn part2_example() {
+        let input = read_input_file("inputs/day3-example.txt");
+        assert_eq!(part2(input), "70".to_string());
+    }
+
+    #[test]
+    fn part2_input() {
+        let input = read_input_file("inputs/day3-input.txt");
+        assert_eq!(part2(input), "2363".to_string());
+    }
 }

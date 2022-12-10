@@ -74,8 +74,6 @@ Priorities for these items must still be found to organize the sticker attachmen
 
 Find the item type that corresponds to the badges of each three-Elf group. What is the sum of the priorities of those item types?
 
-Answer: `2363`
+Your puzzle answer was `2363`.
 
-That's the right answer! You are one gold star closer to collecting enough star fruit.
-
-You have completed Day 3!
+Both parts of this puzzle are complete! They provide two gold stars: **

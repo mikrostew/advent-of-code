@@ -58,8 +58,6 @@ In the example above, the top three Elves are the fourth Elf (with 24000 Calorie
 
 Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
 
-Answer: `200116`
+Your puzzle answer was `200116`.
 
-That's the right answer! You are one gold star closer to collecting enough star fruit.
-
-You have completed Day 1!
+Both parts of this puzzle are complete! They provide two gold stars: **

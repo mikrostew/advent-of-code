@@ -51,8 +51,6 @@ Now that you're correctly decrypting the ultra top secret strategy guide, you wo
 
 Following the Elf's instructions for the second column, what would your total score be if everything goes exactly according to your strategy guide?
 
-Answer: `11373`
+Your puzzle answer was `11373`.
 
-That's the right answer! You are one gold star closer to collecting enough star fruit.
-
-You have completed Day 2!
+Both parts of this puzzle are complete! They provide two gold stars: **

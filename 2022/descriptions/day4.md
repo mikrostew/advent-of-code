@@ -73,8 +73,6 @@ In how many assignment pairs do the ranges overlap?
 That's not the right answer; your answer is too low. If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit. Please wait one minute before trying again. (You guessed `678`.)
 
 
-Answer: `792`
+Your puzzle answer was `792`.
 
-That's the right answer! You are one gold star closer to collecting enough star fruit.
-
-You have completed Day 4!
+Both parts of this puzzle are complete! They provide two gold stars: **
