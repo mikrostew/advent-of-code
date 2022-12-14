@@ -1,5 +1,3 @@
-use std::fs;
-
 pub mod day1;
 pub mod day10;
 pub mod day11;
@@ -32,11 +30,18 @@ macro_rules! parse_usize {
         $e.parse::<usize>().expect("failed to parse usize!")
     }
 }
+macro_rules! parse_i32 {
+    ($e:ident) => {
+        $e.parse::<i32>().expect("failed to parse i32!")
+    };
+}
+pub(crate) use parse_i32;
 pub(crate) use parse_usize;
 
 // test helpers
 
+#[cfg(test)]
 fn read_input_file(path: &str) -> String {
-    let file_contents = fs::read_to_string(path).expect("failed to read file");
+    let file_contents = std::fs::read_to_string(path).expect("failed to read file");
     file_contents
 }
