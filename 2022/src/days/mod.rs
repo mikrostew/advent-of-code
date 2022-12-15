@@ -42,6 +42,16 @@ macro_rules! expect_i32 {
     };
 }
 
+// parse unsigned into into usize
+pub(crate) fn parse_usize(input: &str) -> IResult<&str, usize> {
+    digit1(input).map(|(next_input, dig)| {
+        (
+            next_input,
+            dig.parse::<usize>().expect("failed to parse usize!"),
+        )
+    })
+}
+
 // parse signed ints (e.g. 4, -67, 234) into i32
 pub(crate) fn parse_i32(input: &str) -> IResult<&str, i32> {
     tuple((many_m_n(0, 1, tag("-")), digit1))(input).map(|(next_input, (sign, dig))| {
