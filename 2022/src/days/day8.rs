@@ -2,7 +2,7 @@ use nom::bytes::complete::take;
 use nom::multi::many1;
 use nom::IResult;
 
-use super::parse_i32;
+use super::expect_i32;
 
 // lines are just a bunch a digits
 fn parse_line(input: &str) -> IResult<&str, Vec<i32>> {
@@ -11,7 +11,7 @@ fn parse_line(input: &str) -> IResult<&str, Vec<i32>> {
 
 // parse a single digit as u8
 fn digit(input: &str) -> IResult<&str, i32> {
-    take(1usize)(input).map(|(next_input, d)| (next_input, parse_i32!(d)))
+    take(1usize)(input).map(|(next_input, d)| (next_input, expect_i32!(d)))
 }
 
 struct TreeGrid {

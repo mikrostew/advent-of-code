@@ -9,7 +9,7 @@ use nom::sequence::delimited;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::parse_usize;
+use super::expect_usize;
 
 // holds a single move instruction
 #[derive(Debug)]
@@ -162,7 +162,7 @@ fn crate_or_empty(input: &str) -> IResult<&str, &str> {
 
 fn stack_nums(input: &str) -> IResult<&str, ParsedLine> {
     delimited(space0, separated_list1(space1, digit1), space0)(input).map(|(next_input, result)| {
-        let vec_of_stack_nums = result.iter().map(|d| parse_usize!(d)).collect();
+        let vec_of_stack_nums = result.iter().map(|d| expect_usize!(d)).collect();
         (next_input, ParsedLine::StackNums(vec_of_stack_nums))
     })
 }
@@ -180,9 +180,9 @@ fn move_instr(input: &str) -> IResult<&str, ParsedLine> {
         (
             next_input,
             ParsedLine::MoveInstr(Move {
-                quantity: parse_usize!(d1),
-                from: parse_usize!(d2),
-                to: parse_usize!(d3),
+                quantity: expect_usize!(d1),
+                from: expect_usize!(d2),
+                to: expect_usize!(d3),
             }),
         )
     })

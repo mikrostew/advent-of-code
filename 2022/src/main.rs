@@ -54,5 +54,5 @@ fn main() {
     let file_contents = fs::read_to_string(args.file).expect("failed to read file");
 
     let answer = day_fn(file_contents);
-    println!("answer: {}", answer);
+    println!("answer:\n{}", answer);
 }

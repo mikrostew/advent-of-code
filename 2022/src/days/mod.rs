@@ -1,3 +1,9 @@
+use nom::bytes::complete::tag;
+use nom::character::complete::digit1;
+use nom::multi::many_m_n;
+use nom::sequence::tuple;
+use nom::IResult;
+
 pub mod day1;
 pub mod day10;
 pub mod day11;
@@ -25,18 +31,31 @@ pub mod day8;
 pub mod day9;
 
 // who needs error handling, this ain't production code
-macro_rules! parse_usize {
+macro_rules! expect_usize {
     ($e:ident) => {
         $e.parse::<usize>().expect("failed to parse usize!")
     }
 }
-macro_rules! parse_i32 {
+macro_rules! expect_i32 {
     ($e:ident) => {
         $e.parse::<i32>().expect("failed to parse i32!")
     };
 }
-pub(crate) use parse_i32;
-pub(crate) use parse_usize;
+
+// parse signed ints (e.g. 4, -67, 234) into i32
+pub(crate) fn parse_i32(input: &str) -> IResult<&str, i32> {
+    tuple((many_m_n(0, 1, tag("-")), digit1))(input).map(|(next_input, (sign, dig))| {
+        (
+            next_input,
+            format!("{}{}", sign.join(""), dig)
+                .parse::<i32>()
+                .expect("failed to parse i32!"),
+        )
+    })
+}
+
+pub(crate) use expect_i32;
+pub(crate) use expect_usize;
 
 // test helpers
 

@@ -6,7 +6,7 @@ use nom::character::complete::one_of;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::parse_usize;
+use super::expect_usize;
 
 #[derive(Debug)]
 enum Direction {
@@ -36,7 +36,7 @@ fn direction(input: &str) -> IResult<&str, Direction> {
 }
 
 fn distance(input: &str) -> IResult<&str, usize> {
-    digit1(input).map(|(next_input, d)| (next_input, parse_usize!(d)))
+    digit1(input).map(|(next_input, d)| (next_input, expect_usize!(d)))
 }
 
 #[derive(Debug)]

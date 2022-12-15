@@ -3,7 +3,7 @@ use nom::character::complete::digit1;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::parse_usize;
+use super::expect_usize;
 
 #[derive(Debug)]
 struct Range {
@@ -29,8 +29,8 @@ fn range(input: &str) -> IResult<&str, Range> {
         (
             next_input,
             Range {
-                start: parse_usize!(d1),
-                end: parse_usize!(d2),
+                start: expect_usize!(d1),
+                end: expect_usize!(d2),
             },
         )
     })

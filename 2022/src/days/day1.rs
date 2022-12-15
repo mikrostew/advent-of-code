@@ -1,4 +1,4 @@
-use super::parse_usize;
+use super::expect_usize;
 
 pub fn part1(file_contents: String) -> String {
     let mut current_total: usize = 0;
@@ -14,7 +14,7 @@ pub fn part1(file_contents: String) -> String {
         }
         _ => {
             println!("line: {}", line);
-            let as_int = parse_usize!(line);
+            let as_int = expect_usize!(line);
             current_total += as_int;
         }
     });
@@ -43,7 +43,7 @@ pub fn part2(file_contents: String) -> String {
         }
         _ => {
             println!("line: {}", line);
-            let as_int = parse_usize!(line);
+            let as_int = expect_usize!(line);
             current_total += as_int;
         }
     });

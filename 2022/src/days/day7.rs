@@ -12,7 +12,7 @@ use nom::sequence::preceded;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::parse_usize;
+use super::expect_usize;
 
 #[derive(Clone, Debug)]
 enum TermOutput {
@@ -83,7 +83,7 @@ fn file(input: &str) -> IResult<&str, Entry> {
             next_input,
             Entry::File(File {
                 name: name.to_string(),
-                size: parse_usize!(size),
+                size: expect_usize!(size),
             }),
         )
     })
