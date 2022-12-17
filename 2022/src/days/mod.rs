@@ -1,6 +1,8 @@
 use nom::bytes::complete::tag;
 use nom::character::complete::digit1;
-use nom::multi::many_m_n;
+use nom::combinator::map;
+use nom::combinator::opt;
+use nom::combinator::recognize;
 use nom::sequence::tuple;
 use nom::IResult;
 
@@ -42,26 +44,25 @@ macro_rules! expect_i32 {
     };
 }
 
-// parse unsigned into into usize
+// parse unsigned int into usize
 pub(crate) fn parse_usize(input: &str) -> IResult<&str, usize> {
-    digit1(input).map(|(next_input, dig)| {
-        (
-            next_input,
-            dig.parse::<usize>().expect("failed to parse usize!"),
-        )
-    })
+    map(digit1, |n: &str| {
+        n.parse::<usize>().expect("failed to parse usize!")
+    })(input)
+}
+
+// parse signed ints (e.g. 4, -67, 234) into isize
+pub(crate) fn parse_isize(input: &str) -> IResult<&str, isize> {
+    map(recognize(tuple((opt(tag("-")), digit1))), |n: &str| {
+        n.parse::<isize>().expect("failed to parse isize!")
+    })(input)
 }
 
 // parse signed ints (e.g. 4, -67, 234) into i32
 pub(crate) fn parse_i32(input: &str) -> IResult<&str, i32> {
-    tuple((many_m_n(0, 1, tag("-")), digit1))(input).map(|(next_input, (sign, dig))| {
-        (
-            next_input,
-            format!("{}{}", sign.join(""), dig)
-                .parse::<i32>()
-                .expect("failed to parse i32!"),
-        )
-    })
+    map(recognize(tuple((opt(tag("-")), digit1))), |n: &str| {
+        n.parse::<i32>().expect("failed to parse i32!")
+    })(input)
 }
 
 pub(crate) use expect_i32;

@@ -8,7 +8,7 @@ use nom::IResult;
 
 use super::parse_usize;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 struct Point {
     x: usize,
     y: usize,
@@ -54,7 +54,7 @@ enum Tile {
 struct Cave {
     // map of points to what is at the point
     // (using this instead of a full 2D grid, because there are sparse points)
-    points: HashMap<String, Tile>,
+    points: HashMap<Point, Tile>,
     // lowest rock tile in the map
     lowest_y: usize,
 }
@@ -104,19 +104,19 @@ impl Cave {
     // add a single rock tile, tracking where the lowest tile is
     // (to later determine if sand is falling forever)
     fn add_rock(&mut self, x: usize, y: usize) -> () {
-        self.points.insert(format!("{},{}", x, y), Tile::Rock);
+        self.points.insert(Point::new(x, y), Tile::Rock);
         if y > self.lowest_y {
             self.lowest_y = y;
         }
     }
 
     fn add_sand(&mut self, x: usize, y: usize) -> () {
-        self.points.insert(format!("{},{}", x, y), Tile::Sand);
+        self.points.insert(Point::new(x, y), Tile::Sand);
     }
 
     // is this point taken by rock or sand?
     fn point_taken(&self, x: usize, y: usize) -> bool {
-        self.points.get(&format!("{},{}", x, y)).is_some()
+        self.points.get(&Point::new(x, y)).is_some()
     }
 
     // drop sand into the cave from the input point,
@@ -192,7 +192,7 @@ pub fn part1(file_contents: String) -> String {
     }
 
     let mut num_sand_grains = 0;
-    while let Some(p) = cave.drop_sand(Point::new(500, 0)) {
+    while let Some(_p) = cave.drop_sand(Point::new(500, 0)) {
         num_sand_grains += 1;
         //println!("{}, {:?}", num_sand_grains, p);
     }
@@ -243,9 +243,10 @@ mod tests {
         assert_eq!(part2(input), "93".to_string());
     }
 
-    #[test]
-    fn part2_input() {
-        let input = read_input_file("inputs/day14-input.txt");
-        assert_eq!(part2(input), "24943".to_string());
-    }
+    // this takes a long time to run
+    // #[test]
+    // fn part2_input() {
+    //     let input = read_input_file("inputs/day14-input.txt");
+    //     assert_eq!(part2(input), "24943".to_string());
+    // }
 }
