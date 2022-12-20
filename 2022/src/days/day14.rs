@@ -7,18 +7,9 @@ use nom::sequence::separated_pair;
 use nom::IResult;
 
 use super::parse_usize;
+use super::simple_struct;
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
-struct Point {
-    x: usize,
-    y: usize,
-}
-
-impl Point {
-    fn new(x: usize, y: usize) -> Self {
-        Point { x, y }
-    }
-}
+simple_struct!(Point; x: usize, y: usize);
 
 #[derive(Debug)]
 struct RockPath {

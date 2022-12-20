@@ -13,6 +13,7 @@ use nom::sequence::separated_pair;
 use nom::IResult;
 
 use super::expect_usize;
+use super::simple_struct;
 
 #[derive(Clone, Debug)]
 enum TermOutput {
@@ -81,10 +82,7 @@ fn file(input: &str) -> IResult<&str, Entry> {
     separated_pair(digit1, tag(" "), filename)(input).map(|(next_input, (size, name))| {
         (
             next_input,
-            Entry::File(File {
-                name: name.to_string(),
-                size: expect_usize!(size),
-            }),
+            Entry::File(File::new(name.to_string(), expect_usize!(size))),
         )
     })
 }
@@ -97,11 +95,7 @@ fn is_filename(chr: char) -> bool {
     is_alphabetic(chr as u8) || chr == '.'
 }
 
-#[derive(Clone, Debug)]
-struct File {
-    name: String,
-    size: usize,
-}
+simple_struct!(File; name: String, size: usize);
 
 #[derive(Clone, Debug)]
 struct Dir {
@@ -148,11 +142,7 @@ impl Dir {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
-struct DirSize {
-    name: String,
-    size: usize,
-}
+simple_struct!(DirSize; name: String, size: usize);
 
 // where to go from the current dir
 #[derive(Debug, Eq, PartialEq)]
@@ -256,10 +246,7 @@ impl Filesystem {
             self_and_child_dirs.append(&mut child_dirs);
             self_size += tot_size;
         }
-        self_and_child_dirs.push(DirSize {
-            name: d.name.clone(),
-            size: self_size,
-        });
+        self_and_child_dirs.push(DirSize::new(d.name.clone(), self_size));
         (self_and_child_dirs, self_size)
     }
 }

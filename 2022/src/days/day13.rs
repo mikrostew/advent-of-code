@@ -14,14 +14,12 @@ use nom::sequence::tuple;
 use nom::IResult;
 
 use super::expect_usize;
+use super::simple_struct;
 
-#[derive(Clone, Debug)]
-struct PacketPair {
-    left: Vec<ListOrInt>,
-    right: Vec<ListOrInt>,
-}
+simple_struct!(PacketPair; left: Vec<ListOrInt>, right: Vec<ListOrInt>);
+simple_struct!(Packet; parsed: Vec<ListOrInt>, orig: String);
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 enum ListOrInt {
     List(Vec<ListOrInt>),
     Int(usize),
@@ -50,9 +48,8 @@ fn packet_line(input: &str) -> IResult<&str, Vec<ListOrInt>> {
 }
 
 fn packet_pair(input: &str) -> IResult<&str, PacketPair> {
-    map(tuple((packet_line, packet_line)), |(p1, p2)| PacketPair {
-        left: p1,
-        right: p2,
+    map(tuple((packet_line, packet_line)), |(p1, p2)| {
+        PacketPair::new(p1, p2)
     })(input)
 }
 
@@ -122,12 +119,6 @@ fn compare(left: &ListOrInt, right: &ListOrInt) -> Option<bool> {
     }
 }
 
-#[derive(Clone, Debug)]
-struct Packet {
-    parsed: Vec<ListOrInt>,
-    orig: String,
-}
-
 pub fn part1(file_contents: String) -> String {
     //println!("{}", file_contents);
     let packet_pairs = parse_packets(&file_contents);
@@ -157,24 +148,15 @@ pub fn part2(file_contents: String) -> String {
         .map(|l| {
             let (leftover, p) = packet(l).expect("Could not parse packet");
             assert_eq!(leftover, "");
-            Packet {
-                parsed: p,
-                orig: l.to_string(),
-            }
+            Packet::new(p, l.to_string())
         })
         .collect();
 
     // add the 2 divider packets
     let (_, div1) = packet("[[2]]").expect("Could not parse divider [[2]]");
-    all_packets.push(Packet {
-        parsed: div1,
-        orig: "[[2]]".to_string(),
-    });
+    all_packets.push(Packet::new(div1, "[[2]]".to_string()));
     let (_, div2) = packet("[[6]]").expect("Could not parse divider [[6]]");
-    all_packets.push(Packet {
-        parsed: div2,
-        orig: "[[6]]".to_string(),
-    });
+    all_packets.push(Packet::new(div2, "[[6]]".to_string()));
 
     // sort in-place
     all_packets.sort_by(|a, b| match compare_vec(&a.parsed, &b.parsed) {

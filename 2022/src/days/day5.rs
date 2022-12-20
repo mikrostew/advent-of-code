@@ -10,14 +10,10 @@ use nom::sequence::tuple;
 use nom::IResult;
 
 use super::expect_usize;
+use super::simple_struct;
 
 // holds a single move instruction
-#[derive(Debug)]
-struct Move {
-    quantity: usize,
-    from: usize,
-    to: usize,
-}
+simple_struct!(Move; quantity: usize, from: usize, to: usize);
 
 struct Stacks<'a> {
     stacks: Vec<Vec<&'a str>>,
@@ -179,11 +175,11 @@ fn move_instr(input: &str) -> IResult<&str, ParsedLine> {
     .map(|(next_input, (_m, d1, _f, d2, _t, d3))| {
         (
             next_input,
-            ParsedLine::MoveInstr(Move {
-                quantity: expect_usize!(d1),
-                from: expect_usize!(d2),
-                to: expect_usize!(d3),
-            }),
+            ParsedLine::MoveInstr(Move::new(
+                expect_usize!(d1),
+                expect_usize!(d2),
+                expect_usize!(d3),
+            )),
         )
     })
 }

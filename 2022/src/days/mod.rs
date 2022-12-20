@@ -32,6 +32,25 @@ pub mod day7;
 pub mod day8;
 pub mod day9;
 
+// because I do this all the time
+// (not deriving Copy because some structs use String)
+macro_rules! simple_struct {
+    ($s:ident; $($v:ident: $t:ty),+) => {
+        #[derive(Clone, Debug, Hash, Eq, PartialEq)]
+        struct $s {
+            $($v: $t),+
+        }
+
+        impl $s {
+            fn new($($v: $t),+) -> Self {
+                $s {
+                    $($v),+
+                }
+            }
+        }
+    };
+}
+
 // who needs error handling, this ain't production code
 macro_rules! expect_usize {
     ($e:ident) => {
@@ -43,6 +62,9 @@ macro_rules! expect_i32 {
         $e.parse::<i32>().expect("failed to parse i32!")
     };
 }
+pub(crate) use expect_i32;
+pub(crate) use expect_usize;
+pub(crate) use simple_struct;
 
 // parse unsigned int into usize
 pub(crate) fn parse_usize(input: &str) -> IResult<&str, usize> {
@@ -64,9 +86,6 @@ pub(crate) fn parse_i32(input: &str) -> IResult<&str, i32> {
         n.parse::<i32>().expect("failed to parse i32!")
     })(input)
 }
-
-pub(crate) use expect_i32;
-pub(crate) use expect_usize;
 
 // test helpers
 

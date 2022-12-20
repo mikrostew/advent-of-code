@@ -16,6 +16,7 @@ use nom::sequence::tuple;
 use nom::IResult;
 
 use super::parse_usize;
+use super::simple_struct;
 
 fn parse_valve_descr(input: &str) -> Vec<ValveDescription> {
     let (leftover, vd) = valve_descriptions(input).expect("Could not parse valve descriptions");
@@ -57,37 +58,13 @@ fn valve_id(input: &str) -> IResult<&str, String> {
     map(alpha1, |s| String::from(s))(input)
 }
 
-#[derive(Debug)]
-struct Valve {
-    flow_rate: usize,
-    // list of indices into the array of valves
-    tunnels: Vec<usize>,
-}
-
-impl Valve {
-    fn new(flow_rate: usize, tunnels: Vec<usize>) -> Self {
-        Valve { flow_rate, tunnels }
-    }
-}
+simple_struct!(Valve; flow_rate: usize, tunnels: Vec<usize>);
 
 // temporarily used to hold Valve descriptions,
 // before converting IDs to indices
-#[derive(Debug)]
-struct ValveDescription {
-    id: String,
-    flow_rate: usize,
-    tunnels: Vec<String>,
-}
+simple_struct!(ValveDescription; id: String, flow_rate: usize, tunnels: Vec<String>);
 
 impl ValveDescription {
-    fn new(id: String, flow_rate: usize, tunnels: Vec<String>) -> Self {
-        ValveDescription {
-            id,
-            flow_rate,
-            tunnels,
-        }
-    }
-
     fn into_valve(self, id_to_index: &HashMap<String, usize>) -> Valve {
         Valve::new(
             self.flow_rate,

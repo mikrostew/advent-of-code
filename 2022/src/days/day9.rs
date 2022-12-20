@@ -7,6 +7,7 @@ use nom::sequence::separated_pair;
 use nom::IResult;
 
 use super::expect_usize;
+use super::simple_struct;
 
 #[derive(Debug)]
 enum Direction {
@@ -39,11 +40,7 @@ fn distance(input: &str) -> IResult<&str, usize> {
     digit1(input).map(|(next_input, d)| (next_input, expect_usize!(d)))
 }
 
-#[derive(Debug)]
-struct Point {
-    x: i32,
-    y: i32,
-}
+simple_struct!(Point; x: i32, y: i32);
 
 struct RopeBridge2Knots {
     head_pos: Point,
@@ -55,8 +52,8 @@ impl RopeBridge2Knots {
     fn new() -> Self {
         RopeBridge2Knots {
             // start out at the same point
-            head_pos: Point { x: 0, y: 0 },
-            tail_pos: Point { x: 0, y: 0 },
+            head_pos: Point::new(0, 0),
+            tail_pos: Point::new(0, 0),
             tail_visited: HashSet::new(),
         }
     }
@@ -135,7 +132,7 @@ impl RopeBridge10Knots {
         // everything starts at 0,0
         let mut knots: Vec<Point> = vec![];
         for _ in 0..10 {
-            knots.push(Point { x: 0, y: 0 });
+            knots.push(Point::new(0, 0));
         }
         RopeBridge10Knots {
             knots,

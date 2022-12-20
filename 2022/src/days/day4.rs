@@ -4,12 +4,9 @@ use nom::sequence::separated_pair;
 use nom::IResult;
 
 use super::expect_usize;
+use super::simple_struct;
 
-#[derive(Debug)]
-struct Range {
-    start: usize,
-    end: usize,
-}
+simple_struct!(Range; start: usize, end: usize);
 
 impl Range {
     fn contains(&self, other: &Range) -> bool {
@@ -26,13 +23,7 @@ impl Range {
 // (assumption: the input is always <small>-<bigger>)
 fn range(input: &str) -> IResult<&str, Range> {
     separated_pair(digit1, tag("-"), digit1)(input).map(|(next_input, (d1, d2))| {
-        (
-            next_input,
-            Range {
-                start: expect_usize!(d1),
-                end: expect_usize!(d2),
-            },
-        )
+        (next_input, Range::new(expect_usize!(d1), expect_usize!(d2)))
     })
 }
 

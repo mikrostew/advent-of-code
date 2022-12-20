@@ -7,6 +7,8 @@ use nom::multi::many1;
 use nom::sequence::terminated;
 use nom::IResult;
 
+use super::simple_struct;
+
 // TODO: generalize and extract this (will likely need it again)
 // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 // Note: this only figures out the cost, it doesn't return the path
@@ -41,7 +43,7 @@ where
             if self.visited.contains(&p) {
                 continue;
             }
-            self.visited.insert(p);
+            self.visited.insert(p.clone());
 
             // if we found the target point, this will be the smallest cost
             // (since the unvisited head is sorted min-first)
@@ -91,13 +93,7 @@ impl Ord for Node {
     }
 }
 
-// TODO: require that the input type has all this stuff
-// (do I need to do that, or just let the compiler handle it?)
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-struct Point {
-    x: usize,
-    y: usize,
-}
+simple_struct!(Point; x: usize, y: usize);
 
 #[derive(Debug)]
 struct Map {
@@ -105,24 +101,24 @@ struct Map {
 }
 
 impl Map {
-    fn get_height(&self, p: Point) -> u32 {
+    fn get_height(&self, p: &Point) -> u32 {
         self.heights[p.x][p.y]
     }
 
     // neighbors of the input point
-    fn get_neighbors(&self, p: Point) -> Vec<Point> {
+    fn get_neighbors(&self, p: &Point) -> Vec<Point> {
         let mut neighbor_pts = vec![];
         if p.x > 0 {
-            neighbor_pts.push(Point { x: p.x - 1, y: p.y });
+            neighbor_pts.push(Point::new(p.x - 1, p.y));
         }
         if p.x < self.heights.len() - 1 {
-            neighbor_pts.push(Point { x: p.x + 1, y: p.y });
+            neighbor_pts.push(Point::new(p.x + 1, p.y));
         }
         if p.y > 0 {
-            neighbor_pts.push(Point { x: p.x, y: p.y - 1 });
+            neighbor_pts.push(Point::new(p.x, p.y - 1));
         }
         if p.y < self.heights[0].len() - 1 {
-            neighbor_pts.push(Point { x: p.x, y: p.y + 1 });
+            neighbor_pts.push(Point::new(p.x, p.y + 1));
         }
         neighbor_pts
     }
@@ -132,8 +128,8 @@ fn parse_map(input: &str) -> (Map, Point, Point) {
     let (leftover, chars) = parse_heights(input).expect("Could not parse heights!");
     assert_eq!(leftover, "");
 
-    let mut start_point = Point { x: 0, y: 0 };
-    let mut end_point = Point { x: 0, y: 0 };
+    let mut start_point = Point::new(0, 0);
+    let mut end_point = Point::new(0, 0);
     let heights = chars
         .iter()
         .enumerate()
@@ -142,11 +138,11 @@ fn parse_map(input: &str) -> (Map, Point, Point) {
                 .enumerate()
                 .map(|(y, c)| match c {
                     'S' => {
-                        start_point = Point { x, y };
+                        start_point = Point::new(x, y);
                         0
                     }
                     'E' => {
-                        end_point = Point { x, y };
+                        end_point = Point::new(x, y);
                         ('z' as u32) - ('a' as u32)
                     }
                     // already validated rest of chars are in range a-z with one_of()
@@ -174,12 +170,12 @@ pub fn part1(file_contents: String) -> String {
         start,
         |p| *p == end,
         |p| {
-            let current_height = map.get_height(*p);
+            let current_height = map.get_height(p);
 
-            map.get_neighbors(*p)
+            map.get_neighbors(p)
                 .into_iter()
                 .filter_map(|n| {
-                    if map.get_height(n) <= current_height + 1 {
+                    if map.get_height(&n) <= current_height + 1 {
                         Some(n)
                     } else {
                         None
@@ -200,14 +196,14 @@ pub fn part2(file_contents: String) -> String {
     // this time start at the end, and find the fewest steps to get to a point of height 0
     let mut solver = Dijkstra::new(
         end,
-        |p| map.get_height(*p) == 0,
+        |p| map.get_height(p) == 0,
         |p| {
-            let current_height = map.get_height(*p);
+            let current_height = map.get_height(p);
 
-            map.get_neighbors(*p)
+            map.get_neighbors(p)
                 .into_iter()
                 .filter_map(|n| {
-                    if map.get_height(n) >= current_height - 1 {
+                    if map.get_height(&n) >= current_height - 1 {
                         Some(n)
                     } else {
                         None

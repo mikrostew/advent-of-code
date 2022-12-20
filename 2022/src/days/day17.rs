@@ -15,17 +15,11 @@ use nom::sequence::terminated;
 // use nom::sequence::tuple;
 use nom::IResult;
 
-#[derive(Clone, Copy, Debug, Hash, Eq, PartialEq)]
-struct Point {
-    x: usize,
-    y: usize,
-}
+use super::simple_struct;
+
+simple_struct!(Point; x: usize, y: usize);
 
 impl Point {
-    fn new(x: usize, y: usize) -> Self {
-        Point { x, y }
-    }
-
     fn try_move(&self, dir: Move) -> Option<Self> {
         match dir {
             Move::Left => {
@@ -109,7 +103,7 @@ enum Rock {
 }
 
 impl Rock {
-    fn points(&self, base: Point) -> Vec<Point> {
+    fn points(&self, base: &Point) -> Vec<Point> {
         match self {
             // ####
             Rock::Flat => vec![
@@ -188,48 +182,10 @@ impl Iterator for FallingRocks {
     }
 }
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
-struct PeriodicInfo {
-    rock_delta: usize,
-    height_delta: usize,
-}
-
-impl PeriodicInfo {
-    fn new(rock_delta: usize, height_delta: usize) -> Self {
-        PeriodicInfo {
-            rock_delta,
-            height_delta,
-        }
-    }
-}
-
 // for identifying the periodic sequence
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
-struct SeqId {
-    rock: usize,
-    jet: usize,
-}
-
-impl SeqId {
-    fn new(rock: usize, jet: usize) -> Self {
-        SeqId { rock, jet }
-    }
-}
-
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
-struct ChamberState {
-    rock_number: usize,
-    height: usize,
-}
-
-impl ChamberState {
-    fn new(rock_number: usize, height: usize) -> Self {
-        ChamberState {
-            rock_number,
-            height,
-        }
-    }
-}
+simple_struct!(PeriodicInfo; rock_delta: usize, height_delta: usize);
+simple_struct!(SeqId; rock: usize, jet: usize);
+simple_struct!(ChamberState; rock_number: usize, height: usize);
 
 struct RockChamber {
     width: usize,
@@ -261,10 +217,10 @@ impl RockChamber {
             loop {
                 // rock is maybe pushed by jet, then falls one unit
                 let jet_dir = self.jets.next().unwrap();
-                if let Some(new_pt) = self.try_move_rock(rock, rock_pt, jet_dir) {
+                if let Some(new_pt) = self.try_move_rock(rock, &rock_pt, jet_dir) {
                     rock_pt = new_pt;
                 }
-                if let Some(new_pt) = self.try_move_rock(rock, rock_pt, Move::Down) {
+                if let Some(new_pt) = self.try_move_rock(rock, &rock_pt, Move::Down) {
                     rock_pt = new_pt;
                 } else {
                     break;
@@ -277,16 +233,16 @@ impl RockChamber {
     }
 
     // if movement is ok, return new coords, else None
-    fn try_move_rock(&mut self, rock: Rock, from_pt: Point, dir: Move) -> Option<Point> {
+    fn try_move_rock(&mut self, rock: Rock, from_pt: &Point, dir: Move) -> Option<Point> {
         if let Some(new_position) = from_pt.try_move(dir) {
-            if self.position_is_ok(rock, new_position) {
+            if self.position_is_ok(rock, &new_position) {
                 return Some(new_position);
             }
         }
         None
     }
 
-    fn position_is_ok(&self, rock: Rock, point: Point) -> bool {
+    fn position_is_ok(&self, rock: Rock, point: &Point) -> bool {
         for pt in rock.points(point) {
             if pt.x >= self.width {
                 return false;
@@ -300,12 +256,12 @@ impl RockChamber {
 
     // add points from a rock
     fn add_rock(&mut self, rock: Rock, at_point: Point) -> () {
-        for pt in rock.points(at_point) {
-            self.rock_points.insert(pt);
+        for pt in rock.points(&at_point) {
             if pt.y >= self.height {
                 // plus one, because at row 0, the height is one
                 self.height = pt.y + 1;
             }
+            self.rock_points.insert(pt);
         }
     }
 

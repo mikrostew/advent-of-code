@@ -11,18 +11,11 @@ use nom::sequence::tuple;
 use nom::IResult;
 
 use super::parse_isize;
+use super::simple_struct;
 
-#[derive(Clone, Debug)]
-struct Point {
-    x: isize,
-    y: isize,
-}
+simple_struct!(Point; x: isize, y: isize);
 
 impl Point {
-    fn new(x: isize, y: isize) -> Self {
-        Point { x, y }
-    }
-
     // Manhattan Distance between 2 points
     fn manhattan_dist(&self, other: &Self) -> isize {
         (self.x - other.x).abs() + (self.y - other.y).abs()
@@ -65,17 +58,9 @@ impl Sensor {
 }
 
 // exclusion for a single row
-#[derive(Clone, Debug)]
-struct Exclusion {
-    start: isize,
-    end: isize,
-}
+simple_struct!(Exclusion; start: isize, end: isize);
 
 impl Exclusion {
-    fn new(start: isize, end: isize) -> Self {
-        Exclusion { start, end }
-    }
-
     // try to combine with another, possibly overlapping, exclusion
     fn combine_with(&self, other: &Self) -> Option<Exclusion> {
         if self.start < other.start {
