@@ -1,9 +1,216 @@
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::collections::VecDeque;
+
+// use nom::branch::alt;
+use nom::bytes::complete::tag;
+// use nom::character::complete::alpha1;
+use nom::character::complete::newline;
+// use nom::character::complete::one_of;
+use nom::combinator::map;
+// use nom::combinator::opt;
+// use nom::multi::many1;
+use nom::multi::separated_list1;
+// use nom::sequence::preceded;
+// use nom::sequence::separated_pair;
+use nom::sequence::terminated;
+use nom::sequence::tuple;
+use nom::IResult;
+
+use super::parse_i32;
+use super::simple_struct;
+
+simple_struct!(Point; x: i32, y: i32, z: i32);
+
+fn point_xyz(input: &str) -> IResult<&str, Point> {
+    map(
+        tuple((parse_i32, tag(","), parse_i32, tag(","), parse_i32)),
+        |(x, _, y, _, z)| Point::new(x, y, z),
+    )(input)
+}
+
+fn parse_points(input: &str) -> Vec<Point> {
+    let (leftover, points) = terminated(separated_list1(newline, point_xyz), newline)(input)
+        .expect("Could not parse input");
+    assert_eq!(leftover, "");
+    points
+}
+
+// state of each 1x1x1 unit in the grid
+#[derive(Debug)]
+enum GridUnit {
+    Empty,
+    Filled,
+}
+
+struct PointGrid {
+    grid: HashMap<Point, GridUnit>,
+    points: Vec<Point>,
+}
+
+impl PointGrid {
+    fn from_points(points: Vec<Point>) -> Self {
+        let (xmin, xmax, ymin, ymax, zmin, zmax) = PointGrid::find_limits_xyz(&points);
+        println!(
+            "Limits: X min={},max={} Y min={},max={} Z min={},max={}",
+            xmin, xmax, ymin, ymax, zmin, zmax
+        );
+        let grid = PointGrid::build_point_grid(&points, xmin, xmax, ymin, ymax, zmin, zmax);
+        println!("Built grid of {} points", grid.len());
+        PointGrid { grid, points }
+    }
+
+    fn find_limits_xyz(points: &Vec<Point>) -> (i32, i32, i32, i32, i32, i32) {
+        let (mut xmin, mut xmax, mut ymin, mut ymax, mut zmin, mut zmax) =
+            (i32::MAX, i32::MIN, i32::MAX, i32::MIN, i32::MAX, i32::MIN);
+        for p in points.iter() {
+            xmin = xmin.min(p.x);
+            xmax = xmax.max(p.x);
+            ymin = ymin.min(p.y);
+            ymax = ymax.max(p.y);
+            zmin = zmin.min(p.z);
+            zmax = zmax.max(p.z);
+        }
+        (xmin, xmax, ymin, ymax, zmin, zmax)
+    }
+
+    fn build_point_grid(
+        points: &Vec<Point>,
+        xmin: i32,
+        xmax: i32,
+        ymin: i32,
+        ymax: i32,
+        zmin: i32,
+        zmax: i32,
+    ) -> HashMap<Point, GridUnit> {
+        let mut point_grid: HashMap<Point, GridUnit> = HashMap::new();
+        // start with all empty space
+        // (extending one unit past the lava drop)
+        for x in (xmin - 1)..=(xmax + 1) {
+            for y in (ymin - 1)..=(ymax + 1) {
+                for z in (zmin - 1)..=(zmax + 1) {
+                    point_grid.insert(Point::new(x, y, z), GridUnit::Empty);
+                }
+            }
+        }
+        // then fill in the points
+        for p in points.iter() {
+            point_grid.insert(p.clone(), GridUnit::Filled);
+        }
+        point_grid
+    }
+
+    fn find_surface_area_all(&self) -> usize {
+        let mut surface_area = 0;
+        // just check all the input points for this
+        for p in self.points.iter() {
+            // check all the neighbors of this point
+            let neighbors: Vec<Point> = vec![
+                Point::new(p.x + 1, p.y, p.z),
+                Point::new(p.x - 1, p.y, p.z),
+                Point::new(p.x, p.y + 1, p.z),
+                Point::new(p.x, p.y - 1, p.z),
+                Point::new(p.x, p.y, p.z + 1),
+                Point::new(p.x, p.y, p.z - 1),
+            ];
+
+            neighbors.into_iter().for_each(|n| match self.grid.get(&n) {
+                Some(GridUnit::Empty) => {
+                    // that's one surface in that direction
+                    surface_area += 1;
+                }
+                Some(GridUnit::Filled) => {}
+                // outside the grid, ignore it (shouldn't happen tho)
+                None => {}
+            });
+        }
+
+        surface_area
+    }
+
+    fn find_surface_area_ext(&self) -> usize {
+        let mut surface_area = 0;
+        let mut point_queue: VecDeque<Point> = VecDeque::new();
+        let mut checked_points: HashSet<Point> = HashSet::new();
+        // start at 0,0,0 and go from there
+        point_queue.push_back(Point::new(0, 0, 0));
+        checked_points.insert(Point::new(0, 0, 0));
+        while let Some(p) = point_queue.pop_front() {
+            // check all the neighbors of this point
+            let neighbors: Vec<Point> = vec![
+                Point::new(p.x + 1, p.y, p.z),
+                Point::new(p.x - 1, p.y, p.z),
+                Point::new(p.x, p.y + 1, p.z),
+                Point::new(p.x, p.y - 1, p.z),
+                Point::new(p.x, p.y, p.z + 1),
+                Point::new(p.x, p.y, p.z - 1),
+            ];
+
+            neighbors.into_iter().for_each(|n| match self.grid.get(&n) {
+                Some(GridUnit::Empty) => {
+                    if !checked_points.get(&n).is_some() {
+                        point_queue.push_back(n.clone());
+                        checked_points.insert(n);
+                    }
+                }
+                Some(GridUnit::Filled) => {
+                    // that's one surface in that direction
+                    surface_area += 1;
+                }
+                // outside the grid, ignore it
+                None => {}
+            });
+        }
+        println!("Checked {} points", checked_points.len());
+
+        surface_area
+    }
+}
+
 pub fn part1(file_contents: String) -> String {
-    println!("{}", file_contents);
-    "TODO".to_string()
+    let points = parse_points(&file_contents);
+    println!("Parsed {} points", points.len());
+    let point_grid = PointGrid::from_points(points);
+    let area = point_grid.find_surface_area_all();
+
+    format!("{}", area)
 }
 
 pub fn part2(file_contents: String) -> String {
-    println!("{}", file_contents);
-    "TODO".to_string()
+    let points = parse_points(&file_contents);
+    println!("Parsed {} points", points.len());
+    let point_grid = PointGrid::from_points(points);
+    let area = point_grid.find_surface_area_ext();
+
+    format!("{}", area)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{part1, part2};
+    use crate::days::read_input_file;
+
+    #[test]
+    fn part1_example() {
+        let input = read_input_file("inputs/day18-example.txt");
+        assert_eq!(part1(input), "64".to_string());
+    }
+
+    #[test]
+    fn part1_input() {
+        let input = read_input_file("inputs/day18-input.txt");
+        assert_eq!(part1(input), "4512".to_string());
+    }
+
+    #[test]
+    fn part2_example() {
+        let input = read_input_file("inputs/day18-example.txt");
+        assert_eq!(part2(input), "58".to_string());
+    }
+
+    #[test]
+    fn part2_input() {
+        let input = read_input_file("inputs/day18-input.txt");
+        assert_eq!(part2(input), "2554".to_string());
+    }
 }
