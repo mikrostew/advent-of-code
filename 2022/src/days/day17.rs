@@ -1,21 +1,14 @@
 use std::collections::HashSet;
 
-// use nom::branch::alt;
-// use nom::bytes::complete::tag;
-// use nom::character::complete::alpha1;
 use nom::character::complete::newline;
 use nom::character::complete::one_of;
 use nom::combinator::map;
-// use nom::combinator::opt;
 use nom::multi::many1;
-// use nom::multi::separated_list1;
-// use nom::sequence::preceded;
-// use nom::sequence::separated_pair;
 use nom::sequence::terminated;
-// use nom::sequence::tuple;
 use nom::IResult;
 
 use super::simple_struct;
+use crate::cli::Params;
 
 simple_struct!(Point; x: usize, y: usize);
 
@@ -380,7 +373,7 @@ impl RockChamber {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
     let jets = parse_into_jets(&file_contents);
     let rocks = FallingRocks::new();
@@ -390,7 +383,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", chamber.height)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
     let jets = parse_into_jets(&file_contents);
     let rocks = FallingRocks::new();
@@ -408,24 +401,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day17-example.txt");
-        assert_eq!(part1(input), "3068".to_string());
+        assert_eq!(part1(input, None), "3068".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day17-input.txt");
-        assert_eq!(part1(input), "3161".to_string());
+        assert_eq!(part1(input, None), "3161".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day17-example.txt");
-        assert_eq!(part2(input), "1514285714288".to_string());
+        assert_eq!(part2(input, None), "1514285714288".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day17-input.txt");
-        assert_eq!(part2(input), "1575931232076".to_string());
+        assert_eq!(part2(input, None), "1575931232076".to_string());
     }
 }

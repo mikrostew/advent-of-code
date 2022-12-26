@@ -8,6 +8,7 @@ use nom::IResult;
 
 use super::parse_usize;
 use super::simple_struct;
+use crate::cli::Params;
 
 simple_struct!(Point; x: usize, y: usize);
 
@@ -174,7 +175,7 @@ impl Cave {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
     let rock_paths: Vec<RockPath> = file_contents.lines().map(RockPath::parse).collect();
     let mut cave = Cave::new();
@@ -191,7 +192,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", num_sand_grains)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
     let rock_paths: Vec<RockPath> = file_contents.lines().map(RockPath::parse).collect();
     let mut cave = Cave::new();
@@ -219,25 +220,25 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day14-example.txt");
-        assert_eq!(part1(input), "24".to_string());
+        assert_eq!(part1(input, None), "24".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day14-input.txt");
-        assert_eq!(part1(input), "757".to_string());
+        assert_eq!(part1(input, None), "757".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day14-example.txt");
-        assert_eq!(part2(input), "93".to_string());
+        assert_eq!(part2(input, None), "93".to_string());
     }
 
-    // this takes a long time to run
+    // TODO: this takes a long time to run
     // #[test]
     // fn part2_input() {
     //     let input = read_input_file("inputs/day14-input.txt");
-    //     assert_eq!(part2(input), "24943".to_string());
+    //     assert_eq!(part2(input, None), "24943".to_string());
     // }
 }

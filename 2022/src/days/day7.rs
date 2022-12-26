@@ -14,6 +14,7 @@ use nom::IResult;
 
 use super::expect_usize;
 use super::simple_struct;
+use crate::cli::Params;
 
 #[derive(Clone, Debug)]
 enum TermOutput {
@@ -251,7 +252,7 @@ impl Filesystem {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
 
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
@@ -279,7 +280,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", sum_of_sizes)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
 
     file_contents.lines().for_each(|line| {
@@ -339,24 +340,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day7-example.txt");
-        assert_eq!(part1(input), "95437".to_string());
+        assert_eq!(part1(input, None), "95437".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day7-input.txt");
-        assert_eq!(part1(input), "1582412".to_string());
+        assert_eq!(part1(input, None), "1582412".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day7-example.txt");
-        assert_eq!(part2(input), "24933642".to_string());
+        assert_eq!(part2(input, None), "24933642".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day7-input.txt");
-        assert_eq!(part2(input), "3696336".to_string());
+        assert_eq!(part2(input, None), "3696336".to_string());
     }
 }

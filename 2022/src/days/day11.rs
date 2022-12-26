@@ -11,6 +11,7 @@ use nom::sequence::tuple;
 use nom::IResult;
 
 use super::{expect_usize, parse_usize};
+use crate::cli::Params;
 
 struct Monkey<'a> {
     number: usize,
@@ -162,7 +163,7 @@ fn do_round2(monkeys: &mut Vec<Monkey>, lcm: usize) -> () {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
     let (leftover, mut monkeys) =
         parse_monkeys(&file_contents).expect("Could not parse monkeys from input!");
@@ -190,7 +191,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", top_2_product)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let (leftover, mut monkeys) =
         parse_monkeys(&file_contents).expect("Could not parse monkeys from input!");
     assert_eq!(leftover, "");
@@ -235,24 +236,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day11-example.txt");
-        assert_eq!(part1(input), "10605".to_string());
+        assert_eq!(part1(input, None), "10605".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day11-input.txt");
-        assert_eq!(part1(input), "67830".to_string());
+        assert_eq!(part1(input, None), "67830".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day11-example.txt");
-        assert_eq!(part2(input), "2713310158".to_string());
+        assert_eq!(part2(input, None), "2713310158".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day11-input.txt");
-        assert_eq!(part2(input), "15305381442".to_string());
+        assert_eq!(part2(input, None), "15305381442".to_string());
     }
 }

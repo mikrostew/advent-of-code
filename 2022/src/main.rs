@@ -20,7 +20,7 @@ fn main() {
     println!("Day {}", args.day);
 
     // validate days and parts
-    let day_fn = match args.day {
+    let day_fn: fn(String, Option<cli::Params>) -> String = match args.day {
         1 => fn_for_day!(day1, args.part),
         2 => fn_for_day!(day2, args.part),
         3 => fn_for_day!(day3, args.part),
@@ -49,10 +49,16 @@ fn main() {
         _ => panic!("Day {} is out of range", args.day),
     };
 
+    // input params
+    let params = match args.params {
+        Some(list) => Some(cli::Params::from(&list)),
+        None => None,
+    };
+
     // try to read the input file
     println!("reading file {:?}", args.file);
     let file_contents = fs::read_to_string(args.file).expect("failed to read file");
 
-    let answer = day_fn(file_contents);
+    let answer = day_fn(file_contents, params);
     println!("answer:\n{}", answer);
 }

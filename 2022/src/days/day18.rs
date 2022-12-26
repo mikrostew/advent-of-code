@@ -2,23 +2,17 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
 
-// use nom::branch::alt;
 use nom::bytes::complete::tag;
-// use nom::character::complete::alpha1;
 use nom::character::complete::newline;
-// use nom::character::complete::one_of;
 use nom::combinator::map;
-// use nom::combinator::opt;
-// use nom::multi::many1;
 use nom::multi::separated_list1;
-// use nom::sequence::preceded;
-// use nom::sequence::separated_pair;
 use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
 use super::parse_i32;
 use super::simple_struct;
+use crate::cli::Params;
 
 simple_struct!(Point; x: i32, y: i32, z: i32);
 
@@ -167,7 +161,7 @@ impl PointGrid {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let points = parse_points(&file_contents);
     println!("Parsed {} points", points.len());
     let point_grid = PointGrid::from_points(points);
@@ -176,7 +170,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", area)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let points = parse_points(&file_contents);
     println!("Parsed {} points", points.len());
     let point_grid = PointGrid::from_points(points);
@@ -193,24 +187,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day18-example.txt");
-        assert_eq!(part1(input), "64".to_string());
+        assert_eq!(part1(input, None), "64".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day18-input.txt");
-        assert_eq!(part1(input), "4512".to_string());
+        assert_eq!(part1(input, None), "4512".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day18-example.txt");
-        assert_eq!(part2(input), "58".to_string());
+        assert_eq!(part2(input, None), "58".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day18-input.txt");
-        assert_eq!(part2(input), "2554".to_string());
+        assert_eq!(part2(input, None), "2554".to_string());
     }
 }

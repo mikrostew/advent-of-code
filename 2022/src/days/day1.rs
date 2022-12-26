@@ -1,6 +1,7 @@
 use super::expect_usize;
+use crate::cli::Params;
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let mut current_total: usize = 0;
     let mut max_value: usize = 0;
 
@@ -31,7 +32,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", max_value)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let mut current_total: usize = 0;
     let mut totals: Vec<usize> = vec![];
 
@@ -71,24 +72,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day1-example.txt");
-        assert_eq!(part1(input), "24000".to_string());
+        assert_eq!(part1(input, None), "24000".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day1-input.txt");
-        assert_eq!(part1(input), "67016".to_string());
+        assert_eq!(part1(input, None), "67016".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day1-example.txt");
-        assert_eq!(part2(input), "45000".to_string());
+        assert_eq!(part2(input, None), "45000".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day1-input.txt");
-        assert_eq!(part2(input), "200116".to_string());
+        assert_eq!(part2(input, None), "200116".to_string());
     }
 }

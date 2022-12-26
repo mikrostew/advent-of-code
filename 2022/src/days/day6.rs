@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use crate::cli::Params;
+
 // 4 distinct chars
 fn find_start_of_packet_marker(line: &str) -> usize {
     for end_pos in 4..line.len() {
@@ -62,14 +64,14 @@ fn find_start_of_message_marker(line: &str) -> usize {
     panic!("start of packet marker not found");
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     // input is a single line
     let position = find_start_of_packet_marker(&file_contents);
     println!("position: {}", position);
     format!("{}", position)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     // input is a single line
     let position = find_start_of_message_marker(&file_contents);
     println!("position: {}", position);
@@ -84,72 +86,72 @@ mod tests {
     #[test]
     fn part1_example1() {
         let input = read_input_file("inputs/day6-example1.txt");
-        assert_eq!(part1(input), "7".to_string());
+        assert_eq!(part1(input, None), "7".to_string());
     }
 
     #[test]
     fn part1_example2() {
         let input = read_input_file("inputs/day6-example2.txt");
-        assert_eq!(part1(input), "5".to_string());
+        assert_eq!(part1(input, None), "5".to_string());
     }
 
     #[test]
     fn part1_example3() {
         let input = read_input_file("inputs/day6-example3.txt");
-        assert_eq!(part1(input), "6".to_string());
+        assert_eq!(part1(input, None), "6".to_string());
     }
 
     #[test]
     fn part1_example4() {
         let input = read_input_file("inputs/day6-example4.txt");
-        assert_eq!(part1(input), "10".to_string());
+        assert_eq!(part1(input, None), "10".to_string());
     }
 
     #[test]
     fn part1_example5() {
         let input = read_input_file("inputs/day6-example5.txt");
-        assert_eq!(part1(input), "11".to_string());
+        assert_eq!(part1(input, None), "11".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day6-input.txt");
-        assert_eq!(part1(input), "1896".to_string());
+        assert_eq!(part1(input, None), "1896".to_string());
     }
 
     #[test]
     fn part2_example1() {
         let input = read_input_file("inputs/day6-example1.txt");
-        assert_eq!(part2(input), "19".to_string());
+        assert_eq!(part2(input, None), "19".to_string());
     }
 
     #[test]
     fn part2_example2() {
         let input = read_input_file("inputs/day6-example2.txt");
-        assert_eq!(part2(input), "23".to_string());
+        assert_eq!(part2(input, None), "23".to_string());
     }
 
     #[test]
     fn part2_example3() {
         let input = read_input_file("inputs/day6-example3.txt");
-        assert_eq!(part2(input), "23".to_string());
+        assert_eq!(part2(input, None), "23".to_string());
     }
 
     #[test]
     fn part2_example4() {
         let input = read_input_file("inputs/day6-example4.txt");
-        assert_eq!(part2(input), "29".to_string());
+        assert_eq!(part2(input, None), "29".to_string());
     }
 
     #[test]
     fn part2_example5() {
         let input = read_input_file("inputs/day6-example5.txt");
-        assert_eq!(part2(input), "26".to_string());
+        assert_eq!(part2(input, None), "26".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day6-input.txt");
-        assert_eq!(part2(input), "3452".to_string());
+        assert_eq!(part2(input, None), "3452".to_string());
     }
 }

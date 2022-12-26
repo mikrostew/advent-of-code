@@ -6,18 +6,16 @@ use nom::character::complete::alpha1;
 use nom::character::complete::newline;
 use nom::character::complete::one_of;
 use nom::combinator::map;
-// use nom::combinator::opt;
-// use nom::multi::many1;
 use nom::multi::separated_list1;
-// use nom::sequence::preceded;
 use nom::sequence::separated_pair;
 use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
 use super::parse_usize;
+use crate::cli::Params;
 
-// monkeky language grammar
+// monkey language grammar
 
 struct Assign(String, Expr);
 
@@ -180,7 +178,7 @@ impl Program {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let statements = parse_lines(&file_contents);
     let mut program = Program::new();
     program.load_statements(statements);
@@ -191,7 +189,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", result)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let statements = parse_lines(&file_contents);
     let mut program = Program::new();
     program.load_statements_2(statements);
@@ -208,24 +206,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day21-example.txt");
-        assert_eq!(part1(input), "152".to_string());
+        assert_eq!(part1(input, None), "152".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day21-input.txt");
-        assert_eq!(part1(input), "38731621732448".to_string());
+        assert_eq!(part1(input, None), "38731621732448".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day21-example.txt");
-        assert_eq!(part2(input), "301".to_string());
+        assert_eq!(part2(input, None), "301".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day21-input.txt");
-        assert_eq!(part2(input), "3848301405790".to_string());
+        assert_eq!(part2(input, None), "3848301405790".to_string());
     }
 }

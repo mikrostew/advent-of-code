@@ -4,6 +4,7 @@ use nom::sequence::separated_pair;
 use nom::IResult;
 
 use super::parse_i32;
+use crate::cli::Params;
 
 #[derive(Debug)]
 enum Instruction {
@@ -99,7 +100,7 @@ impl SimpleCPU {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let instructions: Vec<Instruction> = file_contents
         .lines()
         .map(|l| {
@@ -129,7 +130,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", signal_strength_sum)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let instructions: Vec<Instruction> = file_contents
         .lines()
         .map(|l| {
@@ -153,13 +154,13 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day10-example.txt");
-        assert_eq!(part1(input), "13140".to_string());
+        assert_eq!(part1(input, None), "13140".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day10-input.txt");
-        assert_eq!(part1(input), "14320".to_string());
+        assert_eq!(part1(input, None), "14320".to_string());
     }
 
     #[test]
@@ -171,7 +172,7 @@ mod tests {
 #####.....#####.....#####.....#####.....
 ######......######......######......####
 #######.......#######.......#######.....";
-        assert_eq!(part2(input), expected.to_string());
+        assert_eq!(part2(input, None), expected.to_string());
     }
 
     #[test]
@@ -183,6 +184,6 @@ mod tests {
 ###..#....###..#..#.#.#..####.###.....#.
 #....#..#.#....#..#.#.#..#..#.#....#..#.
 #.....##..#....###..#..#.#..#.#.....##..";
-        assert_eq!(part2(input), expected.to_string());
+        assert_eq!(part2(input, None), expected.to_string());
     }
 }

@@ -8,6 +8,7 @@ use nom::sequence::terminated;
 use nom::IResult;
 
 use super::simple_struct;
+use crate::cli::Params;
 
 // TODO: generalize and extract this (will likely need it again)
 // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
@@ -162,7 +163,7 @@ fn parse_line(input: &str) -> IResult<&str, Vec<char>> {
     terminated(many1(one_of("abcdefghijklmnopqrstuvwxyzSE")), newline)(input)
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
     let (map, start, end) = parse_map(&file_contents);
 
@@ -190,7 +191,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", cost)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let (map, _start, end) = parse_map(&file_contents);
 
     // this time start at the end, and find the fewest steps to get to a point of height 0
@@ -226,24 +227,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day12-example.txt");
-        assert_eq!(part1(input), "31".to_string());
+        assert_eq!(part1(input, None), "31".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day12-input.txt");
-        assert_eq!(part1(input), "361".to_string());
+        assert_eq!(part1(input, None), "361".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day12-example.txt");
-        assert_eq!(part2(input), "29".to_string());
+        assert_eq!(part2(input, None), "29".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day12-input.txt");
-        assert_eq!(part2(input), "354".to_string());
+        assert_eq!(part2(input, None), "354".to_string());
     }
 }

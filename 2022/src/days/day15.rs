@@ -12,6 +12,7 @@ use nom::IResult;
 
 use super::parse_isize;
 use super::simple_struct;
+use crate::cli::Params;
 
 simple_struct!(Point; x: isize, y: isize);
 
@@ -301,27 +302,35 @@ fn find_beacon(
     }
 }
 
-// TODO: figure out how to accommodate another param in this function (and the CLI)
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, p: Option<Params>) -> String {
     //println!("{}", file_contents);
+    let row = p
+        .expect("need params for this")
+        .get("y")
+        .expect("need 'y' param to specify the row")
+        .parse::<isize>()
+        .unwrap();
     let sensors: Vec<Sensor> = parse_sensors(&file_contents);
-
-    // for the example
-    //let exclusions = exclusions_in_row(10, &sensors);
-    let exclusions = exclusions_in_row(2_000_000, &sensors);
+    let exclusions = exclusions_in_row(row, &sensors);
 
     format!("{}", exclusions)
 }
 
-// TODO: figure out how to accommodate another param in this function (and the CLI)
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, p: Option<Params>) -> String {
     //println!("{}", file_contents);
+    let params = p.expect("need params for this");
+    let min = params
+        .get("min")
+        .expect("need 'min' param")
+        .parse::<isize>()
+        .unwrap();
+    let max = params
+        .get("max")
+        .expect("need 'max' param")
+        .parse::<isize>()
+        .unwrap();
     let sensors: Vec<Sensor> = parse_sensors(&file_contents);
-
-    // for the example
-    let beacon_pt = find_beacon(&sensors, 0, 20, 0, 20);
-    // for the real input
-    //let beacon_pt = find_beacon(&sensors, 0, 4_000_000, 0, 4_000_000);
+    let beacon_pt = find_beacon(&sensors, min, max, min, max);
 
     format!("{}", beacon_pt.x * 4_000_000 + beacon_pt.y)
 }
@@ -329,34 +338,35 @@ pub fn part2(file_contents: String) -> String {
 #[cfg(test)]
 mod tests {
     use super::{part1, part2};
+    use crate::cli::Params;
     use crate::days::read_input_file;
 
-    // TODO: this doesn't work now :(
-    // #[test]
-    // fn part1_example() {
-    //     let input = read_input_file("inputs/day15-example.txt");
-    //     let output = part1(input);
-    //     let expected = format!("{}", 26);
-    //     assert_eq!(output, expected);
-    // }
+    #[test]
+    fn part1_example() {
+        let input = read_input_file("inputs/day15-example.txt");
+        let params = Params::from("y=10");
+        assert_eq!(part1(input, Some(params)), "26".to_string());
+    }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day15-input.txt");
-        assert_eq!(part1(input), "5525847".to_string());
+        let params = Params::from("y=2000000");
+        assert_eq!(part1(input, Some(params)), "5525847".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day15-example.txt");
-        assert_eq!(part2(input), "56000011".to_string());
+        let params = Params::from("min=0,max=20");
+        assert_eq!(part2(input, Some(params)), "56000011".to_string());
     }
 
-    // this takes a long time to run
-    // TODO: and also doesn't work - needs an extra param :(
+    // TODO: this takes a long time to run
     // #[test]
     // fn part2_input() {
     //     let input = read_input_file("inputs/day15-input.txt");
-    //     assert_eq!(part2(input), "13340867187704".to_string());
+    //     let params = Params::from("min=0,max=4000000");
+    //     assert_eq!(part2(input, Some(params)), "13340867187704".to_string());
     // }
 }

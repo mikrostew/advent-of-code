@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use crate::cli::Params;
+
 fn find_item_priority(line: &str) -> u32 {
     let line_len = line.len();
     if line_len % 2 != 0 {
@@ -70,7 +72,7 @@ fn priority_for_char(c: char) -> u32 {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let item_priorities: Vec<u32> = file_contents
         .lines()
         .map(|line| find_item_priority(line))
@@ -81,7 +83,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", item_priorities.iter().sum::<u32>())
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     // process this in groups of 3
     let badge_priorities: Vec<u32> = file_contents
         .lines()
@@ -110,24 +112,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day3-example.txt");
-        assert_eq!(part1(input), "157".to_string());
+        assert_eq!(part1(input, None), "157".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day3-input.txt");
-        assert_eq!(part1(input), "8105".to_string());
+        assert_eq!(part1(input, None), "8105".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day3-example.txt");
-        assert_eq!(part2(input), "70".to_string());
+        assert_eq!(part2(input, None), "70".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day3-input.txt");
-        assert_eq!(part2(input), "2363".to_string());
+        assert_eq!(part2(input, None), "2363".to_string());
     }
 }

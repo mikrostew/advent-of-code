@@ -3,6 +3,7 @@ use nom::multi::many1;
 use nom::IResult;
 
 use super::expect_i32;
+use crate::cli::Params;
 
 // lines are just a bunch a digits
 fn parse_line(input: &str) -> IResult<&str, Vec<i32>> {
@@ -226,7 +227,7 @@ fn print_grid(grid: &Vec<Vec<i32>>, num_rows: usize) -> () {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     //println!("{}", file_contents);
 
     let grid: Vec<Vec<i32>> = file_contents
@@ -249,7 +250,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", num_visible)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let grid: Vec<Vec<i32>> = file_contents
         .lines()
         .map(|l| {
@@ -275,24 +276,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day8-example.txt");
-        assert_eq!(part1(input), "21".to_string());
+        assert_eq!(part1(input, None), "21".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day8-input.txt");
-        assert_eq!(part1(input), "1835".to_string());
+        assert_eq!(part1(input, None), "1835".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day8-example.txt");
-        assert_eq!(part2(input), "8".to_string());
+        assert_eq!(part2(input, None), "8".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day8-input.txt");
-        assert_eq!(part2(input), "263670".to_string());
+        assert_eq!(part2(input, None), "263670".to_string());
     }
 }

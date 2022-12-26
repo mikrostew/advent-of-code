@@ -1,13 +1,9 @@
 use nom::branch::alt;
-// use nom::bytes::complete::tag;
-// use nom::character::complete::alpha1;
 use nom::character::complete::newline;
 use nom::character::complete::one_of;
 use nom::combinator::map;
-// use nom::combinator::opt;
 use nom::multi::many1;
 use nom::multi::separated_list1;
-// use nom::sequence::preceded;
 use nom::sequence::separated_pair;
 use nom::sequence::terminated;
 use nom::sequence::tuple;
@@ -15,6 +11,7 @@ use nom::IResult;
 
 use super::parse_usize;
 use super::simple_struct;
+use crate::cli::Params;
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 enum Tile {
@@ -244,7 +241,7 @@ fn parse_input(input: &str) -> (Vec<Vec<Tile>>, Path) {
     (tiles, path)
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let (tiles, path) = parse_input(&file_contents);
     let mut board = Board2D::from(tiles);
     board.follow_path(&path);
@@ -256,7 +253,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", password)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     println!("{}", file_contents);
     "TODO".to_string()
 }
@@ -269,24 +266,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day22-example.txt");
-        assert_eq!(part1(input), "6032".to_string());
+        assert_eq!(part1(input, None), "6032".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day22-input.txt");
-        assert_eq!(part1(input), "43466".to_string());
+        assert_eq!(part1(input, None), "43466".to_string());
     }
 
     // #[test]
     // fn part2_example() {
-    //     let input = read_input_file("inputs/day21-example.txt");
-    //     assert_eq!(part2(input), "301".to_string());
+    //     let input = read_input_file("inputs/day22-example.txt");
+    //     assert_eq!(part2(input, None), "301".to_string());
     // }
 
     // #[test]
     // fn part2_input() {
-    //     let input = read_input_file("inputs/day21-input.txt");
-    //     assert_eq!(part2(input), "3848301405790".to_string());
+    //     let input = read_input_file("inputs/day22-input.txt");
+    //     assert_eq!(part2(input, None), "3848301405790".to_string());
     // }
 }

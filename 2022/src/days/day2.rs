@@ -1,3 +1,5 @@
+use crate::cli::Params;
+
 enum Choice {
     Rock,
     Paper,
@@ -77,7 +79,7 @@ fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> usize {
     }
 }
 
-pub fn part1(file_contents: String) -> String {
+pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let total_score: usize = file_contents
         .lines()
         .map(|line| score_for_round(line))
@@ -87,7 +89,7 @@ pub fn part1(file_contents: String) -> String {
     format!("{}", total_score)
 }
 
-pub fn part2(file_contents: String) -> String {
+pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let total_score: usize = file_contents
         .lines()
         .map(|line| score_for_round_2(line))
@@ -105,24 +107,24 @@ mod tests {
     #[test]
     fn part1_example() {
         let input = read_input_file("inputs/day2-example.txt");
-        assert_eq!(part1(input), "15".to_string());
+        assert_eq!(part1(input, None), "15".to_string());
     }
 
     #[test]
     fn part1_input() {
         let input = read_input_file("inputs/day2-input.txt");
-        assert_eq!(part1(input), "13005".to_string());
+        assert_eq!(part1(input, None), "13005".to_string());
     }
 
     #[test]
     fn part2_example() {
         let input = read_input_file("inputs/day2-example.txt");
-        assert_eq!(part2(input), "12".to_string());
+        assert_eq!(part2(input, None), "12".to_string());
     }
 
     #[test]
     fn part2_input() {
         let input = read_input_file("inputs/day2-input.txt");
-        assert_eq!(part2(input), "11373".to_string());
+        assert_eq!(part2(input, None), "11373".to_string());
     }
 }
