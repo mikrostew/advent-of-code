@@ -189,30 +189,11 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{part1, part2};
-    use crate::days::read_input_file;
+    use crate::days::test::aoc_test;
 
-    #[test]
-    fn part1_example() {
-        let input = read_input_file("inputs/day13-example.txt");
-        assert_eq!(part1(input, None), "13".to_string());
-    }
+    aoc_test!(part1_example: "day13", part1, "example", 13);
+    aoc_test!(part1_input: "day13", part1, "input", 6235);
 
-    #[test]
-    fn part1_input() {
-        let input = read_input_file("inputs/day13-input.txt");
-        assert_eq!(part1(input, None), "6235".to_string());
-    }
-
-    #[test]
-    fn part2_example() {
-        let input = read_input_file("inputs/day13-example.txt");
-        assert_eq!(part2(input, None), "140".to_string());
-    }
-
-    #[test]
-    fn part2_input() {
-        let input = read_input_file("inputs/day13-input.txt");
-        assert_eq!(part2(input, None), "22866".to_string());
-    }
+    aoc_test!(part2_example: "day13", part2, "example", 140);
+    aoc_test!(part2_input: "day13", part2, "input", 22866);
 }

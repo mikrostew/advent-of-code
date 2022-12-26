@@ -148,42 +148,24 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{part1, part2};
-    use crate::days::read_input_file;
+    use crate::days::test::aoc_test;
 
-    #[test]
-    fn part1_example() {
-        let input = read_input_file("inputs/day10-example.txt");
-        assert_eq!(part1(input, None), "13140".to_string());
-    }
+    aoc_test!(part1_example: "day10", part1, "example", 13140);
+    aoc_test!(part1_input: "day10", part1, "input", 14320);
 
-    #[test]
-    fn part1_input() {
-        let input = read_input_file("inputs/day10-input.txt");
-        assert_eq!(part1(input, None), "14320".to_string());
-    }
-
-    #[test]
-    fn part2_example() {
-        let input = read_input_file("inputs/day10-example.txt");
-        let expected = "##..##..##..##..##..##..##..##..##..##..
+    aoc_test!(part2_example: "day10", part2, "example",
+"##..##..##..##..##..##..##..##..##..##..
 ###...###...###...###...###...###...###.
 ####....####....####....####....####....
 #####.....#####.....#####.....#####.....
 ######......######......######......####
-#######.......#######.......#######.....";
-        assert_eq!(part2(input, None), expected.to_string());
-    }
+#######.......#######.......#######.....");
 
-    #[test]
-    fn part2_input() {
-        let input = read_input_file("inputs/day10-input.txt");
-        let expected = "###...##..###..###..#..#..##..###....##.
+    aoc_test!(part2_input: "day10", part2, "input",
+"###...##..###..###..#..#..##..###....##.
 #..#.#..#.#..#.#..#.#.#..#..#.#..#....#.
 #..#.#....#..#.###..##...#..#.#..#....#.
 ###..#....###..#..#.#.#..####.###.....#.
 #....#..#.#....#..#.#.#..#..#.#....#..#.
-#.....##..#....###..#..#.#..#.#.....##..";
-        assert_eq!(part2(input, None), expected.to_string());
-    }
+#.....##..#....###..#..#.#..#.#.....##..");
 }

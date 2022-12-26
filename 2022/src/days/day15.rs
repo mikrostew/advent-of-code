@@ -337,36 +337,12 @@ pub fn part2(file_contents: String, p: Option<Params>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{part1, part2};
-    use crate::cli::Params;
-    use crate::days::read_input_file;
+    use crate::days::test::aoc_test;
 
-    #[test]
-    fn part1_example() {
-        let input = read_input_file("inputs/day15-example.txt");
-        let params = Params::from("y=10");
-        assert_eq!(part1(input, Some(params)), "26".to_string());
-    }
+    aoc_test!(part1_example: "day15", part1, "example", "y=10", 26);
+    aoc_test!(part1_input: "day15", part1, "input", "y=2000000", 5525847);
 
-    #[test]
-    fn part1_input() {
-        let input = read_input_file("inputs/day15-input.txt");
-        let params = Params::from("y=2000000");
-        assert_eq!(part1(input, Some(params)), "5525847".to_string());
-    }
-
-    #[test]
-    fn part2_example() {
-        let input = read_input_file("inputs/day15-example.txt");
-        let params = Params::from("min=0,max=20");
-        assert_eq!(part2(input, Some(params)), "56000011".to_string());
-    }
-
+    aoc_test!(part2_example: "day15", part2, "example", "min=0,max=20", 56000011);
     // TODO: this takes a long time to run
-    // #[test]
-    // fn part2_input() {
-    //     let input = read_input_file("inputs/day15-input.txt");
-    //     let params = Params::from("min=0,max=4000000");
-    //     assert_eq!(part2(input, Some(params)), "13340867187704".to_string());
-    // }
+    // aoc_test!(part2_input: "day15", part2, "input", "min=0,max=4000000", 13340867187704usize);
 }

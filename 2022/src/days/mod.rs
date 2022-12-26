@@ -90,7 +90,28 @@ pub(crate) fn parse_i32(input: &str) -> IResult<&str, i32> {
 // test helpers
 
 #[cfg(test)]
-fn read_input_file(path: &str) -> String {
-    let file_contents = std::fs::read_to_string(path).expect("failed to read file");
-    file_contents
+mod test {
+    macro_rules! aoc_test {
+        // no Params
+        ($name:ident: $day:literal, $part:ident, $variation:literal, $expected:literal) => {
+            #[test]
+            fn $name() {
+                let file = format!("inputs/{}-{}.txt", $day, $variation);
+                let input = std::fs::read_to_string(&file).expect("failed to read file");
+                assert_eq!(super::$part(input, None), format!("{}", $expected));
+            }
+        };
+        // with Params
+        ($name:ident: $day:literal, $part:ident, $variation:literal, $params:literal, $expected:literal) => {
+            #[test]
+            fn $name() {
+                let file = format!("inputs/{}-{}.txt", $day, $variation);
+                let params = crate::cli::Params::from($params);
+                let input = std::fs::read_to_string(&file).expect("failed to read file");
+                assert_eq!(super::$part(input, Some(params)), $expected.to_string());
+            }
+        };
+    }
+
+    pub(crate) use aoc_test;
 }

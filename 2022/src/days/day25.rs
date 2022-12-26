@@ -9,3 +9,14 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     println!("{}", file_contents);
     "TODO".to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    // use crate::days::test::aoc_test;
+
+    // aoc_test!(part1_example: "day25", part1, "example", "TODO");
+    // aoc_test!(part1_input: "day25", part1, "input", "TODO");
+
+    // aoc_test!(part2_example: "day25", part2, "example", "TODO");
+    // aoc_test!(part2_input: "day25", part2, "input", "TODO");
+}
