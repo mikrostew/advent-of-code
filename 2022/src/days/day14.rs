@@ -8,7 +8,7 @@ use nom::IResult;
 
 use super::parse_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 simple_struct!(Point; x: usize, y: usize);
 
@@ -175,7 +175,8 @@ impl Cave {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let rock_paths: Vec<RockPath> = file_contents.lines().map(RockPath::parse).collect();
     let mut cave = Cave::new();
@@ -189,10 +190,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
         //println!("{}, {:?}", num_sand_grains, p);
     }
 
-    format!("{}", num_sand_grains)
+    num_sand_grains
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let rock_paths: Vec<RockPath> = file_contents.lines().map(RockPath::parse).collect();
     let mut cave = Cave::new();
@@ -209,17 +211,17 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
         }
     }
 
-    format!("{}", num_sand_grains)
+    num_sand_grains
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day14", part1, "example", 24);
-    aoc_test!(part1_input: "day14", part1, "input", 757);
+    test_fn!(day14, part1, example, 24);
+    test_fn!(day14, part1, input, 757);
 
-    aoc_test!(part2_example: "day14", part2, "example", 93);
+    test_fn!(day14, part2, example, 93);
     // TODO: this takes a long time to run
-    // aoc_test!(part2_input: "day14", part2, "input", 24943);
+    // test_fn!(day14, part2, input, 24943);
 }

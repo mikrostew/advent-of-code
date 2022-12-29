@@ -1,4 +1,4 @@
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 enum Choice {
     Rock,
@@ -79,33 +79,35 @@ fn score_for_outcome(my_choice: Choice, opponent_choice: Choice) -> usize {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+pub fn part1(file_contents: String) -> usize {
     let total_score: usize = file_contents
         .lines()
         .map(|line| score_for_round(line))
         .sum();
 
     println!("Total score: {}", total_score);
-    format!("{}", total_score)
+    total_score
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+pub fn part2(file_contents: String) -> usize {
     let total_score: usize = file_contents
         .lines()
         .map(|line| score_for_round_2(line))
         .sum();
 
     println!("Total score: {}", total_score);
-    format!("{}", total_score)
+    total_score
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day2", part1, "example", 15);
-    aoc_test!(part1_input: "day2", part1, "input", 13005);
+    test_fn!(day2, part1, example, 15);
+    test_fn!(day2, part1, input, 13005);
 
-    aoc_test!(part2_example: "day2", part2, "example", 12);
-    aoc_test!(part2_input: "day2", part2, "input", 11373);
+    test_fn!(day2, part2, example, 12);
+    test_fn!(day2, part2, input, 11373);
 }

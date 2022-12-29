@@ -11,7 +11,7 @@ use nom::IResult;
 
 use super::expect_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 // holds a single move instruction
 simple_struct!(Move; quantity: usize, from: usize, to: usize);
@@ -185,7 +185,8 @@ fn move_instr(input: &str) -> IResult<&str, ParsedLine> {
     })
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+pub fn part1(file_contents: String) -> String {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing
@@ -228,7 +229,8 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     tops
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+pub fn part2(file_contents: String) -> String {
     let mut crate_info: Vec<Vec<&str>> = vec![];
     let mut moves: Vec<Move> = vec![];
     // based on how many stacks are found when parsing
@@ -273,11 +275,11 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day5", part1, "example", "CMZ");
-    aoc_test!(part1_input: "day5", part1, "input",  "TLNGFGMFN");
+    test_fn!(day5, part1, example, "CMZ");
+    test_fn!(day5, part1, input, "TLNGFGMFN");
 
-    aoc_test!(part2_example: "day5", part2, "example", "MCD");
-    aoc_test!(part2_input: "day5", part2, "input", "FGLQJCMBD");
+    test_fn!(day5, part2, example, "MCD");
+    test_fn!(day5, part2, input, "FGLQJCMBD");
 }

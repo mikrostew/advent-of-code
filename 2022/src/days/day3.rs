@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 fn find_item_priority(line: &str) -> u32 {
     let line_len = line.len();
@@ -72,7 +72,8 @@ fn priority_for_char(c: char) -> u32 {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> u32 {
     let item_priorities: Vec<u32> = file_contents
         .lines()
         .map(|line| find_item_priority(line))
@@ -80,10 +81,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
 
     println!("Item priorities: {:?}", item_priorities);
     println!("Total priority: {}", item_priorities.iter().sum::<u32>());
-    format!("{}", item_priorities.iter().sum::<u32>())
+    item_priorities.iter().sum::<u32>()
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> u32 {
     // process this in groups of 3
     let badge_priorities: Vec<u32> = file_contents
         .lines()
@@ -101,16 +103,16 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
 
     println!("Badge priorities: {:?}", badge_priorities);
     println!("Total priority: {}", badge_priorities.iter().sum::<u32>());
-    format!("{}", badge_priorities.iter().sum::<u32>())
+    badge_priorities.iter().sum::<u32>()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day3", part1, "example", 157);
-    aoc_test!(part1_input: "day3", part1, "input", 8105);
+    test_fn!(day3, part1, example, 157);
+    test_fn!(day3, part1, input, 8105);
 
-    aoc_test!(part2_example: "day3", part2, "example", 70);
-    aoc_test!(part2_input: "day3", part2, "input", 2363);
+    test_fn!(day3, part2, example, 70);
+    test_fn!(day3, part2, input, 2363);
 }

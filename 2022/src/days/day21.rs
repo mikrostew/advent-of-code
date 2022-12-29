@@ -13,7 +13,7 @@ use nom::sequence::tuple;
 use nom::IResult;
 
 use super::parse_usize;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 // monkey language grammar
 
@@ -178,7 +178,8 @@ impl Program {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     let statements = parse_lines(&file_contents);
     let mut program = Program::new();
     program.load_statements(statements);
@@ -186,25 +187,26 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
         .evaluate(&"root".to_string())
         .expect("this part shouldn't error");
 
-    format!("{}", result)
+    result
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let statements = parse_lines(&file_contents);
     let mut program = Program::new();
     program.load_statements_2(statements);
     let result = program.find_humn_value(&"root".to_string());
 
-    format!("{}", result)
+    result
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day21", part1, "example", 152);
-    aoc_test!(part1_input: "day21", part1, "input", 38731621732448usize);
+    test_fn!(day21, part1, example, 152);
+    test_fn!(day21, part1, input, 38731621732448usize);
 
-    aoc_test!(part2_example: "day21", part2, "example", 301);
-    aoc_test!(part2_input: "day21", part2, "input", 3848301405790usize);
+    test_fn!(day21, part2, example, 301);
+    test_fn!(day21, part2, input, 3848301405790usize);
 }

@@ -5,7 +5,7 @@ use nom::IResult;
 
 use super::expect_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 simple_struct!(Range; start: usize, end: usize);
 
@@ -41,7 +41,8 @@ fn ranges_overlap(r1: &Range, r2: &Range) -> bool {
     r1.overlaps(r2) || r2.overlaps(r1)
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     let contained: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {
@@ -55,10 +56,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
 
     //println!("contained: {:?}", contained);
     println!("total: {}", contained.len());
-    format!("{}", contained.len())
+    contained.len()
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let overlap: Vec<(Range, Range)> = file_contents
         .lines()
         .map(|line| {
@@ -72,16 +74,16 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
 
     //println!("overlap: {:?}", overlap);
     println!("total: {}", overlap.len());
-    format!("{}", overlap.len())
+    overlap.len()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day4", part1, "example", 2);
-    aoc_test!(part1_input: "day4", part1, "input", 538);
+    test_fn!(day4, part1, example, 2);
+    test_fn!(day4, part1, input, 538);
 
-    aoc_test!(part2_example: "day4", part2, "example", 4);
-    aoc_test!(part2_input: "day4", part2, "input", 792);
+    test_fn!(day4, part2, example, 4);
+    test_fn!(day4, part2, input, 792);
 }

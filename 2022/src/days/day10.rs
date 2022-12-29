@@ -4,7 +4,7 @@ use nom::sequence::separated_pair;
 use nom::IResult;
 
 use super::parse_i32;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 #[derive(Debug)]
 enum Instruction {
@@ -100,7 +100,8 @@ impl SimpleCPU {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> i32 {
     let instructions: Vec<Instruction> = file_contents
         .lines()
         .map(|l| {
@@ -127,10 +128,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
         + 180 * x_reg_values[180]
         + 220 * x_reg_values[220];
 
-    format!("{}", signal_strength_sum)
+    signal_strength_sum
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> String {
     let instructions: Vec<Instruction> = file_contents
         .lines()
         .map(|l| {
@@ -148,24 +150,32 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day10", part1, "example", 13140);
-    aoc_test!(part1_input: "day10", part1, "input", 14320);
+    test_fn!(day10, part1, example, 13140);
+    test_fn!(day10, part1, input, 14320);
 
-    aoc_test!(part2_example: "day10", part2, "example",
-"##..##..##..##..##..##..##..##..##..##..
+    test_fn!(
+        day10,
+        part2,
+        example,
+        "##..##..##..##..##..##..##..##..##..##..
 ###...###...###...###...###...###...###.
 ####....####....####....####....####....
 #####.....#####.....#####.....#####.....
 ######......######......######......####
-#######.......#######.......#######.....");
+#######.......#######.......#######....."
+    );
 
-    aoc_test!(part2_input: "day10", part2, "input",
-"###...##..###..###..#..#..##..###....##.
+    test_fn!(
+        day10,
+        part2,
+        input,
+        "###...##..###..###..#..#..##..###....##.
 #..#.#..#.#..#.#..#.#.#..#..#.#..#....#.
 #..#.#....#..#.###..##...#..#.#..#....#.
 ###..#....###..#..#.#.#..####.###.....#.
 #....#..#.#....#..#.#.#..#..#.#....#..#.
-#.....##..#....###..#..#.#..#.#.....##..");
+#.....##..#....###..#..#.#..#.#.....##.."
+    );
 }

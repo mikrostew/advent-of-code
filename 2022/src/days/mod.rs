@@ -6,6 +6,7 @@ use nom::combinator::recognize;
 use nom::sequence::tuple;
 use nom::IResult;
 
+// TODO: can I use seq! macro here?
 pub mod day1;
 pub mod day10;
 pub mod day11;
@@ -85,33 +86,4 @@ pub(crate) fn parse_i32(input: &str) -> IResult<&str, i32> {
     map(recognize(tuple((opt(tag("-")), digit1))), |n: &str| {
         n.parse::<i32>().expect("failed to parse i32!")
     })(input)
-}
-
-// test helpers
-
-#[cfg(test)]
-mod test {
-    macro_rules! aoc_test {
-        // no Params
-        ($name:ident: $day:literal, $part:ident, $variation:literal, $expected:literal) => {
-            #[test]
-            fn $name() {
-                let file = format!("inputs/{}-{}.txt", $day, $variation);
-                let input = std::fs::read_to_string(&file).expect("failed to read file");
-                assert_eq!(super::$part(input, None), format!("{}", $expected));
-            }
-        };
-        // with Params
-        ($name:ident: $day:literal, $part:ident, $variation:literal, $params:literal, $expected:literal) => {
-            #[test]
-            fn $name() {
-                let file = format!("inputs/{}-{}.txt", $day, $variation);
-                let params = crate::cli::Params::from($params);
-                let input = std::fs::read_to_string(&file).expect("failed to read file");
-                assert_eq!(super::$part(input, Some(params)), $expected.to_string());
-            }
-        };
-    }
-
-    pub(crate) use aoc_test;
 }

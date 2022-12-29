@@ -13,6 +13,7 @@ use nom::IResult;
 use super::parse_isize;
 use super::simple_struct;
 use crate::cli::Params;
+use run_aoc::runner_fn;
 
 simple_struct!(Point; x: isize, y: isize);
 
@@ -302,8 +303,8 @@ fn find_beacon(
     }
 }
 
-pub fn part1(file_contents: String, p: Option<Params>) -> String {
-    //println!("{}", file_contents);
+#[runner_fn]
+pub fn part1(file_contents: String, p: Option<Params>) -> isize {
     let row = p
         .expect("need params for this")
         .get("y")
@@ -313,11 +314,11 @@ pub fn part1(file_contents: String, p: Option<Params>) -> String {
     let sensors: Vec<Sensor> = parse_sensors(&file_contents);
     let exclusions = exclusions_in_row(row, &sensors);
 
-    format!("{}", exclusions)
+    exclusions
 }
 
-pub fn part2(file_contents: String, p: Option<Params>) -> String {
-    //println!("{}", file_contents);
+#[runner_fn]
+pub fn part2(file_contents: String, p: Option<Params>) -> isize {
     let params = p.expect("need params for this");
     let min = params
         .get("min")
@@ -332,17 +333,17 @@ pub fn part2(file_contents: String, p: Option<Params>) -> String {
     let sensors: Vec<Sensor> = parse_sensors(&file_contents);
     let beacon_pt = find_beacon(&sensors, min, max, min, max);
 
-    format!("{}", beacon_pt.x * 4_000_000 + beacon_pt.y)
+    beacon_pt.x * 4_000_000 + beacon_pt.y
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day15", part1, "example", "y=10", 26);
-    aoc_test!(part1_input: "day15", part1, "input", "y=2000000", 5525847);
+    test_fn!(day15, part1, example, "y=10", 26);
+    test_fn!(day15, part1, input, "y=2000000", 5525847);
 
-    aoc_test!(part2_example: "day15", part2, "example", "min=0,max=20", 56000011);
+    test_fn!(day15, part2, example, "min=0,max=20", 56000011);
     // TODO: this takes a long time to run
-    // aoc_test!(part2_input: "day15", part2, "input", "min=0,max=4000000", 13340867187704usize);
+    // test_fn!(day15, part2, input, "min=0,max=4000000", 13340867187704usize);
 }

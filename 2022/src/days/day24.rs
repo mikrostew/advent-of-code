@@ -1,22 +1,24 @@
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     println!("{}", file_contents);
-    "TODO".to_string()
+    0
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     println!("{}", file_contents);
-    "TODO".to_string()
+    0
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::days::test::aoc_test;
+    // use run_aoc::test_fn;
 
-    // aoc_test!(part1_example: "day24", part1, "example", "TODO");
-    // aoc_test!(part1_input: "day24", part1, "input", "TODO");
+    // test_fn!(day24, part1, example, 0);
+    // test_fn!(day24, part1, input, 0);
 
-    // aoc_test!(part2_example: "day24", part2, "example", "TODO");
-    // aoc_test!(part2_input: "day24", part2, "input", "TODO");
+    // test_fn!(day24, part2, example, 0);
+    // test_fn!(day24, part2, input, 0);
 }

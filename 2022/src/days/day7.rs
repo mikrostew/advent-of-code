@@ -14,7 +14,7 @@ use nom::IResult;
 
 use super::expect_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 #[derive(Clone, Debug)]
 enum TermOutput {
@@ -252,7 +252,8 @@ impl Filesystem {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+pub fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
 
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
@@ -277,10 +278,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     println!("dirs <= 100k: {:?}", dirs_100k);
     let sum_of_sizes: usize = dirs_100k.iter().map(|d| d.size).sum();
     println!("sum of those: {}", sum_of_sizes);
-    format!("{}", sum_of_sizes)
+    sum_of_sizes
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let mut term_output: VecDeque<TermOutput> = VecDeque::new();
 
     file_contents.lines().for_each(|line| {
@@ -329,16 +331,16 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
         "size of that: {}",
         deletion_candidates.first().expect("no dir??").size
     );
-    format!("{}", deletion_candidates.first().expect("no dir??").size)
+    deletion_candidates.first().expect("no dir??").size
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day7", part1, "example", 95437);
-    aoc_test!(part1_input: "day7", part1, "input", 1582412);
+    test_fn!(day7, part1, example, 95437);
+    test_fn!(day7, part1, input, 1582412);
 
-    aoc_test!(part2_example: "day7", part2, "example", 24933642);
-    aoc_test!(part2_input: "day7", part2, "input", 3696336);
+    test_fn!(day7, part2, example, 24933642);
+    test_fn!(day7, part2, input, 3696336);
 }

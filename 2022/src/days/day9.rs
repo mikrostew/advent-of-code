@@ -8,7 +8,7 @@ use nom::IResult;
 
 use super::expect_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 #[derive(Debug)]
 enum Direction {
@@ -236,7 +236,8 @@ impl RopeBridge10Knots {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     let directions: Vec<Direction> = file_contents
         .lines()
         .map(|l| {
@@ -249,10 +250,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let mut bridge = RopeBridge2Knots::new();
     directions.iter().for_each(|d| bridge.move_head(d));
 
-    format!("{}", bridge.num_tail_positions())
+    bridge.num_tail_positions()
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let directions: Vec<Direction> = file_contents
         .lines()
         .map(|l| {
@@ -265,18 +267,18 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let mut bridge = RopeBridge10Knots::new();
     directions.iter().for_each(|d| bridge.move_head(d));
 
-    format!("{}", bridge.num_tail_positions())
+    bridge.num_tail_positions()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day9", part1, "example", 13);
-    aoc_test!(part1_input: "day9", part1, "input", 5683);
+    test_fn!(day9, part1, example, 13);
+    test_fn!(day9, part1, input, 5683);
 
-    aoc_test!(part2_example: "day9", part2, "example", 1);
-    aoc_test!(part2_example2: "day9", part2, "example2", 36);
+    test_fn!(day9, part2, example, 1);
+    test_fn!(day9, part2, example2, 36);
 
-    aoc_test!(part2_input: "day9", part2, "input", 2372);
+    test_fn!(day9, part2, input, 2372);
 }

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 // 4 distinct chars
 fn find_start_of_packet_marker(line: &str) -> usize {
@@ -64,37 +64,39 @@ fn find_start_of_message_marker(line: &str) -> usize {
     panic!("start of packet marker not found");
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     // input is a single line
     let position = find_start_of_packet_marker(&file_contents);
     println!("position: {}", position);
-    format!("{}", position)
+    position
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     // input is a single line
     let position = find_start_of_message_marker(&file_contents);
     println!("position: {}", position);
-    format!("{}", position)
+    position
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example1: "day6", part1, "example1", 7);
-    aoc_test!(part1_example2: "day6", part1, "example2", 5);
-    aoc_test!(part1_example3: "day6", part1, "example3", 6);
-    aoc_test!(part1_example4: "day6", part1, "example4", 10);
-    aoc_test!(part1_example5: "day6", part1, "example5", 11);
+    test_fn!(day6, part1, example1, 7);
+    test_fn!(day6, part1, example2, 5);
+    test_fn!(day6, part1, example3, 6);
+    test_fn!(day6, part1, example4, 10);
+    test_fn!(day6, part1, example5, 11);
 
-    aoc_test!(part1_input: "day6", part1, "input", 1896);
+    test_fn!(day6, part1, input, 1896);
 
-    aoc_test!(part2_example1: "day6", part2, "example1", 19);
-    aoc_test!(part2_example2: "day6", part2, "example2", 23);
-    aoc_test!(part2_example3: "day6", part2, "example3", 23);
-    aoc_test!(part2_example4: "day6", part2, "example4", 29);
-    aoc_test!(part2_example5: "day6", part2, "example5", 26);
+    test_fn!(day6, part2, example1, 19);
+    test_fn!(day6, part2, example2, 23);
+    test_fn!(day6, part2, example3, 23);
+    test_fn!(day6, part2, example4, 29);
+    test_fn!(day6, part2, example5, 26);
 
-    aoc_test!(part2_input: "day6", part2, "input", 3452);
+    test_fn!(day6, part2, input, 3452);
 }

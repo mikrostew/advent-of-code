@@ -15,7 +15,7 @@ use nom::IResult;
 
 use super::expect_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 simple_struct!(PacketPair; left: Vec<ListOrInt>, right: Vec<ListOrInt>);
 simple_struct!(Packet; parsed: Vec<ListOrInt>, orig: String);
@@ -120,7 +120,8 @@ fn compare(left: &ListOrInt, right: &ListOrInt) -> Option<bool> {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let packet_pairs = parse_packets(&file_contents);
 
@@ -138,10 +139,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
         .collect();
     //println!("{:?}", ordered);
     let sum: usize = ordered.iter().sum();
-    format!("{}", sum)
+    sum
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let mut all_packets: Vec<Packet> = file_contents
         .lines()
@@ -184,16 +186,16 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
         .collect();
     println!("{:?}", indices);
 
-    format!("{}", indices.iter().product::<usize>())
+    indices.iter().product::<usize>()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day13", part1, "example", 13);
-    aoc_test!(part1_input: "day13", part1, "input", 6235);
+    test_fn!(day13, part1, example, 13);
+    test_fn!(day13, part1, input, 6235);
 
-    aoc_test!(part2_example: "day13", part2, "example", 140);
-    aoc_test!(part2_input: "day13", part2, "input", 22866);
+    test_fn!(day13, part2, example, 140);
+    test_fn!(day13, part2, input, 22866);
 }

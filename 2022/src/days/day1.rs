@@ -1,7 +1,8 @@
 use super::expect_usize;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     let mut current_total: usize = 0;
     let mut max_value: usize = 0;
 
@@ -27,12 +28,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
         }
     }
 
-    println!("");
-    println!("max value: {}", max_value);
-    format!("{}", max_value)
+    max_value
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let mut current_total: usize = 0;
     let mut totals: Vec<usize> = vec![];
 
@@ -59,18 +59,16 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     totals.reverse();
     let sum: usize = totals[0..=2].iter().sum();
 
-    println!("");
-    println!("total of top 3: {:?}", sum);
-    format!("{}", sum)
+    sum
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day1", part1, "example", 24000);
-    aoc_test!(part1_input: "day1", part1, "input", 67016);
+    test_fn!(day1, part1, example, 24000);
+    test_fn!(day1, part1, input, 67016);
 
-    aoc_test!(part2_example: "day1", part2, "example", 45000);
-    aoc_test!(part2_input: "day1", part2, "input", 200116);
+    test_fn!(day1, part2, example, 45000);
+    test_fn!(day1, part2, input, 200116);
 }

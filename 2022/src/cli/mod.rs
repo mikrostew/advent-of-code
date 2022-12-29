@@ -1,5 +1,4 @@
 use std::fmt;
-use std::path;
 
 use clap::{Parser, ValueEnum};
 use nom::bytes::complete::tag;
@@ -23,8 +22,8 @@ pub struct Args {
     #[arg(long)]
     pub params: Option<String>,
 
-    /// File to read
-    pub file: path::PathBuf,
+    /// Variation to use ('example', 'example2', 'input', etc.)
+    pub variation: String,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]

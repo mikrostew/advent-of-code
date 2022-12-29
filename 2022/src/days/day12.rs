@@ -8,7 +8,7 @@ use nom::sequence::terminated;
 use nom::IResult;
 
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 // TODO: generalize and extract this (will likely need it again)
 // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
@@ -163,7 +163,8 @@ fn parse_line(input: &str) -> IResult<&str, Vec<char>> {
     terminated(many1(one_of("abcdefghijklmnopqrstuvwxyzSE")), newline)(input)
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let (map, start, end) = parse_map(&file_contents);
 
@@ -187,11 +188,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     );
 
     let cost = solver.solve().expect("Could not solve!");
-
-    format!("{}", cost)
+    cost
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let (map, _start, end) = parse_map(&file_contents);
 
     // this time start at the end, and find the fewest steps to get to a point of height 0
@@ -215,17 +216,16 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     );
 
     let cost = solver.solve().expect("Could not solve!");
-
-    format!("{}", cost)
+    cost
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day12", part1, "example", 31);
-    aoc_test!(part1_input: "day12", part1, "input", 361);
+    test_fn!(day12, part1, example, 31);
+    test_fn!(day12, part1, input, 361);
 
-    aoc_test!(part2_example: "day12", part2, "example", 29);
-    aoc_test!(part2_input: "day12", part2, "input", 354);
+    test_fn!(day12, part2, example, 29);
+    test_fn!(day12, part2, input, 354);
 }

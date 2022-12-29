@@ -17,7 +17,7 @@ use nom::IResult;
 
 use super::parse_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 fn parse_valve_descr(input: &str) -> Vec<ValveDescription> {
     let (leftover, vd) = valve_descriptions(input).expect("Could not parse valve descriptions");
@@ -287,30 +287,32 @@ impl ValveState {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let cave = Cave::parse(&file_contents);
     let pressure = cave.max_pressure(ValveState::new(cave.start_index), 30);
 
-    format!("{}", pressure)
+    pressure
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let cave = Cave::parse(&file_contents);
     let pressure = cave.max_with_elephant(ValveState::new(cave.start_index), 26);
 
-    format!("{}", pressure)
+    pressure
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day16", part1, "example", 1651);
-    aoc_test!(part1_input: "day16", part1, "input", 1595);
+    test_fn!(day16, part1, example, 1651);
+    test_fn!(day16, part1, input, 1595);
 
-    aoc_test!(part2_example: "day16", part2, "example", 1707);
+    test_fn!(day16, part2, example, 1707);
     // TODO: this takes a little too long to run regularly
-    // aoc_test!(part2_input: "day16", part2, "input", 2189);
+    // test_fn!(day16, part2, input, 2189);
 }

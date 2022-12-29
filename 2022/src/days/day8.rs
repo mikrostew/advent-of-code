@@ -3,7 +3,7 @@ use nom::multi::many1;
 use nom::IResult;
 
 use super::expect_i32;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 // lines are just a bunch a digits
 fn parse_line(input: &str) -> IResult<&str, Vec<i32>> {
@@ -227,7 +227,8 @@ fn print_grid(grid: &Vec<Vec<i32>>, num_rows: usize) -> () {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
 
     let grid: Vec<Vec<i32>> = file_contents
@@ -245,12 +246,11 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     tree_grid.calculate_tallest_trees();
     //tree_grid.print_tallest_trees();
 
-    let num_visible = tree_grid.count_visible_trees();
-
-    format!("{}", num_visible)
+    tree_grid.count_visible_trees()
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> i32 {
     let grid: Vec<Vec<i32>> = file_contents
         .lines()
         .map(|l| {
@@ -265,16 +265,16 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
     let scores = tree_grid.calculate_scenic_scores();
     println!("{:?}", scores);
 
-    format!("{}", scores.iter().max().expect("no max value?"))
+    *scores.iter().max().expect("no max value?")
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day8", part1, "example", 21);
-    aoc_test!(part1_input: "day8", part1, "input", 1835);
+    test_fn!(day8, part1, example, 21);
+    test_fn!(day8, part1, input, 1835);
 
-    aoc_test!(part2_example: "day8", part2, "example", 8);
-    aoc_test!(part2_input: "day8", part2, "input", 263670);
+    test_fn!(day8, part2, example, 8);
+    test_fn!(day8, part2, input, 263670);
 }

@@ -11,7 +11,7 @@ use nom::IResult;
 
 use super::parse_usize;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 enum Tile {
@@ -241,7 +241,8 @@ fn parse_input(input: &str) -> (Vec<Vec<Tile>>, Path) {
     (tiles, path)
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     let (tiles, path) = parse_input(&file_contents);
     let mut board = Board2D::from(tiles);
     board.follow_path(&path);
@@ -250,21 +251,22 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
     let direction = board.direction;
     let password = 1000 * (position.row + 1) + 4 * (position.col + 1) + direction.facing();
 
-    format!("{}", password)
+    password
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     println!("{}", file_contents);
-    "TODO".to_string()
+    0
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day22", part1, "example", 6032);
-    aoc_test!(part1_input: "day22", part1, "input", 43466);
+    test_fn!(day22, part1, example, 6032);
+    test_fn!(day22, part1, input, 43466);
 
-    // aoc_test!(part2_example: "day22", part2, "example", "TODO");
-    // aoc_test!(part2_input: "day22", part2, "input", "TODO");
+    // test_fn!(day22, part2, example, 0);
+    // test_fn!(day22, part2, input, 0);
 }

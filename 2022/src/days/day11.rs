@@ -11,7 +11,7 @@ use nom::sequence::tuple;
 use nom::IResult;
 
 use super::{expect_usize, parse_usize};
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 struct Monkey<'a> {
     number: usize,
@@ -163,7 +163,8 @@ fn do_round2(monkeys: &mut Vec<Monkey>, lcm: usize) -> () {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let (leftover, mut monkeys) =
         parse_monkeys(&file_contents).expect("Could not parse monkeys from input!");
@@ -186,12 +187,13 @@ pub fn part1(file_contents: String, _p: Option<Params>) -> String {
         .collect::<Vec<usize>>();
     inspections.sort();
     inspections.reverse();
-    let top_2_product = &inspections[0..2].iter().product::<usize>();
+    let top_2_product = inspections[0..2].iter().product::<usize>();
 
-    format!("{}", top_2_product)
+    top_2_product
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let (leftover, mut monkeys) =
         parse_monkeys(&file_contents).expect("Could not parse monkeys from input!");
     assert_eq!(leftover, "");
@@ -223,18 +225,18 @@ pub fn part2(file_contents: String, _p: Option<Params>) -> String {
 
     inspections.sort();
     inspections.reverse();
-    let top_2_product = &inspections[0..2].iter().product::<usize>();
+    let top_2_product = inspections[0..2].iter().product::<usize>();
 
-    format!("{}", top_2_product)
+    top_2_product
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day11", part1, "example", 10605);
-    aoc_test!(part1_input: "day11", part1, "input", 67830);
+    test_fn!(day11, part1, example, 10605);
+    test_fn!(day11, part1, input, 67830);
 
-    aoc_test!(part2_example: "day11", part2, "example", 2713310158usize);
-    aoc_test!(part2_input: "day11", part2, "input", 15305381442usize);
+    test_fn!(day11, part2, example, 2713310158usize);
+    test_fn!(day11, part2, input, 15305381442usize);
 }

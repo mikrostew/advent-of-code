@@ -8,7 +8,7 @@ use nom::sequence::terminated;
 use nom::IResult;
 
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 simple_struct!(Point; x: usize, y: usize);
 
@@ -373,33 +373,35 @@ impl RockChamber {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let jets = parse_into_jets(&file_contents);
     let rocks = FallingRocks::new();
     let mut chamber = RockChamber::new(rocks, jets);
     chamber.simulate_rocks(2022);
 
-    format!("{}", chamber.height)
+    chamber.height
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     //println!("{}", file_contents);
     let jets = parse_into_jets(&file_contents);
     let rocks = FallingRocks::new();
     let mut chamber = RockChamber::new(rocks, jets);
     chamber.simulate_rocks_big(1_000_000_000_000);
 
-    format!("{}", chamber.height)
+    chamber.height
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day17", part1, "example", 3068);
-    aoc_test!(part1_input: "day17", part1, "input", 3161);
+    test_fn!(day17, part1, example, 3068);
+    test_fn!(day17, part1, input, 3161);
 
-    aoc_test!(part2_example: "day17", part2, "example", 1514285714288usize);
-    aoc_test!(part2_input: "day17", part2, "input", 1575931232076usize);
+    test_fn!(day17, part2, example, 1514285714288usize);
+    test_fn!(day17, part2, input, 1575931232076usize);
 }

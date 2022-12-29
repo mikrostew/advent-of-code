@@ -12,7 +12,7 @@ use nom::IResult;
 
 use super::parse_i32;
 use super::simple_struct;
-use crate::cli::Params;
+use run_aoc::runner_fn;
 
 simple_struct!(Point; x: i32, y: i32, z: i32);
 
@@ -161,31 +161,33 @@ impl PointGrid {
     }
 }
 
-pub fn part1(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part1(file_contents: String) -> usize {
     let points = parse_points(&file_contents);
     println!("Parsed {} points", points.len());
     let point_grid = PointGrid::from_points(points);
     let area = point_grid.find_surface_area_all();
 
-    format!("{}", area)
+    area
 }
 
-pub fn part2(file_contents: String, _p: Option<Params>) -> String {
+#[runner_fn]
+fn part2(file_contents: String) -> usize {
     let points = parse_points(&file_contents);
     println!("Parsed {} points", points.len());
     let point_grid = PointGrid::from_points(points);
     let area = point_grid.find_surface_area_ext();
 
-    format!("{}", area)
+    area
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::test::aoc_test;
+    use run_aoc::test_fn;
 
-    aoc_test!(part1_example: "day18", part1, "example", 64);
-    aoc_test!(part1_input: "day18", part1, "input", 4512);
+    test_fn!(day18, part1, example, 64);
+    test_fn!(day18, part1, input, 4512);
 
-    aoc_test!(part2_example: "day18", part2, "example", 58);
-    aoc_test!(part2_input: "day18", part2, "input", 2554);
+    test_fn!(day18, part2, example, 58);
+    test_fn!(day18, part2, input, 2554);
 }
