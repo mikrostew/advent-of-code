@@ -165,8 +165,10 @@ Using the same method of drawing the last facing you had with an arrow on each t
         ..v...#.
 ```
 
-The final password is still calculated from your final position and facing from the perspective of the map. In this example, the final row is 5, the final column is 7, and the final facing is 3, so the final password is 1000 * 5 + 4 * 7 + 3 = 5031.
+The final password is still calculated from your final position and facing from the perspective of the map. In this example, the final row is 5, the final column is 7, and the final facing is 3, so the final password is 1000 * 5 + 4 * 7 + 3 = `5031`.
 
 Fold the map into a cube, then follow the path given in the monkeys' notes. What is the final password?
 
-Answer:
+Your puzzle answer was `162155`.
+
+Both parts of this puzzle are complete! They provide two gold stars: **

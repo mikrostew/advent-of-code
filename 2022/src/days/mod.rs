@@ -1,3 +1,5 @@
+use std::ops::Rem;
+
 use nom::bytes::complete::tag;
 use nom::character::complete::digit1;
 use nom::combinator::map;
@@ -66,4 +68,31 @@ pub(crate) fn parse_i32(input: &str) -> IResult<&str, i32> {
     map(recognize(tuple((opt(tag("-")), digit1))), |n: &str| {
         n.parse::<i32>().expect("failed to parse i32!")
     })(input)
+}
+
+pub(crate) trait Zero {
+    fn is_zero(&self) -> bool;
+}
+
+// TODO: macro-ize this to do for more int types
+impl Zero for usize {
+    fn is_zero(&self) -> bool {
+        *self == 0
+    }
+}
+
+// find GCD of 2 numbers
+// (Euclid's algorithm)
+pub(crate) fn gcd<T>(x: T, y: T) -> T
+where
+    T: Copy + Rem<Output = T> + Zero,
+{
+    let mut a = x;
+    let mut b = y;
+    while !b.is_zero() {
+        let t = b;
+        b = a % b;
+        a = t;
+    }
+    a
 }
