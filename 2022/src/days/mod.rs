@@ -13,13 +13,28 @@ seq!(N in 1..=25 {
     pub mod day~N;
 });
 
-// TODO: split this stuff into a utils crate or something?
+// TODO: split this stuff into a utils crate
 
 // because I do this all the time
-// (not deriving Copy because some structs use String)
 macro_rules! simple_struct {
+    // not default deriving Copy because some structs use String
     ($s:ident; $($v:ident: $t:ty),+) => {
         #[derive(Clone, Debug, Hash, Eq, PartialEq)]
+        struct $s {
+            $($v: $t),+
+        }
+
+        impl $s {
+            fn new($($v: $t),+) -> Self {
+                $s {
+                    $($v),+
+                }
+            }
+        }
+    };
+    // but can add things to the derive if needed
+    ([$($d:ident),+] $s:ident; $($v:ident: $t:ty),+) => {
+        #[derive(Clone, Debug, Hash, Eq, PartialEq, $($d),+)]
         struct $s {
             $($v: $t),+
         }
