@@ -48,21 +48,25 @@ macro_rules! simple_struct {
         }
     };
 }
+pub(crate) use simple_struct;
 
-// who needs error handling, this ain't production code
-macro_rules! expect_usize {
-    ($e:ident) => {
-        $e.parse::<usize>().expect("failed to parse usize!")
-    }
-}
-macro_rules! expect_i32 {
-    ($e:ident) => {
-        $e.parse::<i32>().expect("failed to parse i32!")
+// meta-macro for making these macros
+macro_rules! num_parsing_macro {
+    ($name:ident, $type:ident) => {
+        macro_rules! $name {
+            ($e:ident) => {
+                $e.parse::<$type>()
+                    .unwrap_or_else(|_| panic!("cannot parse {} into {}!", $e, stringify!($type)))
+            };
+        }
+        pub(crate) use $name;
     };
 }
-pub(crate) use expect_i32;
-pub(crate) use expect_usize;
-pub(crate) use simple_struct;
+num_parsing_macro!(expect_usize, usize);
+num_parsing_macro!(expect_isize, isize);
+num_parsing_macro!(expect_i32, i32);
+
+// TODO: I should also macro-ize these fns
 
 // parse unsigned int into usize
 pub(crate) fn parse_usize(input: &str) -> IResult<&str, usize> {
