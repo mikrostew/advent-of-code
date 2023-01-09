@@ -119,4 +119,6 @@ As you do, a very young Elf - one you recognize from the expedition team - appro
 
 Only 49 stars to go.
 
-You don't have enough stars to fill the blender, though. You need 8 more.
+You have enough stars to [Start the Blender].
+
+Both parts of this puzzle are complete! They provide two gold stars: **
