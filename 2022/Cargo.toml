@@ -8,3 +8,4 @@ clap = { version = "4.0.29", features = ["derive"] }
 nom = "7.1.1"
 run-aoc = { path = "crates/run-aoc" }
 seq-macro = "0.3.2"
+utils = { path = "../crates/utils" }

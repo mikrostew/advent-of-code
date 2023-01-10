@@ -10,11 +10,10 @@ use nom::sequence::separated_pair;
 use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
-
-use super::gcd;
-use super::parse_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::gcd;
+
+use utils::{nom_usize, simple_struct};
 
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 enum Tile {
@@ -56,7 +55,7 @@ fn parse_board(input: &str) -> IResult<&str, Vec<Vec<Tile>>> {
 }
 
 fn parse_move_num(input: &str) -> IResult<&str, Move> {
-    map(parse_usize, |n| Move::Num(n))(input)
+    map(nom_usize, |n| Move::Num(n))(input)
 }
 
 fn parse_move_dir(input: &str) -> IResult<&str, Move> {

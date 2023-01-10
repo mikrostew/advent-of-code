@@ -11,8 +11,8 @@ use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::parse_usize;
 use run_aoc::runner_fn;
+use utils::nom_usize;
 
 struct Blueprint {
     id: usize,
@@ -29,24 +29,24 @@ struct Blueprint {
 }
 
 fn parse_blueprint_id(input: &str) -> IResult<&str, usize> {
-    delimited(tag("Blueprint "), parse_usize, tag(":"))(input)
+    delimited(tag("Blueprint "), nom_usize, tag(":"))(input)
 }
 
 fn parse_ore_robot(input: &str) -> IResult<&str, usize> {
-    delimited(tag("Each ore robot costs "), parse_usize, tag(" ore."))(input)
+    delimited(tag("Each ore robot costs "), nom_usize, tag(" ore."))(input)
 }
 
 fn parse_clay_robot(input: &str) -> IResult<&str, usize> {
-    delimited(tag("Each clay robot costs "), parse_usize, tag(" ore."))(input)
+    delimited(tag("Each clay robot costs "), nom_usize, tag(" ore."))(input)
 }
 
 fn parse_obs_robot(input: &str) -> IResult<&str, (usize, usize)> {
     map(
         tuple((
             tag("Each obsidian robot costs "),
-            parse_usize,
+            nom_usize,
             tag(" ore and "),
-            parse_usize,
+            nom_usize,
             tag(" clay."),
         )),
         |(_, ore, _, clay, _)| (ore, clay),
@@ -57,9 +57,9 @@ fn parse_geode_robot(input: &str) -> IResult<&str, (usize, usize)> {
     map(
         tuple((
             tag("Each geode robot costs "),
-            parse_usize,
+            nom_usize,
             tag(" ore and "),
-            parse_usize,
+            nom_usize,
             tag(" obsidian."),
         )),
         |(_, ore, _, obs, _)| (ore, obs),

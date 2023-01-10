@@ -10,10 +10,9 @@ use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::parse_isize;
-use super::simple_struct;
 use crate::cli::Params;
 use run_aoc::runner_fn;
+use utils::{nom_isize, simple_struct};
 
 simple_struct!(Point; x: isize, y: isize);
 
@@ -139,7 +138,7 @@ fn location(input: &str) -> IResult<&str, Point> {
     map(
         preceded(
             tag("Sensor at x="),
-            separated_pair(parse_isize, tag(", y="), parse_isize),
+            separated_pair(nom_isize, tag(", y="), nom_isize),
         ),
         |(x, y)| Point::new(x, y),
     )(input)
@@ -149,7 +148,7 @@ fn beacon(input: &str) -> IResult<&str, Point> {
     map(
         preceded(
             tag(": closest beacon is at x="),
-            separated_pair(parse_isize, tag(", y="), parse_isize),
+            separated_pair(nom_isize, tag(", y="), nom_isize),
         ),
         |(x, y)| Point::new(x, y),
     )(input)

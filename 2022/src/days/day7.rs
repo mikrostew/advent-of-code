@@ -6,15 +6,14 @@ use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::bytes::complete::take_while;
 use nom::character::complete::alpha1;
-use nom::character::complete::digit1;
 use nom::character::is_alphabetic;
+use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::expect_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_usize, simple_struct};
 
 #[derive(Clone, Debug)]
 enum TermOutput {
@@ -46,46 +45,47 @@ fn parse_line(line: &str) -> IResult<&str, TermOutput> {
 }
 
 fn cmd(input: &str) -> IResult<&str, TermOutput> {
-    alt((cd, ls))(input).map(|(next_input, result)| (next_input, TermOutput::Cmd(result)))
+    map(alt((cd, ls)), |result| TermOutput::Cmd(result))(input)
 }
 
 fn cd(input: &str) -> IResult<&str, Command> {
-    preceded(tag("$ cd "), alt((cd_root, cd_up, cd_dir)))(input)
-        .map(|(next_input, result)| (next_input, Command::Cd(result)))
+    map(
+        preceded(tag("$ cd "), alt((cd_root, cd_up, cd_dir))),
+        |result| Command::Cd(result),
+    )(input)
 }
 
 fn cd_root(input: &str) -> IResult<&str, ChangeDir> {
-    tag("/")(input).map(|(next_input, _result)| (next_input, ChangeDir::Root))
+    map(tag("/"), |_| ChangeDir::Root)(input)
 }
 
 fn cd_up(input: &str) -> IResult<&str, ChangeDir> {
-    tag("..")(input).map(|(next_input, _result)| (next_input, ChangeDir::Up))
+    map(tag(".."), |_| ChangeDir::Up)(input)
 }
 
 fn cd_dir(input: &str) -> IResult<&str, ChangeDir> {
-    alpha1(input).map(|(next_input, result)| (next_input, ChangeDir::ToDir(result.to_string())))
+    map(alpha1, |result: &str| ChangeDir::ToDir(result.to_string()))(input)
 }
 
 fn ls(input: &str) -> IResult<&str, Command> {
-    tag("$ ls")(input).map(|(next_input, _result)| (next_input, Command::Ls))
+    map(tag("$ ls"), |_| Command::Ls)(input)
 }
 
 fn output(input: &str) -> IResult<&str, TermOutput> {
-    alt((dir, file))(input).map(|(next_input, result)| (next_input, TermOutput::Output(result)))
+    map(alt((dir, file)), |result| TermOutput::Output(result))(input)
 }
 
 fn dir(input: &str) -> IResult<&str, Entry> {
-    preceded(tag("dir "), alpha1)(input)
-        .map(|(next_input, result)| (next_input, Entry::Dir(result.to_string())))
+    map(preceded(tag("dir "), alpha1), |result: &str| {
+        Entry::Dir(result.to_string())
+    })(input)
 }
 
 fn file(input: &str) -> IResult<&str, Entry> {
-    separated_pair(digit1, tag(" "), filename)(input).map(|(next_input, (size, name))| {
-        (
-            next_input,
-            Entry::File(File::new(name.to_string(), expect_usize!(size))),
-        )
-    })
+    map(
+        separated_pair(nom_usize, tag(" "), filename),
+        |(size, name)| Entry::File(File::new(name.to_string(), size)),
+    )(input)
 }
 
 fn filename(input: &str) -> IResult<&str, &str> {

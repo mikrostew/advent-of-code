@@ -3,7 +3,6 @@ use std::cmp::Ordering;
 
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::character::complete::digit1;
 use nom::character::complete::newline;
 use nom::combinator::map;
 use nom::multi::separated_list0;
@@ -13,9 +12,8 @@ use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::expect_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_usize, simple_struct};
 
 simple_struct!(PacketPair; left: Vec<ListOrInt>, right: Vec<ListOrInt>);
 simple_struct!(Packet; parsed: Vec<ListOrInt>, orig: String);
@@ -33,7 +31,7 @@ fn list(input: &str) -> IResult<&str, ListOrInt> {
 }
 
 fn int(input: &str) -> IResult<&str, ListOrInt> {
-    map(digit1, |d: &str| ListOrInt::Int(expect_usize!(d)))(input)
+    map(nom_usize, |d| ListOrInt::Int(d))(input)
 }
 
 fn list_or_int(input: &str) -> IResult<&str, Vec<ListOrInt>> {

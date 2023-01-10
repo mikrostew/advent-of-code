@@ -7,8 +7,8 @@ use nom::multi::many1;
 use nom::sequence::terminated;
 use nom::IResult;
 
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::simple_struct;
 
 simple_struct!(Point; x: usize, y: usize);
 

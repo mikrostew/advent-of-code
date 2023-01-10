@@ -7,17 +7,14 @@ use nom::bytes::complete::tag;
 use nom::character::complete::alpha1;
 use nom::character::complete::newline;
 use nom::combinator::map;
-// use nom::combinator::opt;
 use nom::multi::separated_list1;
 use nom::sequence::preceded;
-// use nom::sequence::separated_pair;
 use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::parse_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_usize, simple_struct};
 
 fn parse_valve_descr(input: &str) -> Vec<ValveDescription> {
     let (leftover, vd) = valve_descriptions(input).expect("Could not parse valve descriptions");
@@ -40,7 +37,7 @@ fn id(input: &str) -> IResult<&str, String> {
 }
 
 fn flow_rate(input: &str) -> IResult<&str, usize> {
-    preceded(tag(" has flow rate="), parse_usize)(input)
+    preceded(tag(" has flow rate="), nom_usize)(input)
 }
 
 fn tunnels(input: &str) -> IResult<&str, Vec<String>> {

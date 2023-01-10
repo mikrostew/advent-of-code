@@ -5,13 +5,15 @@ use nom::bytes::complete::tag;
 use nom::character::complete::digit1;
 use nom::character::complete::newline;
 use nom::character::complete::one_of;
+use nom::combinator::map;
 use nom::multi::separated_list1;
 use nom::sequence::delimited;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::{expect_usize, parse_usize};
 use run_aoc::runner_fn;
+use utils::nom_usize;
+use utils::traits::ToNum;
 
 struct Monkey<'a> {
     number: usize,
@@ -37,47 +39,42 @@ fn parse_monkeys(input: &str) -> IResult<&str, Vec<Monkey>> {
 }
 
 fn monkey(input: &str) -> IResult<&str, Monkey> {
-    tuple((monkey_number, starting_items, operation, test))(input).map(
-        |(
-            next_input,
-            (number, items, (operator, operand), (divis_by, true_monkey, false_monkey)),
-        )| {
+    map(
+        tuple((monkey_number, starting_items, operation, test)),
+        |(number, items, (operator, operand), (divis_by, true_monkey, false_monkey))| {
             let operator_fn = move |a, b| match operator {
                 Operator::Add => a + b,
                 Operator::Multiply => a * b,
             };
-            (
-                next_input,
-                Monkey {
-                    number,
-                    items: VecDeque::from(items),
-                    operation_fn: Box::new(move |x| match operand {
-                        Operand::Num(n) => operator_fn(x, n),
-                        Operand::Old => operator_fn(x, x),
-                    }),
-                    test_fn: Box::new(move |x| {
-                        if x % divis_by == 0 {
-                            true_monkey
-                        } else {
-                            false_monkey
-                        }
-                    }),
-                    num_inspections: 0,
-                    divis_by,
-                },
-            )
+            Monkey {
+                number,
+                items: VecDeque::from(items),
+                operation_fn: Box::new(move |x| match operand {
+                    Operand::Num(n) => operator_fn(x, n),
+                    Operand::Old => operator_fn(x, x),
+                }),
+                test_fn: Box::new(move |x| {
+                    if x % divis_by == 0 {
+                        true_monkey
+                    } else {
+                        false_monkey
+                    }
+                }),
+                num_inspections: 0,
+                divis_by,
+            }
         },
-    )
+    )(input)
 }
 
 fn monkey_number(input: &str) -> IResult<&str, usize> {
-    delimited(tag("Monkey "), parse_usize, tuple((tag(":"), newline)))(input)
+    delimited(tag("Monkey "), nom_usize, tuple((tag(":"), newline)))(input)
 }
 
 fn starting_items(input: &str) -> IResult<&str, Vec<usize>> {
     delimited(
         tag("  Starting items: "),
-        separated_list1(tag(", "), parse_usize),
+        separated_list1(tag(", "), nom_usize),
         newline,
     )(input)
 }
@@ -91,29 +88,19 @@ fn operation(input: &str) -> IResult<&str, (Operator, Operand)> {
 }
 
 fn operator(input: &str) -> IResult<&str, Operator> {
-    delimited(tag(" "), one_of("*+"), tag(" "))(input).map(|(next_input, op)| {
-        (
-            next_input,
-            match op {
-                '*' => Operator::Multiply,
-                '+' => Operator::Add,
-                _ => panic!("Matched something not '*' or '+'!"),
-            },
-        )
-    })
+    map(delimited(tag(" "), one_of("*+"), tag(" ")), |op| match op {
+        '*' => Operator::Multiply,
+        '+' => Operator::Add,
+        _ => unreachable!(),
+    })(input)
 }
 
 // returns the number of identifier used as the operand
 fn operand(input: &str) -> IResult<&str, Operand> {
-    alt((tag("old"), digit1))(input).map(|(next_input, num_or_old)| {
-        (
-            next_input,
-            match num_or_old {
-                "old" => Operand::Old,
-                _ => Operand::Num(expect_usize!(num_or_old)),
-            },
-        )
-    })
+    map(alt((tag("old"), digit1)), |num_or_old| match num_or_old {
+        "old" => Operand::Old,
+        _ => Operand::Num(num_or_old.to_usize()),
+    })(input)
 }
 
 // returns three values used in this test
@@ -122,15 +109,15 @@ fn test(input: &str) -> IResult<&str, (usize, usize, usize)> {
 }
 
 fn test_cond(input: &str) -> IResult<&str, usize> {
-    delimited(tag("  Test: divisible by "), parse_usize, newline)(input)
+    delimited(tag("  Test: divisible by "), nom_usize, newline)(input)
 }
 
 fn if_true(input: &str) -> IResult<&str, usize> {
-    delimited(tag("    If true: throw to monkey "), parse_usize, newline)(input)
+    delimited(tag("    If true: throw to monkey "), nom_usize, newline)(input)
 }
 
 fn if_false(input: &str) -> IResult<&str, usize> {
-    delimited(tag("    If false: throw to monkey "), parse_usize, newline)(input)
+    delimited(tag("    If false: throw to monkey "), nom_usize, newline)(input)
 }
 
 fn do_round1(monkeys: &mut Vec<Monkey>) -> () {

@@ -12,8 +12,8 @@ use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::parse_usize;
 use run_aoc::runner_fn;
+use utils::nom_usize;
 
 // monkey language grammar
 
@@ -46,7 +46,7 @@ fn parse_expr(input: &str) -> IResult<&str, Expr> {
 }
 
 fn parse_const(input: &str) -> IResult<&str, Expr> {
-    map(parse_usize, |n| Expr::Const(n))(input)
+    map(nom_usize, |n| Expr::Const(n))(input)
 }
 
 fn parse_binary_op(input: &str) -> IResult<&str, Expr> {

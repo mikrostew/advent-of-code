@@ -1,11 +1,10 @@
 use nom::bytes::complete::tag;
-use nom::character::complete::digit1;
+use nom::combinator::map;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::expect_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_usize, simple_struct};
 
 simple_struct!(Range; start: usize, end: usize);
 
@@ -23,9 +22,10 @@ impl Range {
 // ranges like "4-7", or "53-90"
 // (assumption: the input is always <small>-<bigger>)
 fn range(input: &str) -> IResult<&str, Range> {
-    separated_pair(digit1, tag("-"), digit1)(input).map(|(next_input, (d1, d2))| {
-        (next_input, Range::new(expect_usize!(d1), expect_usize!(d2)))
-    })
+    map(
+        separated_pair(nom_usize, tag("-"), nom_usize),
+        |(d1, d2)| Range::new(d1, d2),
+    )(input)
 }
 
 // pair of ranges, like "4-5,9-12"

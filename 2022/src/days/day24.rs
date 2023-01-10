@@ -8,8 +8,8 @@ use nom::multi::separated_list1;
 use nom::sequence::terminated;
 use nom::IResult;
 
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::simple_struct;
 
 fn parse_tile(input: &str) -> IResult<&str, Tile> {
     map(one_of("#.<^>v"), |c| match c {

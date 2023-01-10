@@ -1,17 +1,16 @@
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::alpha1;
-use nom::character::complete::digit1;
 use nom::character::complete::space0;
 use nom::character::complete::space1;
+use nom::combinator::map;
 use nom::multi::separated_list1;
 use nom::sequence::delimited;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::expect_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_usize, simple_struct};
 
 // holds a single move instruction
 simple_struct!(Move; quantity: usize, from: usize, to: usize);
@@ -146,8 +145,9 @@ fn parse_line(line: &str) -> IResult<&str, ParsedLine> {
 }
 
 fn crates(input: &str) -> IResult<&str, ParsedLine> {
-    separated_list1(tag(" "), crate_or_empty)(input)
-        .map(|(next_input, result)| (next_input, ParsedLine::Crates(result)))
+    map(separated_list1(tag(" "), crate_or_empty), |result| {
+        ParsedLine::Crates(result)
+    })(input)
 }
 
 fn crate_or_empty(input: &str) -> IResult<&str, &str> {
@@ -158,31 +158,24 @@ fn crate_or_empty(input: &str) -> IResult<&str, &str> {
 }
 
 fn stack_nums(input: &str) -> IResult<&str, ParsedLine> {
-    delimited(space0, separated_list1(space1, digit1), space0)(input).map(|(next_input, result)| {
-        let vec_of_stack_nums = result.iter().map(|d| expect_usize!(d)).collect();
-        (next_input, ParsedLine::StackNums(vec_of_stack_nums))
-    })
+    map(
+        delimited(space0, separated_list1(space1, nom_usize), space0),
+        |vec_of_stack_nums| ParsedLine::StackNums(vec_of_stack_nums),
+    )(input)
 }
 
 fn move_instr(input: &str) -> IResult<&str, ParsedLine> {
-    tuple((
-        tag("move "),
-        digit1,
-        tag(" from "),
-        digit1,
-        tag(" to "),
-        digit1,
-    ))(input)
-    .map(|(next_input, (_m, d1, _f, d2, _t, d3))| {
-        (
-            next_input,
-            ParsedLine::MoveInstr(Move::new(
-                expect_usize!(d1),
-                expect_usize!(d2),
-                expect_usize!(d3),
-            )),
-        )
-    })
+    map(
+        tuple((
+            tag("move "),
+            nom_usize,
+            tag(" from "),
+            nom_usize,
+            tag(" to "),
+            nom_usize,
+        )),
+        |(_m, d1, _f, d2, _t, d3)| ParsedLine::MoveInstr(Move::new(d1, d2, d3)),
+    )(input)
 }
 
 #[runner_fn]

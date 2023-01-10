@@ -7,8 +7,8 @@ use nom::multi::many1;
 use nom::sequence::terminated;
 use nom::IResult;
 
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::simple_struct;
 
 // TODO: generalize and extract this (will likely need it again)
 // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm

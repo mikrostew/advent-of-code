@@ -6,9 +6,8 @@ use nom::multi::separated_list1;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::parse_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_usize, simple_struct};
 
 simple_struct!(Point; x: usize, y: usize);
 
@@ -30,10 +29,9 @@ fn rock_path(input: &str) -> IResult<&str, Vec<Point>> {
 }
 
 fn point(input: &str) -> IResult<&str, Point> {
-    map(
-        separated_pair(parse_usize, tag(","), parse_usize),
-        |(x, y)| Point::new(x, y),
-    )(input)
+    map(separated_pair(nom_usize, tag(","), nom_usize), |(x, y)| {
+        Point::new(x, y)
+    })(input)
 }
 
 // what is at each point?

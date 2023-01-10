@@ -1,5 +1,5 @@
-use super::expect_usize;
 use run_aoc::runner_fn;
+use utils::traits::ToNum;
 
 #[runner_fn]
 fn part1(file_contents: String) -> usize {
@@ -16,7 +16,7 @@ fn part1(file_contents: String) -> usize {
         }
         _ => {
             println!("line: {}", line);
-            let as_int = expect_usize!(line);
+            let as_int = line.to_usize();
             current_total += as_int;
         }
     });
@@ -44,7 +44,7 @@ fn part2(file_contents: String) -> usize {
         }
         _ => {
             println!("line: {}", line);
-            let as_int = expect_usize!(line);
+            let as_int = line.to_usize();
             current_total += as_int;
         }
     });

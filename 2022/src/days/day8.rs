@@ -1,18 +1,19 @@
 use nom::bytes::complete::take;
+use nom::combinator::map;
 use nom::multi::many1;
 use nom::IResult;
 
-use super::expect_i32;
 use run_aoc::runner_fn;
+use utils::traits::ToNum;
 
 // lines are just a bunch a digits
 fn parse_line(input: &str) -> IResult<&str, Vec<i32>> {
     many1(digit)(input)
 }
 
-// parse a single digit as u8
+// parse a single digit
 fn digit(input: &str) -> IResult<&str, i32> {
-    take(1usize)(input).map(|(next_input, d)| (next_input, expect_i32!(d)))
+    map(take(1usize), |d: &str| d.to_i32())(input)
 }
 
 struct TreeGrid {

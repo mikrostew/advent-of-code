@@ -1,14 +1,13 @@
 use std::collections::HashSet;
 
 use nom::bytes::complete::tag;
-use nom::character::complete::digit1;
 use nom::character::complete::one_of;
+use nom::combinator::map;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::expect_usize;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_usize, simple_struct};
 
 #[derive(Debug)]
 enum Direction {
@@ -23,22 +22,16 @@ fn parse_line(input: &str) -> IResult<&str, Direction> {
 }
 
 fn direction(input: &str) -> IResult<&str, Direction> {
-    separated_pair(one_of("LURD"), tag(" "), distance)(input).map(|(next_input, (dir, dist))| {
-        (
-            next_input,
-            match dir {
-                'L' => Direction::Left(dist),
-                'U' => Direction::Up(dist),
-                'R' => Direction::Right(dist),
-                'D' => Direction::Down(dist),
-                _ => panic!("Matched something that was not L-U-R-D!! how?!"),
-            },
-        )
-    })
-}
-
-fn distance(input: &str) -> IResult<&str, usize> {
-    digit1(input).map(|(next_input, d)| (next_input, expect_usize!(d)))
+    map(
+        separated_pair(one_of("LURD"), tag(" "), nom_usize),
+        |(dir, dist)| match dir {
+            'L' => Direction::Left(dist),
+            'U' => Direction::Up(dist),
+            'R' => Direction::Right(dist),
+            'D' => Direction::Down(dist),
+            _ => unreachable!(),
+        },
+    )(input)
 }
 
 simple_struct!(Point; x: i32, y: i32);

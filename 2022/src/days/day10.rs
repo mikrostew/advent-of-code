@@ -1,10 +1,11 @@
 use nom::branch::alt;
 use nom::bytes::complete::tag;
+use nom::combinator::map;
 use nom::sequence::separated_pair;
 use nom::IResult;
 
-use super::parse_i32;
 use run_aoc::runner_fn;
+use utils::nom_i32;
 
 #[derive(Debug)]
 enum Instruction {
@@ -17,12 +18,14 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
 }
 
 fn addx(input: &str) -> IResult<&str, Instruction> {
-    separated_pair(tag("addx"), tag(" "), parse_i32)(input)
-        .map(|(next_input, (_addx, num))| (next_input, Instruction::AddX(num)))
+    map(
+        separated_pair(tag("addx"), tag(" "), nom_i32),
+        |(_, num)| Instruction::AddX(num),
+    )(input)
 }
 
 fn noop(input: &str) -> IResult<&str, Instruction> {
-    tag("noop")(input).map(|(next_input, _noop)| (next_input, Instruction::Noop))
+    map(tag("noop"), |_| Instruction::Noop)(input)
 }
 
 struct SimpleCPU {

@@ -9,7 +9,7 @@ use nom::sequence::terminated;
 use nom::IResult;
 use run_aoc::runner_fn;
 
-use super::simple_struct;
+use utils::simple_struct;
 
 fn parse_line(input: &str) -> IResult<&str, Vec<bool>> {
     many1(map(one_of(".#"), |c| match c {

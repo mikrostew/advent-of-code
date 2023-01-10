@@ -10,15 +10,14 @@ use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use super::parse_i32;
-use super::simple_struct;
 use run_aoc::runner_fn;
+use utils::{nom_i32, simple_struct};
 
 simple_struct!(Point; x: i32, y: i32, z: i32);
 
 fn point_xyz(input: &str) -> IResult<&str, Point> {
     map(
-        tuple((parse_i32, tag(","), parse_i32, tag(","), parse_i32)),
+        tuple((nom_i32, tag(","), nom_i32, tag(","), nom_i32)),
         |(x, _, y, _, z)| Point::new(x, y, z),
     )(input)
 }

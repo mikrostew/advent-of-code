@@ -1,9 +1,9 @@
 use run_aoc::runner_fn;
 
-use super::expect_isize;
+use utils::traits::ToNum;
 
 fn parse_input(input: &str, key: isize) -> Vec<isize> {
-    input.lines().map(|l| expect_isize!(l) * key).collect()
+    input.lines().map(|l| l.to_isize() * key).collect()
 }
 
 struct Decrypt {
