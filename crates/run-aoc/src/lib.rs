@@ -33,8 +33,8 @@ pub fn runner_fn(_attr: TokenStream, input: TokenStream) -> TokenStream {
         1 => TokenStream::from(quote!(
             #original_fn
 
-            // only takes one arg, doesn't expect Params
-            pub fn #runner_name(file_contents: String, _p: Option<crate::cli::Params>) -> String {
+            // only takes one arg, doesn't expect params
+            pub fn #runner_name(file_contents: String, _p: Option<std::collections::HashMap<String, String>>) -> String {
                 let result = #ident(file_contents);
                 format!("{}", result)
             }
@@ -42,7 +42,7 @@ pub fn runner_fn(_attr: TokenStream, input: TokenStream) -> TokenStream {
         2 => TokenStream::from(quote!(
             #original_fn
 
-            pub fn #runner_name(file_contents: String, p: Option<crate::cli::Params>) -> String {
+            pub fn #runner_name(file_contents: String, p: Option<std::collections::HashMap<String, String>>) -> String {
                 let result = #ident(file_contents, p);
                 format!("{}", result)
             }
@@ -73,7 +73,7 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
         .collect();
 
     if tt.len() == 4 {
-        // no Params
+        // no params
         // ex: aoc_test!(day1, part1, example, 24000);
         match (&tt[0], &tt[1], &tt[2], &tt[3]) {
             (
@@ -104,7 +104,7 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
             .into(),
         }
     } else if tt.len() == 5 {
-        // with Params
+        // with params
         match (&tt[0], &tt[1], &tt[2], &tt[3], &tt[4]) {
             (
                 TokenTree::Ident(day),
@@ -129,7 +129,7 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
                     #[test]
                     fn #test_name() {
                         let file = #file_name;
-                        let params = crate::cli::Params::from(#params);
+                        let params = crate::parse_params(#params);
                         let input = std::fs::read_to_string(&file).expect(#fail_literal);
                         assert_eq!(super::#part_fn(input, Some(params)), #expected);
                     }

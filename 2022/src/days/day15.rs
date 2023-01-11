@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use nom::bytes::complete::tag;
 use nom::character::complete::newline;
@@ -10,7 +10,6 @@ use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use crate::cli::Params;
 use run_aoc::runner_fn;
 use utils::{nom_isize, simple_struct};
 
@@ -303,7 +302,7 @@ fn find_beacon(
 }
 
 #[runner_fn]
-pub fn part1(file_contents: String, p: Option<Params>) -> isize {
+pub fn part1(file_contents: String, p: Option<HashMap<String, String>>) -> isize {
     let row = p
         .expect("need params for this")
         .get("y")
@@ -317,7 +316,7 @@ pub fn part1(file_contents: String, p: Option<Params>) -> isize {
 }
 
 #[runner_fn]
-pub fn part2(file_contents: String, p: Option<Params>) -> isize {
+pub fn part2(file_contents: String, p: Option<HashMap<String, String>>) -> isize {
     let params = p.expect("need params for this");
     let min = params
         .get("min")

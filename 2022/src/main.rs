@@ -1,6 +1,12 @@
+use std::collections::HashMap;
 use std::fs;
 
 use clap::Parser;
+use nom::bytes::complete::tag;
+use nom::character::complete::alphanumeric1;
+use nom::multi::separated_list1;
+use nom::sequence::separated_pair;
+use nom::IResult;
 use seq_macro::seq;
 
 mod cli;
@@ -22,7 +28,7 @@ fn main() {
 
     // validate days and parts
     seq!(N in 1..=25 {
-        let day_fn: fn(String, Option<cli::Params>) -> String = match args.day {
+        let day_fn: fn(String, Option<HashMap<String, String>>) -> String = match args.day {
             #(
                 N => runner_fn_for_day!(day~N, args.part),
             )*
@@ -32,7 +38,7 @@ fn main() {
 
     // input params
     let params = match args.params {
-        Some(list) => Some(cli::Params::from(&list)),
+        Some(list) => Some(parse_params(&list)),
         None => None,
     };
 
@@ -43,4 +49,20 @@ fn main() {
 
     let answer = day_fn(file_contents, params);
     println!("\nanswer:\n{}", answer);
+}
+
+pub(crate) fn parse_params(list: &str) -> HashMap<String, String> {
+    let (leftover, input_params) =
+        separated_list1(tag(","), parse_pair)(list).expect("could not parse input params");
+    assert_eq!(leftover, "");
+
+    let mut params: HashMap<String, String> = HashMap::new();
+    for (p, v) in input_params.into_iter() {
+        params.insert(p.to_string(), v.to_string());
+    }
+    params
+}
+
+fn parse_pair(input: &str) -> IResult<&str, (&str, &str)> {
+    separated_pair(alphanumeric1, tag("="), alphanumeric1)(input)
 }
