@@ -129,7 +129,7 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
                     #[test]
                     fn #test_name() {
                         let file = #file_name;
-                        let params = crate::parse_params(#params);
+                        let params = crate::cli::parse_params(#params);
                         let input = std::fs::read_to_string(&file).expect(#fail_literal);
                         assert_eq!(super::#part_fn(input, Some(params)), #expected);
                     }
