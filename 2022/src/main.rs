@@ -7,22 +7,13 @@ fn main() {
         // TODO: download the description and input for the input day
         "download" => unimplemented!(),
         "-h" | "--help" => println!("help! TODO"),
-        _ => panic!("unknown option {}", args_test[0]),
+        _ => panic!("unknown option '{}'", args_test[0]),
     }
 }
 
 mod cli {
     use std::collections::HashMap;
-    use std::fmt;
-    use std::fs;
-    use std::str::FromStr;
-
-    use nom::bytes::complete::tag;
-    use nom::character::complete::alphanumeric1;
-    use nom::multi::separated_list1;
-    use nom::sequence::separated_pair;
-    use nom::IResult;
-    use seq_macro::seq;
+    use std::{fmt, fs, str::FromStr};
 
     macro_rules! runner_fn_for_day {
         ($d:ident, $p:expr) => {{
@@ -54,8 +45,8 @@ mod cli {
     impl fmt::Display for Part {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             match self {
-                Part::One => write!(f, "1"),
-                Part::Two => write!(f, "2"),
+                Part::One => write!(f, "one"),
+                Part::Two => write!(f, "two"),
             }
         }
     }
@@ -74,21 +65,38 @@ mod cli {
             .parse::<usize>()
             .unwrap_or_else(|_| panic!("could not parse day '{}' as a number", day));
         let part: Part = part.parse().expect("could not parse part one or two");
-        // comma-separated list, like 'x=y,foo=bar'
         let params: Option<HashMap<String, String>> = params.map(|p| parse_params(p));
-        // variation to use ('example', 'example2', 'input', etc.)
-        //let input
 
         println!("Day {}", day);
-        seq!(N in 1..=25 {
-            let day_fn: fn(String, Option<HashMap<String, String>>) -> String = match day {
-                #(
-                    N => runner_fn_for_day!(day~N, part),
-                )*
-                // TODO: usage here?
-                _ => panic!("Day {} is out of range", day),
-            };
-        });
+        let day_fn: fn(String, Option<HashMap<String, String>>) -> String = match day {
+            1 => runner_fn_for_day!(day1, part),
+            2 => runner_fn_for_day!(day2, part),
+            3 => runner_fn_for_day!(day3, part),
+            4 => runner_fn_for_day!(day4, part),
+            5 => runner_fn_for_day!(day5, part),
+            6 => runner_fn_for_day!(day6, part),
+            7 => runner_fn_for_day!(day7, part),
+            8 => runner_fn_for_day!(day8, part),
+            9 => runner_fn_for_day!(day9, part),
+            10 => runner_fn_for_day!(day10, part),
+            11 => runner_fn_for_day!(day11, part),
+            12 => runner_fn_for_day!(day12, part),
+            13 => runner_fn_for_day!(day13, part),
+            14 => runner_fn_for_day!(day14, part),
+            15 => runner_fn_for_day!(day15, part),
+            16 => runner_fn_for_day!(day16, part),
+            17 => runner_fn_for_day!(day17, part),
+            18 => runner_fn_for_day!(day18, part),
+            19 => runner_fn_for_day!(day19, part),
+            20 => runner_fn_for_day!(day20, part),
+            21 => runner_fn_for_day!(day21, part),
+            22 => runner_fn_for_day!(day22, part),
+            23 => runner_fn_for_day!(day23, part),
+            24 => runner_fn_for_day!(day24, part),
+            25 => runner_fn_for_day!(day25, part),
+            // TODO: also usage here
+            _ => panic!("Day {} is out of range", day),
+        };
 
         // try to read the input file
         let file_path = format!("inputs/day{}-{}.txt", day, input);
@@ -99,19 +107,20 @@ mod cli {
         println!("\nanswer:\n{}", answer);
     }
 
+    // input is comma-separated list, like 'x=y,foo=bar'
     pub fn parse_params(list: &str) -> HashMap<String, String> {
-        let (leftover, input_params) =
-            separated_list1(tag(","), parse_pair)(list).expect("could not parse input params");
-        assert_eq!(leftover, "");
-
         let mut params: HashMap<String, String> = HashMap::new();
-        for (p, v) in input_params.into_iter() {
-            params.insert(p.to_string(), v.to_string());
+        for param in list.split(",") {
+            let pair: Vec<&str> = param.split("=").collect();
+            if pair.len() != 2 {
+                // TODO: also usage
+                panic!(
+                    "could not parse param '{}', expecing equal-separated pair like 'y=10'",
+                    param
+                );
+            }
+            params.insert(pair[0].to_string(), pair[1].to_string());
         }
         params
-    }
-
-    fn parse_pair(input: &str) -> IResult<&str, (&str, &str)> {
-        separated_pair(alphanumeric1, tag("="), alphanumeric1)(input)
     }
 }

@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nom = "7.1.1"
+nom = "7"
 run-aoc = { path = "../crates/run-aoc" }
-seq-macro = "0.3.2"
+seq-macro = "0.3"
 utils = { path = "../crates/utils" }
