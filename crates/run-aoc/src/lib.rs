@@ -176,8 +176,8 @@ pub fn aoc_cli(_input: TokenStream) -> TokenStream {
                 ($d:ident, $p:expr) => {{
                     println!("Part {}", $p);
                     match $p {
-                        Part::One => super::days::$d::__part1_runner,
-                        Part::Two => super::days::$d::__part2_runner,
+                        Part::One => super::$d::__part1_runner,
+                        Part::Two => super::$d::__part2_runner,
                     }
                 }};
             }
