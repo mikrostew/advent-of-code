@@ -1,3 +1,9 @@
 # advent-of-code
 
-Solving code challenges at https://adventofcode.com/
+My solutions for the yearly challenges at https://adventofcode.com/, using Rust.
+
+## Generate skeleton for a year
+
+```
+./gen-year-rust.sh <year>
+```
