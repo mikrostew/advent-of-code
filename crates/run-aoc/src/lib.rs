@@ -3,6 +3,7 @@ pub use aoc_proc::runner_fn;
 pub use aoc_proc::test_fn;
 
 pub mod cli;
+pub mod download;
 
 // generate functions & macros needed in main.rs
 #[macro_export]
@@ -12,17 +13,20 @@ macro_rules! aoc_cli {
             let args_test: Vec<String> = std::env::args().skip(1).collect();
             let year = $year;
             println!("Year {}", year);
-            handle_args(args_test).unwrap_or_else(|err| {
+            handle_args(args_test, year).unwrap_or_else(|err| {
                 println!("Error: {}", err);
                 run_aoc::cli::usage();
             });
         }
 
-        fn handle_args(args: Vec<String>) -> Result<(), String> {
+        fn handle_args(args: Vec<String>, year: usize) -> Result<(), String> {
             match args[0].as_str() {
                 "run" => {
                     let parsed_args = run_aoc::cli::parse_args(&args[1..])?;
                     let day_fn = fn_for_day(parsed_args.0, parsed_args.1)?;
+                    // TODO: maybe just show the error, but don't fail?
+                    // (because then it prints usage, which is not great)
+                    run_aoc::download::auto_download(year, parsed_args.0)?;
                     run_aoc::cli::run_day_fn(day_fn, parsed_args.2, parsed_args.3)?;
                     Ok(())
                 }
@@ -35,7 +39,6 @@ macro_rules! aoc_cli {
 
         macro_rules! runner_fn_for_day {
             ($d:ident, $p:expr) => {{
-                println!("Part {}", $p);
                 match $p {
                     run_aoc::cli::Part::One => Ok($d::__part1_runner),
                     run_aoc::cli::Part::Two => Ok($d::__part2_runner),
