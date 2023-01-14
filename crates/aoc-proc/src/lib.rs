@@ -34,7 +34,7 @@ pub fn runner_fn(_attr: TokenStream, input: TokenStream) -> TokenStream {
             #original_fn
 
             // only takes one arg, doesn't expect params
-            pub fn #runner_name(file_contents: String, _p: Option<std::collections::HashMap<String, String>>) -> String {
+            pub fn #runner_name(file_contents: String, _p: Option<run_aoc::cli::Params>) -> String {
                 let result = #ident(file_contents);
                 format!("{}", result)
             }
@@ -42,7 +42,7 @@ pub fn runner_fn(_attr: TokenStream, input: TokenStream) -> TokenStream {
         2 => TokenStream::from(quote!(
             #original_fn
 
-            pub fn #runner_name(file_contents: String, p: Option<std::collections::HashMap<String, String>>) -> String {
+            pub fn #runner_name(file_contents: String, p: Option<run_aoc::cli::Params>) -> String {
                 let result = #ident(file_contents, p);
                 format!("{}", result)
             }
@@ -129,7 +129,7 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
                     #[test]
                     fn #test_name() {
                         let file = #file_name;
-                        let params = crate::cli::parse_params(#params);
+                        let params = #params.parse().expect("could not parse params");
                         let input = std::fs::read_to_string(&file).expect(#fail_literal);
                         assert_eq!(super::#part_fn(input, Some(params)), #expected);
                     }
@@ -151,4 +151,3 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
         .into()
     }
 }
-

@@ -5,4 +5,4 @@ seq!(N in 1..=25 {
     pub mod day~N;
 });
 
-aoc_cli!();
+aoc_cli!(2022);

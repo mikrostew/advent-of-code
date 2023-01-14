@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use nom::bytes::complete::tag;
 use nom::character::complete::newline;
@@ -10,7 +10,7 @@ use nom::sequence::terminated;
 use nom::sequence::tuple;
 use nom::IResult;
 
-use run_aoc::runner_fn;
+use run_aoc::{cli::Params, runner_fn};
 use utils::{nom_isize, simple_struct};
 
 simple_struct!(Point; x: isize, y: isize);
@@ -302,11 +302,10 @@ fn find_beacon(
 }
 
 #[runner_fn]
-pub fn part1(file_contents: String, p: Option<HashMap<String, String>>) -> isize {
+pub fn part1(file_contents: String, p: Option<Params>) -> isize {
     let row = p
         .expect("need params for this")
         .get("y")
-        .expect("need 'y' param to specify the row")
         .parse::<isize>()
         .unwrap();
     let sensors: Vec<Sensor> = parse_sensors(&file_contents);
@@ -316,18 +315,10 @@ pub fn part1(file_contents: String, p: Option<HashMap<String, String>>) -> isize
 }
 
 #[runner_fn]
-pub fn part2(file_contents: String, p: Option<HashMap<String, String>>) -> isize {
+pub fn part2(file_contents: String, p: Option<Params>) -> isize {
     let params = p.expect("need params for this");
-    let min = params
-        .get("min")
-        .expect("need 'min' param")
-        .parse::<isize>()
-        .unwrap();
-    let max = params
-        .get("max")
-        .expect("need 'max' param")
-        .parse::<isize>()
-        .unwrap();
+    let min = params.get("min").parse::<isize>().unwrap();
+    let max = params.get("max").parse::<isize>().unwrap();
     let sensors: Vec<Sensor> = parse_sensors(&file_contents);
     let beacon_pt = find_beacon(&sensors, min, max, min, max);
 
