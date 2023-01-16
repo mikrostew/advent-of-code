@@ -333,6 +333,11 @@ mod tests {
     test_fn!(day15, part1, input, "y=2000000", 5525847);
 
     test_fn!(day15, part2, example, "min=0,max=20", 56000011);
-    // TODO: this takes a long time to run
-    // test_fn!(day15, part2, input, "min=0,max=4000000", 13340867187704usize);
+    test_fn!(
+        day15,
+        part2_SLOW,
+        input,
+        "min=0,max=4000000",
+        13340867187704isize
+    );
 }

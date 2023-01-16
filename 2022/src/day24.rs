@@ -375,6 +375,5 @@ mod tests {
     test_fn!(day24, part1, input, 245);
 
     test_fn!(day24, part2, example, 54);
-    // TODO: too slow to run every time
-    //test_fn!(day24, part2, input, 798);
+    test_fn!(day24, part2_SLOW, input, 798);
 }

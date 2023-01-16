@@ -78,10 +78,19 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
         match (&tt[0], &tt[1], &tt[2], &tt[3]) {
             (
                 TokenTree::Ident(day),
-                TokenTree::Ident(part),
+                TokenTree::Ident(part_ident),
                 TokenTree::Ident(variation),
                 TokenTree::Literal(expected),
             ) => {
+                // hacky way to specify a slow test
+                let fn_name = part_ident.to_string();
+                let (part, maybe_ignore) = if fn_name.contains("_SLOW") {
+                    let replaced_part = fn_name.replace("_SLOW", "");
+                    (replaced_part, quote!(#[ignore]))
+                } else {
+                    (fn_name, quote!())
+                };
+
                 let test_name = Ident::new(&format!("{}_{}", part, variation), Span::call_site());
                 let file = format!("inputs/{}-{}.txt", day, variation);
                 let file_name = Literal::string(&file);
@@ -89,6 +98,7 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
                 let part_fn = Ident::new(&format!("{}", part), Span::call_site());
                 TokenStream::from(quote!(
                     #[test]
+                    #maybe_ignore
                     fn #test_name() {
                         let file = #file_name;
                         let input = std::fs::read_to_string(&file).expect(#fail_literal);
@@ -98,7 +108,10 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
             }
             _ => syn::Error::new(
                 Span::call_site(),
-                "expected args of type (ident, ident, ident, literal), found something else",
+                format!(
+                    "expected args of type (ident, ident, ident, literal), found: {:?}",
+                    tt
+                ),
             )
             .to_compile_error()
             .into(),
@@ -108,25 +121,29 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
         match (&tt[0], &tt[1], &tt[2], &tt[3], &tt[4]) {
             (
                 TokenTree::Ident(day),
-                TokenTree::Ident(part),
+                TokenTree::Ident(part_ident),
                 TokenTree::Ident(variation),
                 TokenTree::Literal(params),
-                TokenTree::Literal(expected)
+                TokenTree::Literal(expected),
             ) => {
-                let test_name = Ident::new(
-                    &format!("{}_{}", part, variation),
-                    Span::call_site(),
-                );
+                // hacky way to specify a slow test
+                let fn_name = part_ident.to_string();
+                let (part, maybe_ignore) = if fn_name.contains("_SLOW") {
+                    let replaced_part = fn_name.replace("_SLOW", "");
+                    (replaced_part, quote!(#[ignore]))
+                } else {
+                    (fn_name, quote!())
+                };
+
+                let test_name = Ident::new(&format!("{}_{}", part, variation), Span::call_site());
                 let file = format!("inputs/{}-{}.txt", day, variation);
                 let file_name = Literal::string(&file);
-                let fail_literal = Literal::string(&format!(
-                    "failed to read file '{}'",
-                    file
-                ));
+                let fail_literal = Literal::string(&format!("failed to read file '{}'", file));
                 let part_fn = Ident::new(&format!("{}", part), Span::call_site());
 
                 TokenStream::from(quote!(
                     #[test]
+                    #maybe_ignore
                     fn #test_name() {
                         let file = #file_name;
                         let params = #params.parse().expect("could not parse params");
@@ -134,13 +151,16 @@ pub fn test_fn(input: TokenStream) -> TokenStream {
                         assert_eq!(super::#part_fn(input, Some(params)), #expected);
                     }
                 ))
-            },
+            }
             _ => syn::Error::new(
                 Span::call_site(),
-                "expected args of type (ident, ident, ident, literal, literal), found something else",
+                format!(
+                    "expected args of type (ident, ident, ident, literal), found: {:?}",
+                    tt
+                ),
             )
-                .to_compile_error()
-                .into()
+            .to_compile_error()
+            .into(),
         }
     } else {
         syn::Error::new(

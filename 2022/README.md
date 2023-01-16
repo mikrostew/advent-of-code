@@ -25,3 +25,8 @@ $ cargo run -- run 15 one y=10 input
 ```
 $ cargo test
 ```
+
+Run everything, including the slow tests
+```
+$ ct --release -- --include-ignored
+```

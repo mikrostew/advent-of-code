@@ -408,7 +408,6 @@ mod tests {
     test_fn!(day19, part1, example, 33);
     test_fn!(day19, part1, input, 1480);
 
-    // TODO: these are slow (example is even slower than the input)
-    //test_fn!(day19, part2, example, 3472);
-    //test_fn!(day19, part2, input, 3168);
+    test_fn!(day19, part2_SLOW, example, 3472);
+    test_fn!(day19, part2_SLOW, input, 3168);
 }
