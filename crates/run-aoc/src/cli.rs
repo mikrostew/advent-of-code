@@ -12,7 +12,7 @@ Usage:
     Options:
         params     comma-separated list of param pairs, e.g. 'x=2,max=56'
 
-  DOWNLOAD input & description for a specific day:
+  DOWNLOAD description for a specific day:
     cargo run -- download <1-25>
 
   HELP
@@ -83,7 +83,7 @@ impl FromStr for Params {
     }
 }
 
-pub fn parse_args(args: &[String]) -> Result<(usize, Part, Option<Params>, String), String> {
+pub fn parse_run_args(args: &[String]) -> Result<(usize, Part, Option<Params>, String), String> {
     match args.len() {
         3 => args_for_day(&args[0], &args[1], None, &args[2]),
         4 => args_for_day(&args[0], &args[1], Some(&args[2]), &args[3]),
@@ -102,7 +102,7 @@ fn args_for_day(
 ) -> Result<(usize, Part, Option<Params>, String), String> {
     let day = day
         .parse::<usize>()
-        .unwrap_or_else(|_| panic!("could not parse day '{}' as a number", day));
+        .or(Err(format!("could not parse day '{}' as a number", day)))?;
     let part: Part = part.parse()?;
     let params: Option<Params> = match params {
         Some(p) => {
@@ -137,4 +137,18 @@ pub fn run_day_fn(
     let answer = day_fn(file_contents, params);
     println!("\nanswer:\n{}", answer);
     Ok(())
+}
+
+// TODO for now just return the day
+pub fn parse_dl_args(args: &[String]) -> Result<usize, String> {
+    match args.len() {
+        1 => args[0].parse::<usize>().or(Err(format!(
+            "could not parse day '{}' as a number",
+            args[0]
+        ))),
+        _ => Err(format!(
+            "expected 1 arg to 'download', found {}",
+            args.len()
+        )),
+    }
 }

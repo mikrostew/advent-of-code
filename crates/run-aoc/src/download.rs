@@ -51,25 +51,50 @@ fn url_to_buf(url: &str, agent: &Agent) -> Result<Vec<u8>, String> {
 
 // description URL example:
 // https://adventofcode.com/2022/day/15
-// TODO
-fn _dl_description(year: usize, day: usize, agent: &Agent) -> Result<(), String> {
-    let file_loc = format!("descriptions/day{day}.md");
+fn dl_description(year: usize, day: usize, agent: &Agent) -> Result<(), String> {
+    let file_loc_html = format!("descriptions/day{day}.html");
+    let file_loc_md = format!("descriptions/day{day}.md");
+    // TODO: check if HTML file exists, then parse that
+    // (to avoid hammering the AOC server)
+    let p = Path::new(&file_loc_html);
+    if let Ok(exists) = p.try_exists() {
+        if exists == true {
+            println!("(HTML already exists, skipping download)");
+            // TODO actually do the parsing here...
+            // (I won't need to read the file, but convert the buffer)
+            let html_contents = fs::read_to_string(&file_loc_html)
+                .expect("could not read the file, I know it exists!!!");
+            let md_contents = crate::parse::html_to_md(&html_contents)?;
+            match fs::write(file_loc_md, md_contents) {
+                Ok(_) => {}
+                Err(err) => {
+                    let err_str = if let Some(inner_err) = err.into_inner() {
+                        format!("{inner_err}")
+                    } else {
+                        format!("Some std::io::Error happened")
+                    };
+                    return Err(format!("Failed to write file: {err_str}"));
+                }
+            }
+            return Ok(());
+        }
+    }
+
     let url = format!("https://adventofcode.com/{year}/day/{day}");
-    println!("Description {url} --> {file_loc}");
+    println!("Description {url} --> {file_loc_html}");
     let bytes = url_to_buf(&url, agent)?;
-    // TODO: convert HTML to MD
-    match fs::write(file_loc, bytes) {
-        Ok(_) => {}
+    // TODO: convert that buf to str, then parse HTML to MD
+    match fs::write(file_loc_html, bytes) {
+        Ok(_) => Ok(()),
         Err(err) => {
             let err_str = if let Some(inner_err) = err.into_inner() {
                 format!("{inner_err}")
             } else {
                 format!("Some std::io::Error happened")
             };
-            return Err(format!("Failed to write file: {err_str}"));
+            Err(format!("Failed to write file: {err_str}"))
         }
     }
-    Ok(())
 }
 
 // input URL example:
@@ -105,7 +130,12 @@ fn dl_input(year: usize, day: usize, agent: &Agent, dl_opt: DLOpt) -> Result<(),
 
 // called when specifying download in the CLI
 // TODO: args on this are WIP
-pub fn download(year: usize, day: usize, _input: bool, _description: bool) -> Result<(), String> {
+pub fn download(
+    year: usize,
+    day: usize,
+    /* _input: bool, */
+    /* _description: bool, */
+) -> Result<(), String> {
     let home_dir = match dirs::home_dir() {
         Some(d) => d,
         None => {
@@ -125,7 +155,12 @@ pub fn download(year: usize, day: usize, _input: bool, _description: bool) -> Re
         }
     };
     let agent = make_agent(session_cookie);
-    dl_input(year, day, &agent, DLOpt::Force)
+    // TODO
+    dl_description(year, day, &agent)?;
+    // TODO
+    //dl_input(year, day, &agent, DLOpt::Force)
+    // TODO
+    Ok(())
 }
 
 // auto-download the input for the given day
