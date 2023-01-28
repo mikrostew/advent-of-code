@@ -14,6 +14,7 @@ Usage:
 
   DOWNLOAD description for a specific day:
     cargo run -- html <1-25> [options]
+    cargo run -- md <1-25> [options]
 
     Options:
         --force,-f  overwrite the file it if already exists
@@ -180,6 +181,35 @@ pub fn parse_html_args(args: &[String]) -> Result<(usize, bool), String> {
 
         _ => Err(format!(
             "expected 1 or 2 args to 'html', found {}",
+            args.len()
+        )),
+    }
+}
+
+// returns (day, force)
+pub fn parse_md_args(args: &[String]) -> Result<(usize, bool), String> {
+    match args.len() {
+        1 => match args[0].parse::<usize>() {
+            Err(_) => Err(format!("could not parse day '{}' as a number", args[0])),
+            Ok(d) => Ok((d, false)),
+        },
+        2 => {
+            let force = if args[1] == "--force" || args[1] == "-f" || args[1] == "force" {
+                true
+            } else {
+                return Err(format!("Unknown option '{}'", args[1]));
+            };
+            let day = match args[0].parse::<usize>() {
+                Ok(d) => d,
+                Err(_) => {
+                    return Err(format!("could not parse day '{}' as a number", args[0]));
+                }
+            };
+            Ok((day, force))
+        }
+
+        _ => Err(format!(
+            "expected 1 or 2 args to 'md', found {}",
             args.len()
         )),
     }

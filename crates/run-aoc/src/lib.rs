@@ -16,6 +16,7 @@ macro_rules! aoc_cli {
             println!("Year {}", year);
             handle_args(args_test, year).unwrap_or_else(|err| {
                 println!("Error: {}", err);
+                // TODO: use a custom error type, and only show usage is applicable
                 run_aoc::cli::usage();
             });
         }
@@ -31,20 +32,14 @@ macro_rules! aoc_cli {
                     run_aoc::cli::run_day_fn(day_fn, parsed_args.2, parsed_args.3)?;
                     Ok(())
                 }
-                // TODO: remove this, split into "html" and "md" options
-                "download" => {
-                    // TODO: more args will be parsed
-                    let day = run_aoc::cli::parse_dl_args(&args[1..])?;
-                    run_aoc::download::download(year, day)?;
-                    Ok(())
-                }
                 "html" => {
                     let (day, force) = run_aoc::cli::parse_html_args(&args[1..])?;
                     run_aoc::download::dl_html(year, day, force)?;
                     Ok(())
                 }
                 "md" => {
-                    // TODO
+                    let (day, force) = run_aoc::cli::parse_md_args(&args[1..])?;
+                    run_aoc::download::dl_md(year, day, force)?;
                     Ok(())
                 }
                 "help" | "-h" | "--help" => Ok(run_aoc::cli::usage()),

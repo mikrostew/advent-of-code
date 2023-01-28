@@ -81,53 +81,29 @@ pub fn dl_html(year: usize, day: usize, force: bool) -> Result<(), String> {
     }
 }
 
-// TODO: stop using this fn
-// description URL example:
-// https://adventofcode.com/2022/day/15
-fn dl_description(year: usize, day: usize, agent: &Agent) -> Result<(), String> {
+// first download the HTML file if it doesn't exist, then parse that to markdown
+pub fn dl_md(year: usize, day: usize, force: bool) -> Result<(), String> {
     let file_loc_html = format!("descriptions/day{day}.html");
     let file_loc_md = format!("descriptions/day{day}.md");
-    // TODO: check if HTML file exists, then parse that
-    // (to avoid hammering the AOC server)
-    let p = Path::new(&file_loc_html);
-    if let Ok(exists) = p.try_exists() {
-        if exists == true {
-            println!("(HTML already exists, skipping download)");
-            // TODO actually do the parsing here...
-            // (I won't need to read the file, but convert the buffer)
-            let html_contents = fs::read_to_string(&file_loc_html)
-                .expect("could not read the file, I know it exists!!!");
-            let md_contents = crate::parse::html_to_md(&html_contents)?;
-            match fs::write(file_loc_md, md_contents) {
-                Ok(_) => {}
-                Err(err) => {
-                    let err_str = if let Some(inner_err) = err.into_inner() {
-                        format!("{inner_err}")
-                    } else {
-                        format!("Some std::io::Error happened")
-                    };
-                    return Err(format!("Failed to write file: {err_str}"));
-                }
-            }
-            return Ok(());
-        }
-    }
+    // TODO: eventually want to skip writing the HTMl file and go straight to md
+    // (but for testing this is better, to avoid hitting the server every time)
+    dl_html(year, day, force)?;
 
-    let url = format!("https://adventofcode.com/{year}/day/{day}");
-    println!("Description {url} --> {file_loc_html}");
-    let bytes = url_to_buf(&url, agent)?;
-    // TODO: convert that buf to str, then parse HTML to MD
-    match fs::write(file_loc_html, bytes) {
-        Ok(_) => Ok(()),
+    let html_contents =
+        fs::read_to_string(&file_loc_html).expect("could not read the file, I know it exists!!!");
+    let md_contents = crate::parse::html_to_md(&html_contents)?;
+    match fs::write(file_loc_md, md_contents) {
+        Ok(_) => {}
         Err(err) => {
             let err_str = if let Some(inner_err) = err.into_inner() {
                 format!("{inner_err}")
             } else {
                 format!("Some std::io::Error happened")
             };
-            Err(format!("Failed to write file: {err_str}"))
+            return Err(format!("Failed to write file: {err_str}"));
         }
     }
+    Ok(())
 }
 
 // input URL example:
@@ -181,41 +157,6 @@ fn agent_for_dl() -> Result<Agent, String> {
         }
     };
     Ok(make_agent(session_cookie))
-}
-
-// called when specifying download in the CLI
-// TODO: args on this are WIP
-pub fn download(
-    year: usize,
-    day: usize,
-    /* _input: bool, */
-    /* _description: bool, */
-) -> Result<(), String> {
-    let home_dir = match dirs::home_dir() {
-        Some(d) => d,
-        None => {
-            return Err(format!("you have no home directory!?"));
-        }
-    };
-    let cookie_file = home_dir.join(".aoc-session-cookie");
-    let session_cookie = match fs::read_to_string(cookie_file) {
-        Ok(s) => s.trim().to_string(),
-        Err(err) => {
-            let err_str = if let Some(inner_err) = err.into_inner() {
-                format!("{inner_err}")
-            } else {
-                format!("Some std::io::Error happened")
-            };
-            return Err(format!("Failed to read session cookie file: {err_str}"));
-        }
-    };
-    let agent = make_agent(session_cookie);
-    // TODO
-    dl_description(year, day, &agent)?;
-    // TODO
-    //dl_input(year, day, &agent, DLOpt::Force)
-    // TODO
-    Ok(())
 }
 
 // auto-download the input for the given day
