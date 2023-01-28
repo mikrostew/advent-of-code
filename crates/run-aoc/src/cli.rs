@@ -9,11 +9,14 @@ Usage:
   RUN a specific day:
     cargo run -- run <1-25> <one|two> [params] <input-type>
 
-    Options:
-        params     comma-separated list of param pairs, e.g. 'x=2,max=56'
+    Optional:
+        params      comma-separated list of param pairs, e.g. 'x=2,max=56'
 
   DOWNLOAD description for a specific day:
-    cargo run -- download <1-25>
+    cargo run -- html <1-25> [options]
+
+    Options:
+        --force,-f  overwrite the file it if already exists
 
   HELP
     cargo run -- help
@@ -148,6 +151,35 @@ pub fn parse_dl_args(args: &[String]) -> Result<usize, String> {
         ))),
         _ => Err(format!(
             "expected 1 arg to 'download', found {}",
+            args.len()
+        )),
+    }
+}
+
+// returns (day, force)
+pub fn parse_html_args(args: &[String]) -> Result<(usize, bool), String> {
+    match args.len() {
+        1 => match args[0].parse::<usize>() {
+            Err(_) => Err(format!("could not parse day '{}' as a number", args[0])),
+            Ok(d) => Ok((d, false)),
+        },
+        2 => {
+            let force = if args[1] == "--force" || args[1] == "-f" || args[1] == "force" {
+                true
+            } else {
+                return Err(format!("Unknown option '{}'", args[1]));
+            };
+            let day = match args[0].parse::<usize>() {
+                Ok(d) => d,
+                Err(_) => {
+                    return Err(format!("could not parse day '{}' as a number", args[0]));
+                }
+            };
+            Ok((day, force))
+        }
+
+        _ => Err(format!(
+            "expected 1 or 2 args to 'html', found {}",
             args.len()
         )),
     }

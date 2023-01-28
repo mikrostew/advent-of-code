@@ -49,6 +49,39 @@ fn url_to_buf(url: &str, agent: &Agent) -> Result<Vec<u8>, String> {
     Ok(bytes)
 }
 
+pub fn dl_html(year: usize, day: usize, force: bool) -> Result<(), String> {
+    let file_loc_html = format!("descriptions/day{day}.html");
+    // does the HTML file exist?
+    let p = Path::new(&file_loc_html);
+    if let Ok(exists) = p.try_exists() {
+        if exists == true {
+            if force {
+                println!("(HTML already exists, but forcing download)");
+            } else {
+                println!("(HTML already exists, skipping download - use --force to overwrite)");
+                return Ok(());
+            }
+        }
+    }
+
+    let url = format!("https://adventofcode.com/{year}/day/{day}");
+    println!("{url} --> {file_loc_html}");
+    let agent = agent_for_dl()?;
+    let bytes = url_to_buf(&url, &agent)?;
+    match fs::write(file_loc_html, bytes) {
+        Ok(_) => Ok(()),
+        Err(err) => {
+            let err_str = if let Some(inner_err) = err.into_inner() {
+                format!("{inner_err}")
+            } else {
+                format!("Some std::io::Error happened")
+            };
+            Err(format!("Failed to write file: {err_str}"))
+        }
+    }
+}
+
+// TODO: stop using this fn
 // description URL example:
 // https://adventofcode.com/2022/day/15
 fn dl_description(year: usize, day: usize, agent: &Agent) -> Result<(), String> {
@@ -126,6 +159,28 @@ fn dl_input(year: usize, day: usize, agent: &Agent, dl_opt: DLOpt) -> Result<(),
         }
     }
     Ok(())
+}
+
+fn agent_for_dl() -> Result<Agent, String> {
+    let home_dir = match dirs::home_dir() {
+        Some(d) => d,
+        None => {
+            return Err(format!("you have no home directory!?"));
+        }
+    };
+    let cookie_file = home_dir.join(".aoc-session-cookie");
+    let session_cookie = match fs::read_to_string(cookie_file) {
+        Ok(s) => s.trim().to_string(),
+        Err(err) => {
+            let err_str = if let Some(inner_err) = err.into_inner() {
+                format!("{inner_err}")
+            } else {
+                format!("Some std::io::Error happened")
+            };
+            return Err(format!("Failed to read session cookie file: {err_str}"));
+        }
+    };
+    Ok(make_agent(session_cookie))
 }
 
 // called when specifying download in the CLI
