@@ -1,6 +1,7 @@
 use std::fs;
 use std::io::Read;
 use std::path::Path;
+use std::str::FromStr;
 
 use cookie::time::Duration;
 use cookie::{Cookie as RawCookie, SameSite};
@@ -13,9 +14,21 @@ use url::Url;
 // (with methods like input_url(), description_url(), etc)
 
 #[derive(Eq, PartialEq)]
-enum DLOpt {
+pub enum DLOpt {
     Force,
     IfNoExist,
+}
+
+impl FromStr for DLOpt {
+    type Err = String;
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        match input {
+            "--force" | "-f" | "force" => Ok(DLOpt::Force),
+            "--if-no-exist" => Ok(DLOpt::IfNoExist),
+            _ => Err(format!("Unknown option '{}'", input)),
+        }
+    }
 }
 
 fn url_to_buf(url: &str, agent: &Agent) -> Result<Vec<u8>, String> {
@@ -49,13 +62,13 @@ fn url_to_buf(url: &str, agent: &Agent) -> Result<Vec<u8>, String> {
     Ok(bytes)
 }
 
-pub fn dl_html(year: usize, day: usize, force: bool) -> Result<(), String> {
+pub fn dl_html(year: usize, day: usize, dlo: DLOpt) -> Result<(), String> {
     let file_loc_html = format!("descriptions/day{day}.html");
     // does the HTML file exist?
     let p = Path::new(&file_loc_html);
     if let Ok(exists) = p.try_exists() {
         if exists == true {
-            if force {
+            if dlo == DLOpt::Force {
                 println!("(HTML already exists, but forcing download)");
             } else {
                 println!("(HTML already exists, skipping download - use --force to overwrite)");
@@ -82,12 +95,12 @@ pub fn dl_html(year: usize, day: usize, force: bool) -> Result<(), String> {
 }
 
 // first download the HTML file if it doesn't exist, then parse that to markdown
-pub fn dl_md(year: usize, day: usize, force: bool) -> Result<(), String> {
+pub fn dl_md(year: usize, day: usize, dlo: DLOpt) -> Result<(), String> {
     let file_loc_html = format!("descriptions/day{day}.html");
     let file_loc_md = format!("descriptions/day{day}.md");
     // TODO: eventually want to skip writing the HTMl file and go straight to md
     // (but for testing this is better, to avoid hitting the server every time)
-    dl_html(year, day, force)?;
+    dl_html(year, day, dlo)?;
 
     let html_contents =
         fs::read_to_string(&file_loc_html).expect("could not read the file, I know it exists!!!");

@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::{fmt, fs, str::FromStr};
 
+use crate::download::DLOpt;
+
 pub fn usage() {
     println!(
         "
@@ -157,26 +159,21 @@ pub fn parse_dl_args(args: &[String]) -> Result<usize, String> {
     }
 }
 
-// returns (day, force)
-pub fn parse_html_args(args: &[String]) -> Result<(usize, bool), String> {
+pub fn parse_html_args(args: &[String]) -> Result<(usize, DLOpt), String> {
     match args.len() {
         1 => match args[0].parse::<usize>() {
             Err(_) => Err(format!("could not parse day '{}' as a number", args[0])),
-            Ok(d) => Ok((d, false)),
+            Ok(d) => Ok((d, DLOpt::IfNoExist)),
         },
         2 => {
-            let force = if args[1] == "--force" || args[1] == "-f" || args[1] == "force" {
-                true
-            } else {
-                return Err(format!("Unknown option '{}'", args[1]));
-            };
             let day = match args[0].parse::<usize>() {
                 Ok(d) => d,
                 Err(_) => {
                     return Err(format!("could not parse day '{}' as a number", args[0]));
                 }
             };
-            Ok((day, force))
+            let opt = args[1].parse()?;
+            Ok((day, opt))
         }
 
         _ => Err(format!(
@@ -186,26 +183,21 @@ pub fn parse_html_args(args: &[String]) -> Result<(usize, bool), String> {
     }
 }
 
-// returns (day, force)
-pub fn parse_md_args(args: &[String]) -> Result<(usize, bool), String> {
+pub fn parse_md_args(args: &[String]) -> Result<(usize, DLOpt), String> {
     match args.len() {
         1 => match args[0].parse::<usize>() {
             Err(_) => Err(format!("could not parse day '{}' as a number", args[0])),
-            Ok(d) => Ok((d, false)),
+            Ok(d) => Ok((d, DLOpt::IfNoExist)),
         },
         2 => {
-            let force = if args[1] == "--force" || args[1] == "-f" || args[1] == "force" {
-                true
-            } else {
-                return Err(format!("Unknown option '{}'", args[1]));
-            };
             let day = match args[0].parse::<usize>() {
                 Ok(d) => d,
                 Err(_) => {
                     return Err(format!("could not parse day '{}' as a number", args[0]));
                 }
             };
-            Ok((day, force))
+            let opt = args[1].parse()?;
+            Ok((day, opt))
         }
 
         _ => Err(format!(
