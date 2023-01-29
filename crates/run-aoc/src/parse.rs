@@ -21,15 +21,18 @@ enum Markdown<'a> {
     H2(&'a str),
     Paragraph(Vec<Markdown<'a>>),
     Text(&'a str),
-    InlineCode(&'a str),
+    InlineCode(Vec<Markdown<'a>>),
     // title text, spanned text
     Span(&'a str, &'a str),
-    Em(&'a str),
-    CodeBlock(&'a str),
+    Em(Vec<Markdown<'a>>),
+    CodeBlock(Vec<Markdown<'a>>),
+    CodeBlockEm(&'a str),
+    CodeBlockText(&'a str),
     ParagraphSuccess(&'a str),
     Discard,
 }
 
+// convert to markdown formatting
 impl fmt::Display for Markdown<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -43,12 +46,56 @@ impl fmt::Display for Markdown<'_> {
                     .collect::<String>()
             ),
             Markdown::Text(s) => write!(f, "{}", s),
-            Markdown::InlineCode(c) => write!(f, "`{}`", replace_html_char_codes(c)),
+            Markdown::InlineCode(vm) => {
+                write!(
+                    f,
+                    "{}",
+                    match vm.len() {
+                        1 => match &vm[0] {
+                            Markdown::Text(s) => format!("`{}`", replace_html_char_codes(s)),
+                            // expecting only one thing in the <em>
+                            Markdown::Em(vm) =>
+                                format!("**`{}`**", replace_html_char_codes(&vm[0].to_string())),
+                            _ => unreachable!("inline code only contains text or <em>"),
+                        },
+                        _ => unreachable!("I think this doesn't happen right now???"),
+                    }
+                )
+            }
             // spans are used for easter eggs
             Markdown::Span(title, text) => write!(f, "[{}](# \"{}\")", text, title),
-            Markdown::Em(s) => write!(f, "**{}**", s),
-            Markdown::CodeBlock(s) => write!(f, "```\n{}```\n\n", replace_html_char_codes(s)),
-            Markdown::ParagraphSuccess(s) => write!(f, "**{} **\n\n", s),
+            Markdown::Em(vm) => write!(
+                f,
+                "**{}**",
+                replace_asterisks(&vm.into_iter().map(|m| m.to_string()).collect::<String>())
+            ),
+            Markdown::CodeBlock(vm) => {
+                let mut has_html = false;
+                let contents = vm
+                    .into_iter()
+                    .map(|m| match m {
+                        Markdown::CodeBlockEm(s) => {
+                            has_html = true;
+                            format!("<em>{}</em>", s.to_string())
+                        }
+                        Markdown::CodeBlockText(s) => s.to_string(),
+                        _ => unreachable!("only em and text in code blocks"),
+                    })
+                    .collect::<String>();
+
+                if has_html {
+                    write!(
+                        f,
+                        "<pre><code>\n{}</code></pre>\n\n",
+                        replace_html_char_codes(&contents)
+                    )
+                } else {
+                    write!(f, "```\n{}```\n\n", replace_html_char_codes(&contents))
+                }
+            }
+            Markdown::CodeBlockEm(s) => write!(f, "<em>{}</em>", s),
+            Markdown::CodeBlockText(s) => write!(f, "{}", s),
+            Markdown::ParagraphSuccess(s) => write!(f, "**{} **\n\n", replace_asterisks(s)),
             Markdown::Discard => write!(f, ""),
         }
     }
@@ -59,6 +106,11 @@ fn replace_html_char_codes(s: &str) -> String {
     s.replace("&lt;", "<")
         .replace("&gt;", ">")
         .replace("&quot;", "\"")
+}
+
+// so that asterisks inside of markdown bold ** don't mess things up
+fn replace_asterisks(s: &str) -> String {
+    s.replace("*", "&ast;")
 }
 
 pub(crate) fn html_to_md(html: &str) -> Result<String, String> {
@@ -184,12 +236,12 @@ fn paragraph(input: &str) -> IResult<&str, Markdown> {
 }
 fn paragraph_contents(input: &str) -> IResult<&str, Vec<Markdown>> {
     many1(alt((p_code, p_span, p_em, p_text)))(input)
-    //many1(alt((p_code, p_text)))(input)
 }
 fn p_code(input: &str) -> IResult<&str, Markdown> {
+    // sometimes there are <em> sections in the inline code
     map(
-        delimited(tag("<code>"), take_until1("</code>"), tag("</code>")),
-        |text| Markdown::InlineCode(text),
+        delimited(tag("<code>"), many1(alt((p_text, p_em))), tag("</code>")),
+        |vm| Markdown::InlineCode(vm),
     )(input)
 }
 fn p_span(input: &str) -> IResult<&str, Markdown> {
@@ -203,9 +255,10 @@ fn p_span(input: &str) -> IResult<&str, Markdown> {
     )(input)
 }
 fn p_em(input: &str) -> IResult<&str, Markdown> {
+    // <em> can contain <code> in paragraphs
     map(
-        delimited(tag("<em>"), take_until1("</em>"), tag("</em>")),
-        |text| Markdown::Em(text),
+        delimited(tag("<em>"), many1(alt((p_text, p_code))), tag("</em>")),
+        |vm| Markdown::Em(vm),
     )(input)
 }
 fn p_text(input: &str) -> IResult<&str, Markdown> {
@@ -214,13 +267,23 @@ fn p_text(input: &str) -> IResult<&str, Markdown> {
 
 // code blocks
 fn code_block(input: &str) -> IResult<&str, Markdown> {
+    // there can be <em> inside these
     map(
         delimited(
             tag("<pre><code>"),
-            take_until1("</code></pre>"),
+            many1(alt((code_block_em, code_block_text))),
             tag("</code></pre>"),
         ),
-        |text| Markdown::CodeBlock(text),
+        |vm| Markdown::CodeBlock(vm),
+    )(input)
+}
+fn code_block_text(input: &str) -> IResult<&str, Markdown> {
+    map(take_until1("<"), |text| Markdown::CodeBlockText(text))(input)
+}
+fn code_block_em(input: &str) -> IResult<&str, Markdown> {
+    map(
+        delimited(tag("<em>"), take_until1("</em>"), tag("</em>")),
+        |s| Markdown::CodeBlockEm(s),
     )(input)
 }
 
