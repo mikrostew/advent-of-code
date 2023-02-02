@@ -1,8 +1,8 @@
 # --- Day 11: Monkey in the Middle ---
 
-As you finally start making your way upriver, you realize your pack is much lighter than you remember. Just then, one of the items from your pack goes flying overhead. Monkeys are playing Keep Away with your missing things!
+As you finally start making your way upriver, you realize your pack is much lighter than you remember. Just then, one of the items from your pack goes flying overhead. Monkeys are playing [Keep Away](https://en.wikipedia.org/wiki/Keep_away) with your missing things!
 
-To get your stuff back, you need to be able to predict where the monkeys will throw your items. After some careful observation, you realize the monkeys operate based on how worried you are about each item.
+To get your stuff back, you need to be able to predict where the monkeys will throw your items. After some careful observation, you realize the monkeys operate based on **how worried you are about each item**.
 
 You take some notes (your puzzle input) on the items each monkey currently has, how worried you are about those items, and how the monkey makes decisions based on your worry level. For example:
 
@@ -38,17 +38,17 @@ Monkey 3:
 
 Each monkey has several attributes:
 
-* Starting items lists your worry level for each item the monkey is currently holding in the order they will be inspected.
-* Operation shows how your worry level changes as that monkey inspects an item. (An operation like new = old * 5 means that your worry level after the monkey inspected the item is five times whatever your worry level was before inspection.)
-* Test shows how the monkey uses your worry level to decide where to throw an item next.
-  - If true shows what happens with an item if the Test was true.
-  - If false shows what happens with an item if the Test was false.
+* `Starting items` lists your **worry level** for each item the monkey is currently holding in the order they will be inspected.
+* `Operation` shows how your worry level changes as that monkey inspects an item. (An operation like `new = old * 5` means that your worry level after the monkey inspected the item is five times whatever your worry level was before inspection.)
+* `Test` shows how the monkey uses your worry level to decide where to throw an item next. 
+    * `If true` shows what happens with an item if the `Test` was true.
+    * `If false` shows what happens with an item if the `Test` was false.  
 
-After each monkey inspects an item but before it tests your worry level, your relief that the monkey's inspection didn't damage the item causes your worry level to be divided by three and rounded down to the nearest integer.
+After each monkey inspects an item but before it tests your worry level, your relief that the monkey's inspection didn't damage the item causes your worry level to be **divided by three** and rounded down to the nearest integer.
 
-The monkeys take turns inspecting and throwing items. On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed. Monkey 0 goes first, then monkey 1, and so on until each monkey has had one turn. The process of each monkey taking a single turn is called a round.
+The monkeys take turns inspecting and throwing items. On a single monkey's **turn**, it inspects and throws all of the items it is holding one at a time and in the order listed. Monkey `0` goes first, then monkey `1`, and so on until each monkey has had one turn. The process of each monkey taking a single turn is called a **round**.
 
-When a monkey throws an item to another monkey, the item goes on the end of the recipient monkey's list. A monkey that starts a round with no items could end up inspecting and throwing many items by the time its turn comes around. If a monkey is holding no items at the start of its turn, its turn ends.
+When a monkey throws an item to another monkey, the item goes on the **end** of the recipient monkey's list. A monkey that starts a round with no items could end up inspecting and throwing many items by the time its turn comes around. If a monkey is holding no items at the start of its turn, its turn ends.
 
 In the above example, the first round proceeds as follows:
 
@@ -134,8 +134,8 @@ After round 1, the monkeys are holding items with these worry levels:
 ```
 Monkey 0: 20, 23, 27, 26
 Monkey 1: 2080, 25, 167, 207, 401, 1046
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 ```
 
 Monkeys 2 and 3 aren't holding any items at the end of the round; they both inspected items during the round and threw them all before the round ended.
@@ -146,105 +146,100 @@ This process continues for a few more rounds:
 After round 2, the monkeys are holding items with these worry levels:
 Monkey 0: 695, 10, 71, 135, 350
 Monkey 1: 43, 49, 58, 55, 362
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 3, the monkeys are holding items with these worry levels:
 Monkey 0: 16, 18, 21, 20, 122
 Monkey 1: 1468, 22, 150, 286, 739
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 4, the monkeys are holding items with these worry levels:
 Monkey 0: 491, 9, 52, 97, 248, 34
 Monkey 1: 39, 45, 43, 258
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 5, the monkeys are holding items with these worry levels:
 Monkey 0: 15, 17, 16, 88, 1037
 Monkey 1: 20, 110, 205, 524, 72
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 6, the monkeys are holding items with these worry levels:
 Monkey 0: 8, 70, 176, 26, 34
 Monkey 1: 481, 32, 36, 186, 2190
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 7, the monkeys are holding items with these worry levels:
 Monkey 0: 162, 12, 14, 64, 732, 17
 Monkey 1: 148, 372, 55, 72
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 8, the monkeys are holding items with these worry levels:
 Monkey 0: 51, 126, 20, 26, 136
 Monkey 1: 343, 26, 30, 1546, 36
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 9, the monkeys are holding items with these worry levels:
 Monkey 0: 116, 10, 12, 517, 14
 Monkey 1: 108, 267, 43, 55, 288
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 After round 10, the monkeys are holding items with these worry levels:
 Monkey 0: 91, 16, 20, 98
 Monkey 1: 481, 245, 22, 26, 1092, 30
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 ...
 
 After round 15, the monkeys are holding items with these worry levels:
 Monkey 0: 83, 44, 8, 184, 9, 20, 26, 102
 Monkey 1: 110, 36
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 
 ...
 
 After round 20, the monkeys are holding items with these worry levels:
 Monkey 0: 10, 12, 14, 26, 34
 Monkey 1: 245, 93, 53, 199, 115
-Monkey 2:
-Monkey 3:
+Monkey 2: 
+Monkey 3: 
 ```
 
-Chasing all of the monkeys at once is impossible; you're going to have to focus on the two most active monkeys if you want any hope of getting your stuff back. Count the total number of times each monkey inspects items over 20 rounds:
+Chasing all of the monkeys at once is impossible; you're going to have to focus on the **two most active** monkeys if you want any hope of getting your stuff back. Count the **total number of times each monkey inspects items** over 20 rounds:
 
-```
-Monkey 0 inspected items 101 times.
+<pre><code>
+<em>Monkey 0 inspected items 101 times.</em>
 Monkey 1 inspected items 95 times.
 Monkey 2 inspected items 7 times.
-Monkey 3 inspected items 105 times.
-```
+<em>Monkey 3 inspected items 105 times.</em>
+</code></pre>
 
-In this example, the two most active monkeys inspected items 101 and 105 times. The level of monkey business in this situation can be found by multiplying these together: `10605`.
+In this example, the two most active monkeys inspected items 101 and 105 times. The level of **monkey business** in this situation can be found by multiplying these together: **`10605`**.
 
-Figure out which monkeys to chase by counting how many items they inspect over 20 rounds. What is the level of monkey business after 20 rounds of stuff-slinging simian shenanigans?
-
-To begin, get your puzzle input.
+Figure out which monkeys to chase by counting how many items they inspect over 20 rounds. **What is the level of monkey business after 20 rounds of stuff-slinging simian shenanigans?**
 
 Your puzzle answer was `67830`.
 
-The first half of this puzzle is complete! It provides one gold star: *
-
-
 # --- Part Two ---
 
-You're worried you might not ever get your items back. So worried, in fact, that your relief that a monkey's inspection didn't damage an item no longer causes your worry level to be divided by three.
+You're worried you might not ever get your items back. So worried, in fact, that your relief that a monkey's inspection didn't damage an item **no longer causes your worry level to be divided by three**.
 
-Unfortunately, that relief was all that was keeping your worry levels from reaching ridiculous levels. You'll need to find another way to keep your worry levels manageable.
+Unfortunately, that relief was all that was keeping your worry levels from reaching **ridiculous levels**. You'll need to **find another way to keep your worry levels manageable**.
 
-At this rate, you might be putting up with these monkeys for a very long time - possibly 10000 rounds!
+At this rate, you might be putting up with these monkeys for a **very long time** - possibly **`10000` rounds**!
 
-With these new rules, you can still figure out the monkey business after 10000 rounds. Using the same example above:
+With these new rules, you can still figure out the [monkey business](# "Monkey business monkey business monkey business, monkey numbers... is this working?") after 10000 rounds. Using the same example above:
 
-```
+<pre><code>
 == After round 1 ==
 Monkey 0 inspected items 2 times.
 Monkey 1 inspected items 4 times.
@@ -312,16 +307,17 @@ Monkey 2 inspected items 1746 times.
 Monkey 3 inspected items 46807 times.
 
 == After round 10000 ==
-Monkey 0 inspected items 52166 times.
+<em>Monkey 0 inspected items 52166 times.</em>
 Monkey 1 inspected items 47830 times.
 Monkey 2 inspected items 1938 times.
-Monkey 3 inspected items 52013 times.
-```
+<em>Monkey 3 inspected items 52013 times.</em>
+</code></pre>
 
-After 10000 rounds, the two most active monkeys inspected items 52166 and 52013 times. Multiplying these together, the level of monkey business in this situation is now `2713310158`.
+After 10000 rounds, the two most active monkeys inspected items 52166 and 52013 times. Multiplying these together, the level of **monkey business** in this situation is now **`2713310158`**.
 
-Worry levels are no longer divided by three after each item is inspected; you'll need to find another way to keep your worry levels manageable. Starting again from the initial state in your puzzle input, what is the level of monkey business after 10000 rounds?
+Worry levels are no longer divided by three after each item is inspected; you'll need to find another way to keep your worry levels manageable. Starting again from the initial state in your puzzle input, **what is the level of monkey business after 10000 rounds?**
 
 Your puzzle answer was `15305381442`.
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
+
