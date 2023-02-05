@@ -30,19 +30,19 @@ lazy_static! {
     static ref MATCH_WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
 }
 
-enum Markdown<'a> {
+enum Element<'a> {
     H2(&'a str),
-    Paragraph(Vec<Markdown<'a>>),
+    Paragraph(Vec<Element<'a>>),
     Text(&'a str),
     InlineCode(Vec<InlineCodeElement<'a>>),
     Span(&'a str, &'a str),
     AnchorSpan(&'a str, &'a str, &'a str),
-    Em(Vec<Markdown<'a>>),
+    Em(Vec<Element<'a>>),
     EmStar(&'a str),
     LinkRelative(&'a str, &'a str),
     LinkAbsolute(&'a str, &'a str),
-    UnorderedList(Vec<Markdown<'a>>),
-    ListItem(Vec<Markdown<'a>>),
+    UnorderedList(Vec<Element<'a>>),
+    ListItem(Vec<Element<'a>>),
     CodeBlock(Vec<CodeBlockElement<'a>>),
     ParagraphSuccess(&'a str),
     Form(Vec<FormElement<'a>>),
@@ -66,11 +66,11 @@ enum FormElement<'a> {
 }
 
 // convert to markdown formatting
-impl fmt::Display for Markdown<'_> {
+impl fmt::Display for Element<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Markdown::H2(s) => write!(f, "# {}\n\n", s.trim()),
-            Markdown::Paragraph(vec_of_md) => write!(
+            Element::H2(s) => write!(f, "# {}\n\n", s.trim()),
+            Element::Paragraph(vec_of_md) => write!(
                 f,
                 "{}\n\n",
                 vec_of_md
@@ -79,8 +79,8 @@ impl fmt::Display for Markdown<'_> {
                     .collect::<String>()
                     .trim()
             ),
-            Markdown::Text(s) => write!(f, "{}", normalize_whitespace(s)),
-            Markdown::InlineCode(vice) => {
+            Element::Text(s) => write!(f, "{}", normalize_whitespace(s)),
+            Element::InlineCode(vice) => {
                 write!(
                     f,
                     "{}",
@@ -106,19 +106,19 @@ impl fmt::Display for Markdown<'_> {
                 )
             }
             // spans are used for easter eggs
-            Markdown::Span(title, text) => write!(f, "[{}](# \"{}\")", text, title),
-            Markdown::AnchorSpan(href, title, text) => {
+            Element::Span(title, text) => write!(f, "[{}](# \"{}\")", text, title),
+            Element::AnchorSpan(href, title, text) => {
                 write!(f, "[{}]({} \"{}\")", text, href, title)
             }
-            Markdown::Em(vm) => write!(
+            Element::Em(vm) => write!(
                 f,
                 "**{}**",
                 replace_asterisks(&vm.into_iter().map(|m| m.to_string()).collect::<String>())
             ),
-            Markdown::EmStar(s) => write!(f, "***{}***", s),
-            Markdown::LinkRelative(href, text) => write!(f, "[{}]({})", text, convert_href(href)),
-            Markdown::LinkAbsolute(href, text) => write!(f, "[{}]({})", text, href),
-            Markdown::UnorderedList(vm) => write!(
+            Element::EmStar(s) => write!(f, "***{}***", s),
+            Element::LinkRelative(href, text) => write!(f, "[{}]({})", text, convert_href(href)),
+            Element::LinkAbsolute(href, text) => write!(f, "[{}]({})", text, href),
+            Element::UnorderedList(vm) => write!(
                 f,
                 "{}\n\n",
                 vm.into_iter()
@@ -127,13 +127,13 @@ impl fmt::Display for Markdown<'_> {
                     .join("\n")
                     .trim()
             ),
-            Markdown::ListItem(vm) => write!(
+            Element::ListItem(vm) => write!(
                 f,
                 "* {}",
                 vm.into_iter()
                     .map(|m| match m {
                         // only supports one level of nested list
-                        Markdown::UnorderedList(vm) => format!(
+                        Element::UnorderedList(vm) => format!(
                             "\n{}",
                             vm.into_iter()
                                 .map(|li| format!("    {}", li.to_string().trim()))
@@ -144,7 +144,7 @@ impl fmt::Display for Markdown<'_> {
                     })
                     .collect::<String>()
             ),
-            Markdown::CodeBlock(vcbe) => {
+            Element::CodeBlock(vcbe) => {
                 let mut has_html = false;
                 let contents = vcbe
                     .into_iter()
@@ -172,8 +172,8 @@ impl fmt::Display for Markdown<'_> {
                 }
             }
             // no double newline because this is the last thing printed
-            Markdown::ParagraphSuccess(s) => write!(f, "**{}**\n", replace_asterisks(s)),
-            Markdown::Form(vfe) => write!(
+            Element::ParagraphSuccess(s) => write!(f, "**{}**\n", replace_asterisks(s)),
+            Element::Form(vfe) => write!(
                 f,
                 "{}\n\n",
                 vfe.into_iter()
@@ -181,7 +181,7 @@ impl fmt::Display for Markdown<'_> {
                     .collect::<String>()
                     .trim()
             ),
-            Markdown::Discard => write!(f, ""),
+            Element::Discard => write!(f, ""),
         }
     }
 }
@@ -269,7 +269,7 @@ fn before_main(input: &str) -> IResult<&str, &str> {
 }
 
 fn main(input: &str) -> IResult<&str, String> {
-    map(main_md, |md: Vec<Markdown>| {
+    map(main_md, |md: Vec<Element>| {
         md.into_iter().map(|m| m.to_string()).collect::<String>()
     })(input)
 }
@@ -278,7 +278,7 @@ fn after_main(input: &str) -> IResult<&str, &str> {
     recognize(tuple((tag("</main>"), many1(anychar))))(input)
 }
 
-fn main_md(input: &str) -> IResult<&str, Vec<Markdown>> {
+fn main_md(input: &str) -> IResult<&str, Vec<Element>> {
     many1(alt((
         discard,
         header,
@@ -291,7 +291,7 @@ fn main_md(input: &str) -> IResult<&str, Vec<Markdown>> {
 }
 
 // things which will be discarded
-fn discard(input: &str) -> IResult<&str, Markdown> {
+fn discard(input: &str) -> IResult<&str, Element> {
     map(
         alt((
             whitespace,
@@ -302,7 +302,7 @@ fn discard(input: &str) -> IResult<&str, Markdown> {
             get_input,
             sharing,
         )),
-        |_| Markdown::Discard,
+        |_| Element::Discard,
     )(input)
 }
 fn style(input: &str) -> IResult<&str, &str> {
@@ -352,19 +352,19 @@ fn sharing(input: &str) -> IResult<&str, &str> {
 
 // headers
 // (currently only h2)
-fn header(input: &str) -> IResult<&str, Markdown> {
+fn header(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             alt((tag("<h2>"), tag("<h2 id=\"part2\">"))),
             take_until1("</h2>"),
             tag("</h2>"),
         ),
-        |text| Markdown::H2(text),
+        |text| Element::H2(text),
     )(input)
 }
 
 // paragraphs
-fn paragraph(input: &str) -> IResult<&str, Markdown> {
+fn paragraph(input: &str) -> IResult<&str, Element> {
     // sometimes the closing </p> is missing
     map(
         delimited(
@@ -372,16 +372,15 @@ fn paragraph(input: &str) -> IResult<&str, Markdown> {
             paragraph_contents,
             alt((tag("</p>"), peek(tag("<p>")))),
         ),
-        |contents| Markdown::Paragraph(contents),
+        |contents| Element::Paragraph(contents),
     )(input)
 }
-fn paragraph_contents(input: &str) -> IResult<&str, Vec<Markdown>> {
+fn paragraph_contents(input: &str) -> IResult<&str, Vec<Element>> {
     many1(alt((
         p_a_span, p_code, p_span, p_em, p_em_star, p_a, p_text,
     )))(input)
 }
-// <a href=\"https://www.youtube.com/watch?v=sJFnWZH5FXc\" target=\"_blank\"><span title=\"While you're at it, go watch everything else by Retro Game Mechanics Explained, too.\">timing</span></a>
-fn p_a_span(input: &str) -> IResult<&str, Markdown> {
+fn p_a_span(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             tag("<a href=\""),
@@ -394,10 +393,10 @@ fn p_a_span(input: &str) -> IResult<&str, Markdown> {
             )),
             tag("</span></a>"),
         ),
-        |(href, _, title, _, text)| Markdown::AnchorSpan(href, title, text),
+        |(href, _, title, _, text)| Element::AnchorSpan(href, title, text),
     )(input)
 }
-fn p_code(input: &str) -> IResult<&str, Markdown> {
+fn p_code(input: &str) -> IResult<&str, Element> {
     // sometimes there are <em> sections in the inline code
     map(
         delimited(
@@ -405,7 +404,7 @@ fn p_code(input: &str) -> IResult<&str, Markdown> {
             many1(alt((p_code_text, p_code_em))),
             tag("</code>"),
         ),
-        |vm| Markdown::InlineCode(vm),
+        |vm| Element::InlineCode(vm),
     )(input)
 }
 fn p_code_text(input: &str) -> IResult<&str, InlineCodeElement> {
@@ -418,17 +417,17 @@ fn p_code_em(input: &str) -> IResult<&str, InlineCodeElement> {
     )(input)
 }
 
-fn p_span(input: &str) -> IResult<&str, Markdown> {
+fn p_span(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             tag("<span title=\""),
             separated_pair(take_until1("\""), tag("\">"), take_until1("</span>")),
             tag("</span>"),
         ),
-        |(title, text)| Markdown::Span(title, text),
+        |(title, text)| Element::Span(title, text),
     )(input)
 }
-fn p_em(input: &str) -> IResult<&str, Markdown> {
+fn p_em(input: &str) -> IResult<&str, Element> {
     // <em> can contain <code> and <span> in paragraphs
     map(
         delimited(
@@ -436,33 +435,33 @@ fn p_em(input: &str) -> IResult<&str, Markdown> {
             many1(alt((p_text, p_code, p_span))),
             tag("</em>"),
         ),
-        |vm| Markdown::Em(vm),
+        |vm| Element::Em(vm),
     )(input)
 }
-fn p_em_star(input: &str) -> IResult<&str, Markdown> {
+fn p_em_star(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             tag("<em class=\"star\">"),
             take_until1("</em>"),
             tag("</em>"),
         ),
-        |s| Markdown::EmStar(s),
+        |s| Element::EmStar(s),
     )(input)
 }
-fn p_a(input: &str) -> IResult<&str, Markdown> {
+fn p_a(input: &str) -> IResult<&str, Element> {
     alt((p_a_relative, p_a_absolute))(input)
 }
-fn p_a_relative(input: &str) -> IResult<&str, Markdown> {
+fn p_a_relative(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             tag("<a href=\""),
             separated_pair(take_until1("\""), tag("\">"), take_until1("</a>")),
             tag("</a>"),
         ),
-        |(href, text)| Markdown::LinkRelative(href, text),
+        |(href, text)| Element::LinkRelative(href, text),
     )(input)
 }
-fn p_a_absolute(input: &str) -> IResult<&str, Markdown> {
+fn p_a_absolute(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             tag("<a href=\""),
@@ -473,21 +472,20 @@ fn p_a_absolute(input: &str) -> IResult<&str, Markdown> {
             ),
             tag("</a>"),
         ),
-        |(href, text)| Markdown::LinkAbsolute(href, text),
+        |(href, text)| Element::LinkAbsolute(href, text),
     )(input)
 }
-fn p_text(input: &str) -> IResult<&str, Markdown> {
-    map(take_until1("<"), |text| Markdown::Text(text))(input)
+fn p_text(input: &str) -> IResult<&str, Element> {
+    map(take_until1("<"), |text| Element::Text(text))(input)
 }
 
-// unordered list
-fn ulist(input: &str) -> IResult<&str, Markdown> {
+fn ulist(input: &str) -> IResult<&str, Element> {
     map(
         delimited(tag("<ul>"), many1(list_item), tag("</ul>")),
-        |vm| Markdown::UnorderedList(vm),
+        |vm| Element::UnorderedList(vm),
     )(input)
 }
-fn list_item(input: &str) -> IResult<&str, Markdown> {
+fn list_item(input: &str) -> IResult<&str, Element> {
     map(
         tuple((
             whitespace_opt,
@@ -498,12 +496,11 @@ fn list_item(input: &str) -> IResult<&str, Markdown> {
             ),
             whitespace_opt,
         )),
-        |(_, vm, _)| Markdown::ListItem(vm),
+        |(_, vm, _)| Element::ListItem(vm),
     )(input)
 }
 
-// code blocks
-fn code_block(input: &str) -> IResult<&str, Markdown> {
+fn code_block(input: &str) -> IResult<&str, Element> {
     // there can be <em> and <span> inside these
     map(
         delimited(
@@ -512,7 +509,7 @@ fn code_block(input: &str) -> IResult<&str, Markdown> {
             // sometimes this is backwards
             alt((tag("</code></pre>"), tag("</pre></code>"))),
         ),
-        |vcbe| Markdown::CodeBlock(vcbe),
+        |vcbe| Element::CodeBlock(vcbe),
     )(input)
 }
 fn code_block_em(input: &str) -> IResult<&str, CodeBlockElement> {
@@ -535,27 +532,20 @@ fn code_block_text(input: &str) -> IResult<&str, CodeBlockElement> {
     map(take_until1("<"), |text| CodeBlockElement::Text(text))(input)
 }
 
-// paragraph with this success message
-fn paragraph_success(input: &str) -> IResult<&str, Markdown> {
+// paragraph with the success message
+fn paragraph_success(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             tag("<p class=\"day-success\">"),
             take_until1("</p>"),
             tag("</p>"),
         ),
-        |text| Markdown::ParagraphSuccess(text),
+        |text| Element::ParagraphSuccess(text),
     )(input)
 }
 
 // form to submit on day 25
-//
-// <form method=\"post\" action=\"25/answer\">
-// <input type=\"hidden\" name=\"level\" value=\"2\"/><input type=\"hidden\" name=\"answer\" value=\"0\"/>
-// <p>
-// If you like, you can <input type=\"submit\" value=\"[Start The Blender Again]\"/>.
-// </p>
-// </form>
-fn form(input: &str) -> IResult<&str, Markdown> {
+fn form(input: &str) -> IResult<&str, Element> {
     map(
         delimited(
             tag("<form method=\"post\" action=\"25/answer\">"),
@@ -565,7 +555,7 @@ fn form(input: &str) -> IResult<&str, Markdown> {
             ),
             tag("</form>"),
         ),
-        |vfe| Markdown::Form(vfe),
+        |vfe| Element::Form(vfe),
     )(input)
 }
 
@@ -584,7 +574,6 @@ fn form_input(input: &str) -> IResult<&str, FormElement> {
     )(input)
 }
 
-// <input type=\"hidden\" name=\"level\" value=\"2\"/>
 fn form_input_ignore(input: &str) -> IResult<&str, &str> {
     recognize(delimited(
         tag("<input "),
