@@ -4,6 +4,7 @@ pub use aoc_proc::test_fn;
 
 pub mod cli;
 pub mod download;
+mod parse;
 
 // generate functions & macros needed in main.rs
 #[macro_export]
@@ -15,6 +16,7 @@ macro_rules! aoc_cli {
             println!("Year {}", year);
             handle_args(args_test, year).unwrap_or_else(|err| {
                 println!("Error: {}", err);
+                // TODO: use a custom error type, and only show usage is applicable
                 run_aoc::cli::usage();
             });
         }
@@ -22,7 +24,7 @@ macro_rules! aoc_cli {
         fn handle_args(args: Vec<String>, year: usize) -> Result<(), String> {
             match args[0].as_str() {
                 "run" => {
-                    let parsed_args = run_aoc::cli::parse_args(&args[1..])?;
+                    let parsed_args = run_aoc::cli::parse_run_args(&args[1..])?;
                     let day_fn = fn_for_day(parsed_args.0, parsed_args.1)?;
                     // TODO: maybe just show the error, but don't fail?
                     // (because then it prints usage, which is not great)
@@ -30,8 +32,16 @@ macro_rules! aoc_cli {
                     run_aoc::cli::run_day_fn(day_fn, parsed_args.2, parsed_args.3)?;
                     Ok(())
                 }
-                // TODO: download the description and input for the input day
-                "download" => unimplemented!(),
+                "html" => {
+                    let (day, force) = run_aoc::cli::parse_html_args(&args[1..])?;
+                    run_aoc::download::dl_html(year, day, force)?;
+                    Ok(())
+                }
+                "md" => {
+                    let (day, force) = run_aoc::cli::parse_md_args(&args[1..])?;
+                    run_aoc::download::dl_md(year, day, force)?;
+                    Ok(())
+                }
                 "help" | "-h" | "--help" => Ok(run_aoc::cli::usage()),
                 _ => Err(format!("unknown sub-command '{}'", args[0])),
             }

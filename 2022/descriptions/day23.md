@@ -8,9 +8,9 @@ You look up to see a massive, snow-capped mountain towering above you.
 
 "It's not like there are other active volcanoes here; we've looked everywhere."
 
-"But our scanners show active magma flows; clearly it's going somewhere."
+"But our scanners show active magma flows; clearly it's going **somewhere**."
 
-They finally notice you at the edge of the grove, your pack almost overflowing from the random star fruit you've been collecting. Behind you, elephants and monkeys explore the grove, looking concerned. Then, the Elves recognize the ash cloud slowly spreading above your recent detour.
+They finally notice you at the edge of the grove, your pack almost overflowing from the random ***star*** fruit you've been collecting. Behind you, elephants and monkeys explore the grove, looking concerned. Then, the Elves recognize the ash cloud slowly spreading above your recent detour.
 
 "Why do you--" "How is--" "Did you just--"
 
@@ -32,20 +32,20 @@ For example:
 .#..#..
 ```
 
-The scan shows Elves # and empty ground .; outside your scan, more empty ground extends a long way in every direction. The scan is oriented so that north is up; orthogonal directions are written N (north), S (south), W (west), and E (east), while diagonal directions are written NE, NW, SE, SW.
+The scan shows Elves `#` and empty ground `.`; outside your scan, more empty ground extends a long way in every direction. The scan is oriented so that **north is up**; orthogonal directions are written N (north), S (south), W (west), and E (east), while diagonal directions are written NE, NW, SE, SW.
 
-The Elves follow a time-consuming process to figure out where they should each go; you can speed up this process considerably. The process consists of some number of rounds during which Elves alternate between considering where to move and actually moving.
+The Elves follow a time-consuming process to figure out where they should each go; you can speed up this process considerably. The process consists of some number of **rounds** during which Elves alternate between considering where to move and actually moving.
 
-During the first half of each round, each Elf considers the eight positions adjacent to themself. If no other Elves are in one of those eight positions, the Elf does not do anything during this round. Otherwise, the Elf looks in each of four directions in the following order and proposes moving one step in the first valid direction:
+During the **first half** of each round, each Elf considers the eight positions adjacent to themself. If no other Elves are in one of those eight positions, the Elf **does not do anything** during this round. Otherwise, the Elf looks in each of four directions in the following order and **proposes** moving one step in the **first valid direction**:
 
-* If there is no Elf in the N, NE, or NW adjacent positions, the Elf proposes moving north one step.
-* If there is no Elf in the S, SE, or SW adjacent positions, the Elf proposes moving south one step.
-* If there is no Elf in the W, NW, or SW adjacent positions, the Elf proposes moving west one step.
-* If there is no Elf in the E, NE, or SE adjacent positions, the Elf proposes moving east one step.
+* If there is no Elf in the N, NE, or NW adjacent positions, the Elf proposes moving **north** one step.
+* If there is no Elf in the S, SE, or SW adjacent positions, the Elf proposes moving **south** one step.
+* If there is no Elf in the W, NW, or SW adjacent positions, the Elf proposes moving **west** one step.
+* If there is no Elf in the E, NE, or SE adjacent positions, the Elf proposes moving **east** one step.
 
-After each Elf has had a chance to propose a move, the second half of the round can begin. Simultaneously, each Elf moves to their proposed destination tile if they were the only Elf to propose moving to that position. If two or more Elves propose moving to the same position, none of those Elves move.
+After each Elf has had a chance to propose a move, the **second half** of the round can begin. Simultaneously, each Elf moves to their proposed destination tile if they were the **only** Elf to propose moving to that position. If two or more Elves propose moving to the same position, **none** of those Elves move.
 
-Finally, at the end of the round, the first direction the Elves considered is moved to the end of the list of directions. For example, during the second round, the Elves would try proposing a move to the south first, then west, then east, then north. On the third round, the Elves would first consider west, then east, then north, then south.
+Finally, at the end of the round, the **first direction** the Elves considered is moved to the end of the list of directions. For example, during the second round, the Elves would try proposing a move to the south first, then west, then east, then north. On the third round, the Elves would first consider west, then east, then north, then south.
 
 As a smaller example, consider just these five Elves:
 
@@ -69,7 +69,7 @@ The northernmost two Elves and southernmost two Elves all propose moving north, 
 .....
 ```
 
-Next, the northernmost two Elves and the southernmost Elf all propose moving south. Of the remaining middle two Elves, the west one cannot move south and proposes moving west, while the east one cannot move south or west and proposes moving east. All five Elves succeed in moving to their proposed positions:
+Next, the northernmost two Elves and the southernmost Elf all propose moving south. Of the remaining middle two Elves, the west one cannot move south and proposes moving west, while the east one cannot move south **or** west and proposes moving east. All five Elves succeed in moving to their proposed positions:
 
 ```
 .....
@@ -199,7 +199,7 @@ After a few more rounds...
 ..............
 ```
 
-To make sure they're on the right track, the Elves like to check after round 10 that they're making good progress toward covering enough ground. To do this, count the number of empty ground tiles contained by the smallest rectangle that contains every Elf. (The edges of the rectangle should be aligned to the N/S/E/W directions; the Elves do not have the patience to calculate arbitrary rectangles.) In the above example, that rectangle is:
+To make sure they're on the right track, the Elves like to check after round 10 that they're making good progress toward covering enough ground. To do this, count the number of empty ground tiles contained by the smallest rectangle that contains every Elf. (The edges of the rectangle should be aligned to the N/S/E/W directions; the Elves do not have the patience to calculate [arbitrary rectangles](# "Arbitrary Rectangles is my Piet Mondrian cover band.").) In the above example, that rectangle is:
 
 ```
 ......#.....
@@ -215,22 +215,17 @@ To make sure they're on the right track, the Elves like to check after round 10 
 ...#..#..#..
 ```
 
-In this region, the number of empty ground tiles is `110`.
+In this region, the number of empty ground tiles is **`110`**.
 
-Simulate the Elves' process and find the smallest rectangle that contains the Elves after 10 rounds. How many empty ground tiles does that rectangle contain?
-
-To begin, get your puzzle input.
+Simulate the Elves' process and find the smallest rectangle that contains the Elves after 10 rounds. **How many empty ground tiles does that rectangle contain?**
 
 Your puzzle answer was `3966`.
-
-The first half of this puzzle is complete! It provides one gold star: *
-
 
 # --- Part Two ---
 
 It seems you're on the right track. Finish simulating the process and figure out where the Elves need to go. How many rounds did you save them?
 
-In the example above, the first round where no Elf moved was round `20`:
+In the example above, the **first round where no Elf moved** was round **`20`**:
 
 ```
 .......#......
@@ -247,8 +242,8 @@ In the example above, the first round where no Elf moved was round `20`:
 .......#......
 ```
 
-Figure out where the Elves need to go. What is the number of the first round where no Elf moves?
+Figure out where the Elves need to go. **What is the number of the first round where no Elf moves?**
 
 Your puzzle answer was `933`.
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

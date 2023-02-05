@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::{fmt, fs, str::FromStr};
 
+use crate::download::DLOpt;
+
 pub fn usage() {
     println!(
         "
@@ -9,11 +11,15 @@ Usage:
   RUN a specific day:
     cargo run -- run <1-25> <one|two> [params] <input-type>
 
-    Options:
-        params     comma-separated list of param pairs, e.g. 'x=2,max=56'
+    Optional:
+        params      comma-separated list of param pairs, e.g. 'x=2,max=56'
 
-  DOWNLOAD input & description for a specific day:
-    cargo run -- download <1-25>
+  DOWNLOAD description for a specific day:
+    cargo run -- html <1-25> [options]
+    cargo run -- md <1-25> [options]
+
+    Options:
+        --force,-f  overwrite the file it if already exists
 
   HELP
     cargo run -- help
@@ -83,7 +89,7 @@ impl FromStr for Params {
     }
 }
 
-pub fn parse_args(args: &[String]) -> Result<(usize, Part, Option<Params>, String), String> {
+pub fn parse_run_args(args: &[String]) -> Result<(usize, Part, Option<Params>, String), String> {
     match args.len() {
         3 => args_for_day(&args[0], &args[1], None, &args[2]),
         4 => args_for_day(&args[0], &args[1], Some(&args[2]), &args[3]),
@@ -102,7 +108,7 @@ fn args_for_day(
 ) -> Result<(usize, Part, Option<Params>, String), String> {
     let day = day
         .parse::<usize>()
-        .unwrap_or_else(|_| panic!("could not parse day '{}' as a number", day));
+        .or(Err(format!("could not parse day '{}' as a number", day)))?;
     let part: Part = part.parse()?;
     let params: Option<Params> = match params {
         Some(p) => {
@@ -137,4 +143,66 @@ pub fn run_day_fn(
     let answer = day_fn(file_contents, params);
     println!("\nanswer:\n{}", answer);
     Ok(())
+}
+
+// TODO for now just return the day
+pub fn parse_dl_args(args: &[String]) -> Result<usize, String> {
+    match args.len() {
+        1 => args[0].parse::<usize>().or(Err(format!(
+            "could not parse day '{}' as a number",
+            args[0]
+        ))),
+        _ => Err(format!(
+            "expected 1 arg to 'download', found {}",
+            args.len()
+        )),
+    }
+}
+
+pub fn parse_html_args(args: &[String]) -> Result<(usize, DLOpt), String> {
+    match args.len() {
+        1 => match args[0].parse::<usize>() {
+            Err(_) => Err(format!("could not parse day '{}' as a number", args[0])),
+            Ok(d) => Ok((d, DLOpt::IfNoExist)),
+        },
+        2 => {
+            let day = match args[0].parse::<usize>() {
+                Ok(d) => d,
+                Err(_) => {
+                    return Err(format!("could not parse day '{}' as a number", args[0]));
+                }
+            };
+            let opt = args[1].parse()?;
+            Ok((day, opt))
+        }
+
+        _ => Err(format!(
+            "expected 1 or 2 args to 'html', found {}",
+            args.len()
+        )),
+    }
+}
+
+pub fn parse_md_args(args: &[String]) -> Result<(usize, DLOpt), String> {
+    match args.len() {
+        1 => match args[0].parse::<usize>() {
+            Err(_) => Err(format!("could not parse day '{}' as a number", args[0])),
+            Ok(d) => Ok((d, DLOpt::IfNoExist)),
+        },
+        2 => {
+            let day = match args[0].parse::<usize>() {
+                Ok(d) => d,
+                Err(_) => {
+                    return Err(format!("could not parse day '{}' as a number", args[0]));
+                }
+            };
+            let opt = args[1].parse()?;
+            Ok((day, opt))
+        }
+
+        _ => Err(format!(
+            "expected 1 or 2 args to 'md', found {}",
+            args.len()
+        )),
+    }
 }

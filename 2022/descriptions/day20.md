@@ -2,19 +2,19 @@
 
 It's finally time to meet back up with the Elves. When you try to contact them, however, you get no reply. Perhaps you're out of range?
 
-You know they're headed to the grove where the star fruit grows, so if you can figure out where that is, you should be able to meet back up with them.
+You know they're headed to the grove where the ***star*** fruit grows, so if you can figure out where that is, you should be able to meet back up with them.
 
-Fortunately, your handheld device has a file (your puzzle input) that contains the grove's coordinates! Unfortunately, the file is encrypted - just in case the device were to fall into the wrong hands.
+Fortunately, your handheld device has a file (your puzzle input) that contains the grove's coordinates! Unfortunately, the file is **encrypted** - just in case the device were to fall into the wrong hands.
 
-Maybe you can decrypt it?
+Maybe you can [decrypt](# "You once again make a mental note to remind the Elves later not to invent their own cryptographic functions.") it?
 
-When you were still back at the camp, you overheard some Elves talking about coordinate file encryption. The main operation involved in decrypting the file is called mixing.
+When you were still back at the camp, you overheard some Elves talking about coordinate file encryption. The main operation involved in decrypting the file is called **mixing**.
 
-The encrypted file is a list of numbers. To mix the file, move each number forward or backward in the file a number of positions equal to the value of the number being moved. The list is circular, so moving a number off one end of the list wraps back around to the other end as if the ends were connected.
+The encrypted file is a list of numbers. To **mix** the file, move each number forward or backward in the file a number of positions equal to the value of the number being moved. The list is **circular**, so moving a number off one end of the list wraps back around to the other end as if the ends were connected.
 
-For example, to move the 1 in a sequence like 4, 5, 6, 1, 7, 8, 9, the 1 moves one position forward: 4, 5, 6, 7, 1, 8, 9. To move the -2 in a sequence like 4, -2, 5, 6, 7, 8, 9, the -2 moves two positions backward, wrapping around: 4, 5, 6, 7, 8, -2, 9.
+For example, to move the `1` in a sequence like <code>4, 5, 6, <b>1</b>, 7, 8, 9</code>, the `1` moves one position forward: <code>4, 5, 6, 7, <b>1</b>, 8, 9</code>. To move the `-2` in a sequence like <code>4, <b>-2</b>, 5, 6, 7, 8, 9</code>, the `-2` moves two positions backward, wrapping around: <code>4, 5, 6, 7, 8, <b>-2</b>, 9</code>.
 
-The numbers should be moved in the order they originally appear in the encrypted file. Numbers moving around during the mixing process do not change the order in which the numbers are moved.
+The numbers should be moved **in the order they originally appear** in the encrypted file. Numbers moving around during the mixing process do not change the order in which the numbers are moved.
 
 Consider this encrypted file:
 
@@ -56,24 +56,19 @@ Initial arrangement:
 1, 2, -3, 4, 0, 3, -2
 ```
 
-Then, the grove coordinates can be found by looking at the 1000th, 2000th, and 3000th numbers after the value 0, wrapping around the list as necessary. In the above example, the 1000th number after 0 is 4, the 2000th is -3, and the 3000th is 2; adding these together produces `3`.
+Then, the grove coordinates can be found by looking at the 1000th, 2000th, and 3000th numbers after the value `0`, wrapping around the list as necessary. In the above example, the 1000th number after `0` is **`4`**, the 2000th is **`-3`**, and the 3000th is **`2`**; adding these together produces **`3`**.
 
-Mix your encrypted file exactly once. What is the sum of the three numbers that form the grove coordinates?
-
-To begin, get your puzzle input.
+Mix your encrypted file exactly once. **What is the sum of the three numbers that form the grove coordinates?**
 
 Your puzzle answer was `3700`.
-
-The first half of this puzzle is complete! It provides one gold star: *
-
 
 # --- Part Two ---
 
 The grove coordinate values seem nonsensical. While you ponder the mysteries of Elf encryption, you suddenly remember the rest of the decryption routine you overheard back at camp.
 
-First, you need to apply the decryption key, `811589153`. Multiply each number by the decryption key before you begin; this will produce the actual list of numbers to mix.
+First, you need to apply the **decryption key**, `811589153`. Multiply each number by the decryption key before you begin; this will produce the actual list of numbers to mix.
 
-Second, you need to mix the list of numbers ten times. The order in which the numbers are mixed does not change during mixing; the numbers are still moved in the order they appeared in the original, pre-mixed list. (So, if -3 appears fourth in the original list of numbers to mix, -3 will be the fourth number to move during each round of mixing.)
+Second, you need to mix the list of numbers **ten times**. The order in which the numbers are mixed does not change during mixing; the numbers are still moved in the order they appeared in the original, pre-mixed list. (So, if -3 appears fourth in the original list of numbers to mix, -3 will be the fourth number to move during each round of mixing.)
 
 Using the same example as above:
 
@@ -112,10 +107,10 @@ After 10 rounds of mixing:
 0, -2434767459, 1623178306, 3246356612, -1623178306, 2434767459, 811589153
 ```
 
-The grove coordinates can still be found in the same way. Here, the 1000th number after 0 is 811589153, the 2000th is 2434767459, and the 3000th is -1623178306; adding these together produces `1623178306`.
+The grove coordinates can still be found in the same way. Here, the 1000th number after `0` is **`811589153`**, the 2000th is **`2434767459`**, and the 3000th is **`-1623178306`**; adding these together produces **`1623178306`**.
 
-Apply the decryption key and mix your encrypted file ten times. What is the sum of the three numbers that form the grove coordinates?
+Apply the decryption key and mix your encrypted file ten times. **What is the sum of the three numbers that form the grove coordinates?**
 
 Your puzzle answer was `10626948369382`.
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

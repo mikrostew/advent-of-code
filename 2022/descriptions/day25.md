@@ -1,12 +1,12 @@
 # --- Day 25: Full of Hot Air ---
 
-As the expedition finally reaches the extraction point, several large hot air balloons drift down to meet you. Crews quickly start unloading the equipment the balloons brought: many hot air balloon kits, some fuel tanks, and a fuel heating machine.
+As the expedition finally reaches the extraction point, several large [hot air balloons](https://en.wikipedia.org/wiki/Hot_air_balloon) drift down to meet you. Crews quickly start unloading the equipment the balloons brought: many hot air balloon kits, some fuel tanks, and a **fuel heating machine**.
 
 The fuel heating machine is a new addition to the process. When this mountain was a volcano, the ambient temperature was more reasonable; now, it's so cold that the fuel won't work at all without being warmed up first.
 
-The Elves, seemingly in an attempt to make the new machine feel welcome, have already attached a pair of googly eyes and started calling it "Bob".
+The Elves, seemingly in an attempt to make the new machine feel welcome, have already attached a pair of [googly eyes](https://en.wikipedia.org/wiki/Googly_eyes) and started calling it "Bob".
 
-To heat the fuel, Bob needs to know the total amount of fuel that will be processed ahead of time so it can correctly calibrate heat output and flow rate. This amount is simply the sum of the fuel requirements of all of the hot air balloons, and those fuel requirements are even listed clearly on the side of each hot air balloon's burner.
+To heat the fuel, Bob needs to know the total amount of fuel that will be processed ahead of time so it can correctly calibrate heat output and flow rate. This amount is simply the **sum** of the fuel requirements of all of the hot air balloons, and those fuel requirements are even listed clearly on the side of each hot air balloon's burner.
 
 You assume the Elves will have no trouble adding up some numbers and are about to go back to figuring out which balloon is yours when you get a tap on the shoulder. Apparently, the fuel requirements use numbers written in a format the Elves don't recognize; predictably, they'd like your help deciphering them.
 
@@ -38,19 +38,19 @@ You mention that it's quite cold up here and ask if they can skip ahead.
 
 "SNAFU works the same way, except it uses powers of five instead of ten. Starting from the right, you have a ones place, a fives place, a twenty-fives place, a one-hundred-and-twenty-fives place, and so on. It's that easy!"
 
-You ask why some of the digits look like - or = instead of "digits".
+You ask why some of the digits look like `-` or `=` instead of "digits".
 
-"You know, I never did ask the engineers why they did that. Instead of using digits four through zero, the digits are 2, 1, 0, minus (written -), and double-minus (written =). Minus is worth -1, and double-minus is worth -2."
+"You know, I never did ask the engineers why they did that. Instead of using digits four through zero, the digits are **`2`**, **`1`**, **`0`**, **minus** (written `-`), and **double-minus** (written `=`). Minus is worth -1, and double-minus is worth -2."
 
-"So, because ten (in normal numbers) is two fives and no ones, in SNAFU it is written 20. Since eight (in normal numbers) is two fives minus two ones, it is written 2=."
+"So, because ten (in normal numbers) is two fives and no ones, in SNAFU it is written `20`. Since eight (in normal numbers) is two fives minus two ones, it is written `2=`."
 
-"You can do it the other direction, too. Say you have the SNAFU number 2=-01. That's 2 in the 625s place, = (double-minus) in the 125s place, - (minus) in the 25s place, 0 in the 5s place, and 1 in the 1s place. (2 times 625) plus (-2 times 125) plus (-1 times 25) plus (0 times 5) plus (1 times 1). That's 1250 plus -250 plus -25 plus 0 plus 1. 976!"
+"You can do it the other direction, too. Say you have the SNAFU number `2=-01`. That's `2` in the 625s place, `=` (double-minus) in the 125s place, `-` (minus) in the 25s place, `0` in the 5s place, and `1` in the 1s place. (2 times 625) plus (-2 times 125) plus (-1 times 25) plus (0 times 5) plus (1 times 1). That's 1250 plus -250 plus -25 plus 0 plus 1. **976**!"
 
 "I see here that you're connected via our premium uplink service, so I'll transmit our handy SNAFU brochure to you now. Did you need anything else?"
 
 You ask if the fuel will even work in these temperatures.
 
-"Wait, it's how cold? There's no way the fuel - or any fuel - would work in those conditions! There are only a few places in the-- where did you say you are again?"
+"Wait, it's **how** cold? There's no **way** the fuel - or **any** fuel - would work in those conditions! There are only a few places in the-- where did you say you are again?"
 
 Just then, you notice one of the Elves pour a few drops from a snowflake-shaped container into one of the fuel tanks, thank the support representative for their time, and disconnect the call.
 
@@ -94,31 +94,26 @@ Based on this process, the SNAFU numbers in the example above can be converted t
    122       37
 ```
 
-In decimal, the sum of these numbers is 4890.
+In decimal, the sum of these numbers is `4890`.
 
-As you go to input this number on Bob's console, you discover that some buttons you expected are missing. Instead, you are met with buttons labeled =, -, 0, 1, and 2. Bob needs the input value expressed as a SNAFU number, not in decimal.
+As you go to input this number on Bob's console, you discover that some buttons you expected are missing. Instead, you are met with buttons labeled `=`, `-`, `0`, `1`, and `2`. Bob needs the input value expressed as a SNAFU number, not in decimal.
 
-Reversing the process, you can determine that for the decimal number 4890, the SNAFU number you need to supply to Bob's console is `2=-1=0`.
+Reversing the process, you can determine that for the decimal number `4890`, the SNAFU number you need to supply to Bob's console is **`2=-1=0`**.
 
-The Elves are starting to get cold. What SNAFU number do you supply to Bob's console?
-
-To begin, get your puzzle input.
+The Elves are starting to get cold. **What SNAFU number do you supply to Bob's console?**
 
 Your puzzle answer was `2=-0=01----22-0-1-10`.
 
-The first half of this puzzle is complete! It provides one gold star: *
-
-
 # --- Part Two ---
 
-The hot air balloons quickly carry you to the North Pole. As soon as you land, most of the expedition is escorted directly to a small building attached to the reindeer stables.
+The [hot air balloons](# "You notice an engraving on the equipment: Balanced Quinary Industries.") quickly carry you to the North Pole. As soon as you land, most of the expedition is escorted directly to a small building attached to the reindeer stables.
 
-The head smoothie chef has just finished warming up the industrial-grade smoothie blender as you arrive. It will take 50 stars to fill the blender. The expedition Elves turn their attention to you, and you begin emptying the fruit from your pack onto the table.
+The **head smoothie chef** has just finished warming up the industrial-grade smoothie blender as you arrive. It will take ***50 stars*** to fill the blender. The expedition Elves turn their attention to you, and you begin emptying the fruit from your pack onto the table.
 
-As you do, a very young Elf - one you recognize from the expedition team - approaches the table and holds up a single star fruit he found. The head smoothie chef places it in the blender.
+As you do, a very young Elf - one you recognize from the expedition team - approaches the table and holds up a single ***star*** fruit he found. The head smoothie chef places it in the blender.
 
-Only 49 stars to go.
+Only ***49 stars*** to go.
 
-You have enough stars to [Start the Blender].
+If you like, you can [[Start The Blender Again]](#).
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**
