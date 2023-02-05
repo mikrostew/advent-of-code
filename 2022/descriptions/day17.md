@@ -356,5 +356,4 @@ In the example above, the tower would be **`1514285714288`** units tall!
 
 Your puzzle answer was `1575931232076`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

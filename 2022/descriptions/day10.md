@@ -207,16 +207,15 @@ You count the pixels on the CRT: 40 wide and 6 high. This CRT screen draws the t
 
 Like the CPU, the CRT is tied closely to the clock circuit: the CRT draws **a single pixel during each cycle**. Representing each pixel of the screen as a `#`, here are the cycles during which the first and last pixel in each row are drawn:
 
-<pre><code>
-Cycle   1 -> <em>#</em>######################################<em>#</em> <- Cycle  40
-Cycle  41 -> <em>#</em>######################################<em>#</em> <- Cycle  80
-Cycle  81 -> <em>#</em>######################################<em>#</em> <- Cycle 120
-Cycle 121 -> <em>#</em>######################################<em>#</em> <- Cycle 160
-Cycle 161 -> <em>#</em>######################################<em>#</em> <- Cycle 200
-Cycle 201 -> <em>#</em>######################################<em>#</em> <- Cycle 240
+<pre><code>Cycle   1 -> <b>#</b>######################################<b>#</b> <- Cycle  40
+Cycle  41 -> <b>#</b>######################################<b>#</b> <- Cycle  80
+Cycle  81 -> <b>#</b>######################################<b>#</b> <- Cycle 120
+Cycle 121 -> <b>#</b>######################################<b>#</b> <- Cycle 160
+Cycle 161 -> <b>#</b>######################################<b>#</b> <- Cycle 200
+Cycle 201 -> <b>#</b>######################################<b>#</b> <- Cycle 240
 </code></pre>
 
-So, by [carefully](https://en.wikipedia.org/wiki/Racing_the_Beam)  [timing](https://www.youtube.com/watch?v=sJFnWZH5FXc "While you're at it, go watch everything else by Retro Game Mechanics Explained, too.") the CPU instructions and the CRT drawing operations, you should be able to determine whether the sprite is visible the instant each pixel is drawn. If the sprite is positioned such that one of its three pixels is the pixel currently being drawn, the screen produces a **lit** pixel (`#`); otherwise, the screen leaves the pixel **dark** (`.`). 
+So, by [carefully](https://en.wikipedia.org/wiki/Racing_the_Beam) [timing](https://www.youtube.com/watch?v=sJFnWZH5FXc "While you're at it, go watch everything else by Retro Game Mechanics Explained, too.") the CPU instructions and the CRT drawing operations, you should be able to determine whether the sprite is visible the instant each pixel is drawn. If the sprite is positioned such that one of its three pixels is the pixel currently being drawn, the screen produces a **lit** pixel (`#`); otherwise, the screen leaves the pixel **dark** (`.`).
 
 The first few pixels from the larger example above are drawn as follows:
 
@@ -334,5 +333,4 @@ Render the image given by your program. **What eight capital letters appear on y
 
 Your puzzle answer was `PCPBKAPJ`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

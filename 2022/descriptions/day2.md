@@ -48,5 +48,4 @@ Following the Elf's instructions for the second column, **what would your total 
 
 Your puzzle answer was `11373`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

@@ -42,15 +42,14 @@ If a movement instruction would take you off of the map, you **wrap around** to 
 
 For example, if you are at `A` and facing to the right, the tile in front of you is marked `B`; if you are at `C` and facing down, the tile in front of you is marked `D`:
 
-<pre><code>
-        ...#
+<pre><code>        ...#
         .#..
         #...
         ....
-...#.<em>D</em>.....#
+...#.<b>D</b>.....#
 ........#...
-<em>B</em>.#....#...<em>A</em>
-.....<em>C</em>....#.
+<b>B</b>.#....#...<b>A</b>
+.....<b>C</b>....#.
         ...#....
         .....#..
         .#......
@@ -61,13 +60,12 @@ It is possible for the next tile (after wrapping around) to be a **wall**; this 
 
 By drawing the **last facing you had** with an arrow on each tile you visit, the full path taken by the above example looks like this:
 
-<pre><code>
-        >>v#    
+<pre><code>        >>v#    
         .#v.    
         #.v.    
         ..v.    
 ...#...v..v#    
->>>v...<em>></em>#.>>    
+>>>v...<b>></b>#.>>    
 ..#v...#....    
 ...>>>>v..#.    
         ...#....
@@ -111,29 +109,27 @@ In the example above, the six (smaller, 4x4) faces of the cube are:
 
 You still start in the same position and with the same facing as before, but the **wrapping** rules are different. Now, if you would walk off the board, you instead **proceed around the cube**. From the perspective of the map, this can look a little strange. In the above example, if you are at A and move to the right, you would arrive at B facing down; if you are at C and move down, you would arrive at D facing up:
 
-<pre><code>
-        ...#
+<pre><code>        ...#
         .#..
         #...
         ....
 ...#.......#
-........#..<em>A</em>
+........#..<b>A</b>
 ..#....#....
-.<em>D</em>........#.
-        ...#..<em>B</em>.
+.<b>D</b>........#.
+        ...#..<b>B</b>.
         .....#..
         .#......
-        ..<em>C</em>...#.
+        ..<b>C</b>...#.
 </code></pre>
 
 Walls still block your path, even if they are on a different face of the cube. If you are at E facing up, your movement is blocked by the wall marked by the arrow:
 
-<pre><code>
-        ...#
+<pre><code>        ...#
         .#..
-     <em>-->#</em>...
+     <b>-->#</b>...
         ....
-...#..<em>E</em>....#
+...#..<b>E</b>....#
 ........#...
 ..#....#....
 ..........#.
@@ -145,12 +141,11 @@ Walls still block your path, even if they are on a different face of the cube. I
 
 Using the same method of drawing the **last facing you had** with an arrow on each tile you visit, the full path taken by the above example now looks like this:
 
-<pre><code>
-        >>v#    
+<pre><code>        >>v#    
         .#v.    
         #.v.    
         ..v.    
-...#..<em>^</em>...v#    
+...#..<b>^</b>...v#    
 .>>>>>^.#.>>    
 .^#....#....    
 .^........#.    
@@ -166,5 +161,4 @@ Fold the map into a cube, **then** follow the path given in the monkeys' notes. 
 
 Your puzzle answer was `162155`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

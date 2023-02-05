@@ -1,5 +1,6 @@
 use std::fmt;
 
+use lazy_static::lazy_static;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::bytes::complete::take_until1;
@@ -23,12 +24,17 @@ use nom::sequence::preceded;
 use nom::sequence::separated_pair;
 use nom::sequence::tuple;
 use nom::IResult;
+use regex::Regex;
+
+lazy_static! {
+    static ref MATCH_WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
+}
 
 enum Markdown<'a> {
     H2(&'a str),
     Paragraph(Vec<Markdown<'a>>),
     Text(&'a str),
-    InlineCode(Vec<Markdown<'a>>),
+    InlineCode(Vec<InlineCodeElement<'a>>),
     Span(&'a str, &'a str),
     AnchorSpan(&'a str, &'a str, &'a str),
     Em(Vec<Markdown<'a>>),
@@ -37,13 +43,21 @@ enum Markdown<'a> {
     LinkAbsolute(&'a str, &'a str),
     UnorderedList(Vec<Markdown<'a>>),
     ListItem(Vec<Markdown<'a>>),
-    CodeBlock(Vec<Markdown<'a>>),
-    CodeBlockEm(&'a str),
-    CodeBlockSpan(&'a str, &'a str),
-    CodeBlockText(&'a str),
+    CodeBlock(Vec<CodeBlockElement<'a>>),
     ParagraphSuccess(&'a str),
     Form(Vec<FormElement<'a>>),
     Discard,
+}
+
+enum InlineCodeElement<'a> {
+    Text(&'a str),
+    Em(&'a str),
+}
+
+enum CodeBlockElement<'a> {
+    Em(&'a str),
+    Span(&'a str, &'a str),
+    Text(&'a str),
 }
 
 enum FormElement<'a> {
@@ -55,7 +69,7 @@ enum FormElement<'a> {
 impl fmt::Display for Markdown<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Markdown::H2(s) => write!(f, "# {}\n\n", s),
+            Markdown::H2(s) => write!(f, "# {}\n\n", s.trim()),
             Markdown::Paragraph(vec_of_md) => write!(
                 f,
                 "{}\n\n",
@@ -63,31 +77,28 @@ impl fmt::Display for Markdown<'_> {
                     .into_iter()
                     .map(|m| m.to_string())
                     .collect::<String>()
+                    .trim()
             ),
             Markdown::Text(s) => write!(f, "{}", normalize_whitespace(s)),
-            Markdown::InlineCode(vm) => {
+            Markdown::InlineCode(vice) => {
                 write!(
                     f,
                     "{}",
-                    match vm.len() {
-                        1 => match &vm[0] {
-                            Markdown::Text(s) => format!("`{}`", replace_html_char_codes(s)),
-                            // expecting only one thing in the <em>
-                            Markdown::Em(vm) =>
-                                format!("**`{}`**", replace_html_char_codes(&vm[0].to_string())),
-                            _ => unreachable!("inline code only contains text or <em>"),
+                    match vice.len() {
+                        1 => match &vice[0] {
+                            InlineCodeElement::Text(s) =>
+                                format!("`{}`", replace_html_char_codes(s)),
+                            InlineCodeElement::Em(s) =>
+                                format!("**`{}`**", replace_html_char_codes(s)),
                         },
                         _ => format!(
                             "<code>{}</code>",
-                            vm.into_iter()
+                            vice.into_iter()
                                 .map(|m| match m {
-                                    Markdown::Text(s) => format!("{}", replace_html_char_codes(s)),
-                                    // expecting only one thing in the <em>
-                                    Markdown::Em(em_vm) => format!(
-                                        "<em>{}</em>",
-                                        replace_html_char_codes(&em_vm[0].to_string())
-                                    ),
-                                    _ => unreachable!("inline code only contains text or <em>"),
+                                    InlineCodeElement::Text(s) =>
+                                        format!("{}", replace_html_char_codes(s)),
+                                    InlineCodeElement::Em(s) =>
+                                        format!("<b>{}</b>", replace_html_char_codes(s)),
                                 })
                                 .collect::<String>()
                         ),
@@ -111,9 +122,10 @@ impl fmt::Display for Markdown<'_> {
                 f,
                 "{}\n\n",
                 vm.into_iter()
-                    .map(|li| li.to_string())
+                    .map(|li| format!("{}", li.to_string().trim()))
                     .collect::<Vec<String>>()
                     .join("\n")
+                    .trim()
             ),
             Markdown::ListItem(vm) => write!(
                 f,
@@ -124,7 +136,7 @@ impl fmt::Display for Markdown<'_> {
                         Markdown::UnorderedList(vm) => format!(
                             "\n{}",
                             vm.into_iter()
-                                .map(|li| format!("    {}", li))
+                                .map(|li| format!("    {}", li.to_string().trim()))
                                 .collect::<Vec<String>>()
                                 .join("\n")
                         ),
@@ -132,42 +144,42 @@ impl fmt::Display for Markdown<'_> {
                     })
                     .collect::<String>()
             ),
-            Markdown::CodeBlock(vm) => {
+            Markdown::CodeBlock(vcbe) => {
                 let mut has_html = false;
-                let contents = vm
+                let contents = vcbe
                     .into_iter()
-                    .map(|m| match m {
-                        Markdown::CodeBlockEm(s) => {
+                    .map(|e| match e {
+                        CodeBlockElement::Em(s) => {
                             has_html = true;
-                            format!("<em>{}</em>", s.to_string())
+                            format!("<b>{}</b>", s.to_string())
                         }
-                        Markdown::CodeBlockSpan(title, text) => {
+                        CodeBlockElement::Span(title, text) => {
                             has_html = true;
                             format!("<a href=\"#\" alt=\"{}\">{}</a>", title, text)
                         }
-                        Markdown::CodeBlockText(s) => s.to_string(),
-                        _ => unreachable!("only em and text in code blocks"),
+                        CodeBlockElement::Text(s) => s.to_string(),
                     })
                     .collect::<String>();
 
                 if has_html {
                     write!(
                         f,
-                        "<pre><code>\n{}</code></pre>\n\n",
+                        "<pre><code>{}</code></pre>\n\n",
                         replace_html_char_codes(&contents)
                     )
                 } else {
                     write!(f, "```\n{}```\n\n", replace_html_char_codes(&contents))
                 }
             }
-            Markdown::CodeBlockEm(s) => write!(f, "<em>{}</em>", s),
-            Markdown::CodeBlockSpan(title, text) => write!(f, "[{}](# \"{}\")", text, title),
-            Markdown::CodeBlockText(s) => write!(f, "{}", s),
-            Markdown::ParagraphSuccess(s) => write!(f, "**{} **\n\n", replace_asterisks(s)),
+            // no double newline because this is the last thing printed
+            Markdown::ParagraphSuccess(s) => write!(f, "**{}**\n", replace_asterisks(s)),
             Markdown::Form(vfe) => write!(
                 f,
                 "{}\n\n",
-                vfe.into_iter().map(|m| m.to_string()).collect::<String>()
+                vfe.into_iter()
+                    .map(|m| m.to_string())
+                    .collect::<String>()
+                    .trim()
             ),
             Markdown::Discard => write!(f, ""),
         }
@@ -192,29 +204,13 @@ fn replace_html_char_codes(s: &str) -> String {
 
 // so that asterisks inside of markdown bold ** don't mess things up
 fn replace_asterisks(s: &str) -> String {
-    s.replace("*", "&ast;")
+    s.replace("*", "⭐️")
 }
 
 // convert all whitespace (spaces/tabs/newlines/etc) into single spaces,
 // preserving any whitespace at the beginning or ending of the string
 fn normalize_whitespace(s: &str) -> String {
-    let start_space = if s.starts_with(is_space) { " " } else { "" };
-    let end_space = if s.ends_with(is_space) { " " } else { "" };
-    format!(
-        "{}{}{}",
-        start_space,
-        s.split_whitespace()
-            .into_iter()
-            .collect::<Vec<&str>>()
-            .join(" "),
-        end_space
-    )
-}
-fn is_space(c: char) -> bool {
-    match c {
-        ' ' | '\t' | '\n' | '\r' => true,
-        _ => false,
-    }
+    MATCH_WHITESPACE.replace_all(s, " ").into_owned()
 }
 
 fn convert_href(href: &str) -> String {
@@ -404,10 +400,24 @@ fn p_a_span(input: &str) -> IResult<&str, Markdown> {
 fn p_code(input: &str) -> IResult<&str, Markdown> {
     // sometimes there are <em> sections in the inline code
     map(
-        delimited(tag("<code>"), many1(alt((p_text, p_em))), tag("</code>")),
+        delimited(
+            tag("<code>"),
+            many1(alt((p_code_text, p_code_em))),
+            tag("</code>"),
+        ),
         |vm| Markdown::InlineCode(vm),
     )(input)
 }
+fn p_code_text(input: &str) -> IResult<&str, InlineCodeElement> {
+    map(take_until1("<"), |s| InlineCodeElement::Text(s))(input)
+}
+fn p_code_em(input: &str) -> IResult<&str, InlineCodeElement> {
+    map(
+        delimited(tag("<em>"), take_until1("<"), tag("</em>")),
+        |s| InlineCodeElement::Em(s),
+    )(input)
+}
+
 fn p_span(input: &str) -> IResult<&str, Markdown> {
     map(
         delimited(
@@ -418,7 +428,6 @@ fn p_span(input: &str) -> IResult<&str, Markdown> {
         |(title, text)| Markdown::Span(title, text),
     )(input)
 }
-// TODO: I want to split this one up, for top level and inside <code>
 fn p_em(input: &str) -> IResult<&str, Markdown> {
     // <em> can contain <code> and <span> in paragraphs
     map(
@@ -503,28 +512,27 @@ fn code_block(input: &str) -> IResult<&str, Markdown> {
             // sometimes this is backwards
             alt((tag("</code></pre>"), tag("</pre></code>"))),
         ),
-        |vm| Markdown::CodeBlock(vm),
+        |vcbe| Markdown::CodeBlock(vcbe),
     )(input)
 }
-// TODO: these should be a separate enum
-fn code_block_em(input: &str) -> IResult<&str, Markdown> {
+fn code_block_em(input: &str) -> IResult<&str, CodeBlockElement> {
     map(
         delimited(tag("<em>"), take_until1("</em>"), tag("</em>")),
-        |s| Markdown::CodeBlockEm(s),
+        |s| CodeBlockElement::Em(s),
     )(input)
 }
-fn code_block_span(input: &str) -> IResult<&str, Markdown> {
+fn code_block_span(input: &str) -> IResult<&str, CodeBlockElement> {
     map(
         delimited(
             tag("<span title=\""),
             separated_pair(take_until1("\""), tag("\">"), take_until1("</span>")),
             tag("</span>"),
         ),
-        |(title, text)| Markdown::CodeBlockSpan(title, text),
+        |(title, text)| CodeBlockElement::Span(title, text),
     )(input)
 }
-fn code_block_text(input: &str) -> IResult<&str, Markdown> {
-    map(take_until1("<"), |text| Markdown::CodeBlockText(text))(input)
+fn code_block_text(input: &str) -> IResult<&str, CodeBlockElement> {
+    map(take_until1("<"), |text| CodeBlockElement::Text(text))(input)
 }
 
 // paragraph with this success message

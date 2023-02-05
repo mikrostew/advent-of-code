@@ -46,5 +46,4 @@ In the larger example above, exactly one cube of air is trapped within the lava 
 
 Your puzzle answer was `2554`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

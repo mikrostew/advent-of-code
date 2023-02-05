@@ -71,5 +71,4 @@ Find the item type that corresponds to the badges of each three-Elf group. **Wha
 
 Your puzzle answer was `2363`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

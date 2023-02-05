@@ -4,8 +4,7 @@ You can hear birds chirping and raindrops hitting leaves as the expedition proce
 
 The device the Elves gave you has problems with more than just its communication system. You try to run a system update:
 
-<pre><code>
-$ system-update --please --pretty-please-with-sugar-on-top
+<pre><code>$ system-update --please --pretty-please-with-sugar-on-top
 <a href="#" alt="E099 PROGRAMMER IS OVERLY POLITE">Error</a>: No space left on device
 </code></pre>
 
@@ -46,10 +45,10 @@ Within the terminal output, lines that begin with `$` are **commands you execute
 * `cd` means **change directory**. This changes which directory is the current directory, but the specific result depends on the argument: 
     * `cd x` moves **in** one level: it looks in the current directory for the directory named `x` and makes it the current directory.
     * `cd ..` moves **out** one level: it finds the directory that contains the current directory, then makes that directory the current directory.
-    * `cd /` switches the current directory to the outermost directory, `/`.  
+    * `cd /` switches the current directory to the outermost directory, `/`.
 * `ls` means **list**. It prints out all of the files and directories immediately contained by the current directory: 
     * `123 abc` means that the current directory contains a file named `abc` with size `123`.
-    * `dir xyz` means that the current directory contains a directory named `xyz`.  
+    * `dir xyz` means that the current directory contains a directory named `xyz`.
 
 Given the commands and output in the example above, you can determine that the filesystem looks visually like this:
 
@@ -108,5 +107,4 @@ Find the smallest directory that, if deleted, would free up enough space on the 
 
 Your puzzle answer was `3696336`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

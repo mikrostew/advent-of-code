@@ -44,13 +44,12 @@ When comparing two values, the first value is called **left** and the second val
 
 Using these rules, you can determine which of the pairs in the example are in the right order:
 
-<pre><code>
-== Pair 1 ==
+<pre><code>== Pair 1 ==
 - Compare [1,1,3,1,1] vs [1,1,5,1,1]
   - Compare 1 vs 1
   - Compare 1 vs 1
   - Compare 3 vs 5
-    - Left side is smaller, so inputs are <em>in the right order</em>
+    - Left side is smaller, so inputs are <b>in the right order</b>
 
 == Pair 2 ==
 - Compare [[1],[2,3,4]] vs [[1],4]
@@ -60,7 +59,7 @@ Using these rules, you can determine which of the pairs in the example are in th
     - Mixed types; convert right to [4] and retry comparison
     - Compare [2,3,4] vs [4]
       - Compare 2 vs 4
-        - Left side is smaller, so inputs are <em>in the right order</em>
+        - Left side is smaller, so inputs are <b>in the right order</b>
 
 == Pair 3 ==
 - Compare [9] vs [[8,7,6]]
@@ -68,7 +67,7 @@ Using these rules, you can determine which of the pairs in the example are in th
     - Mixed types; convert left to [9] and retry comparison
     - Compare [9] vs [8,7,6]
       - Compare 9 vs 8
-        - Right side is smaller, so inputs are <em>not</em> in the right order
+        - Right side is smaller, so inputs are <b>not</b> in the right order
 
 == Pair 4 ==
 - Compare [[4,4],4,4] vs [[4,4],4,4,4]
@@ -77,23 +76,23 @@ Using these rules, you can determine which of the pairs in the example are in th
     - Compare 4 vs 4
   - Compare 4 vs 4
   - Compare 4 vs 4
-  - Left side ran out of items, so inputs are <em>in the right order</em>
+  - Left side ran out of items, so inputs are <b>in the right order</b>
 
 == Pair 5 ==
 - Compare [7,7,7,7] vs [7,7,7]
   - Compare 7 vs 7
   - Compare 7 vs 7
   - Compare 7 vs 7
-  - Right side ran out of items, so inputs are <em>not</em> in the right order
+  - Right side ran out of items, so inputs are <b>not</b> in the right order
 
 == Pair 6 ==
 - Compare [] vs [3]
-  - Left side ran out of items, so inputs are <em>in the right order</em>
+  - Left side ran out of items, so inputs are <b>in the right order</b>
 
 == Pair 7 ==
 - Compare [[[]]] vs [[]]
   - Compare [[]] vs []
-    - Right side ran out of items, so inputs are <em>not</em> in the right order
+    - Right side ran out of items, so inputs are <b>not</b> in the right order
 
 == Pair 8 ==
 - Compare [1,[2,[3,[4,[5,6,7]]]],8,9] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
@@ -108,7 +107,7 @@ Using these rules, you can determine which of the pairs in the example are in th
           - Compare 5 vs 5
           - Compare 6 vs 6
           - Compare 7 vs 0
-            - Right side is smaller, so inputs are <em>not</em> in the right order
+            - Right side is smaller, so inputs are <b>not</b> in the right order
 </code></pre>
 
 What are the indices of the pairs that are already **in the right order**? (The first pair has index 1, the second pair has index 2, and so on.) In the above example, the pairs in the right order are 1, 2, 4, and 6; the sum of these indices is **`13`**.
@@ -132,8 +131,7 @@ Using the same rules as before, organize all packets - the ones in your list of 
 
 For the example above, the result of putting the packets in the correct order is:
 
-<pre><code>
-[]
+<pre><code>[]
 [[]]
 [[[]]]
 [1,1,3,1,1]
@@ -142,11 +140,11 @@ For the example above, the result of putting the packets in the correct order is
 [1,[2,[3,[4,[5,6,0]]]],8,9]
 [1,[2,[3,[4,[5,6,7]]]],8,9]
 [[1],4]
-<em>[[2]]</em>
+<b>[[2]]</b>
 [3]
 [[4,4],4,4]
 [[4,4],4,4,4]
-<em>[[6]]</em>
+<b>[[6]]</b>
 [7,7,7]
 [7,7,7,7]
 [[8,7,6]]
@@ -159,5 +157,4 @@ Organize all of the packets into the correct order. **What is the decoder key fo
 
 Your puzzle answer was `22866`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

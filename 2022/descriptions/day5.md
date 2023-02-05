@@ -53,11 +53,10 @@ Then, both crates are moved from stack 2 to stack 1. Again, because crates are m
 
 Finally, one crate is moved from stack 1 to stack 2:
 
-<pre><code>
-        [<em>Z</em>]
+<pre><code>        [<b>Z</b>]
         [N]
         [D]
-[<em>C</em>] [<em>M</em>] [P]
+[<b>C</b>] [<b>M</b>] [P]
  1   2   3
 </code></pre>
 
@@ -115,11 +114,10 @@ Next, as both crates are moved from stack 2 to stack 1, they **retain their orde
 
 Finally, a single crate is still moved from stack 1 to stack 2, but now it's crate `C` that gets moved:
 
-<pre><code>
-        [<em>D</em>]
+<pre><code>        [<b>D</b>]
         [N]
         [Z]
-[<em>M</em>] [<em>C</em>] [P]
+[<b>M</b>] [<b>C</b>] [P]
  1   2   3
 </code></pre>
 
@@ -129,5 +127,4 @@ Before the rearrangement process finishes, update your simulation so that the El
 
 Your puzzle answer was `FGLQJCMBD`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

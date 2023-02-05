@@ -60,5 +60,4 @@ In the above example, the number you need to yell to pass `root`'s equality test
 
 Your puzzle answer was `3848301405790`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

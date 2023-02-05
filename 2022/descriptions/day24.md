@@ -99,9 +99,8 @@ Your expedition begins in the only non-wall position in the top row and needs to
 
 In the above example, the fastest way to reach your goal requires **`18`** steps. Drawing the position of the expedition as `E`, one way to achieve this is:
 
-<pre><code>
-Initial state:
-#<em>E</em>######
+<pre><code>Initial state:
+#<b>E</b>######
 #>>.<^<#
 #.<..<<#
 #>v.><>#
@@ -110,7 +109,7 @@ Initial state:
 
 Minute 1, move down:
 #.######
-#<em>E</em>>3.<.#
+#<b>E</b>>3.<.#
 #<..<<.#
 #>2.22.#
 #>v..^<#
@@ -119,7 +118,7 @@ Minute 1, move down:
 Minute 2, move down:
 #.######
 #.2>2..#
-#<em>E</em>^22^<#
+#<b>E</b>^22^<#
 #.>2.^>#
 #.>..<.#
 ######.#
@@ -127,14 +126,14 @@ Minute 2, move down:
 Minute 3, wait:
 #.######
 #<^<22.#
-#<em>E</em>2<.2.#
+#<b>E</b>2<.2.#
 #><2>..#
 #..><..#
 ######.#
 
 Minute 4, move up:
 #.######
-#<em>E</em><..22#
+#<b>E</b><..22#
 #<<.<..#
 #<2.>>.#
 #.^22^.#
@@ -142,7 +141,7 @@ Minute 4, move up:
 
 Minute 5, move right:
 #.######
-#2<em>E</em>v.<>#
+#2<b>E</b>v.<>#
 #<.<..<#
 #.^>^22#
 #.2..2.#
@@ -150,7 +149,7 @@ Minute 5, move right:
 
 Minute 6, move right:
 #.######
-#>2<em>E</em><.<#
+#>2<b>E</b><.<#
 #.2v^2<#
 #>..>2>#
 #<....>#
@@ -159,7 +158,7 @@ Minute 6, move right:
 Minute 7, move down:
 #.######
 #.22^2.#
-#<v<em>E</em><2.#
+#<v<b>E</b><2.#
 #>>v<>.#
 #>....<#
 ######.#
@@ -167,14 +166,14 @@ Minute 7, move down:
 Minute 8, move left:
 #.######
 #.<>2^.#
-#.<em>E</em><<.<#
+#.<b>E</b><<.<#
 #.22..>#
 #.2v^2.#
 ######.#
 
 Minute 9, move up:
 #.######
-#<<em>E</em>2>>.#
+#<<b>E</b>2>>.#
 #.<<.<.#
 #>2>2^.#
 #.v><^.#
@@ -182,7 +181,7 @@ Minute 9, move up:
 
 Minute 10, move right:
 #.######
-#.2<em>E</em>.>2#
+#.2<b>E</b>.>2#
 #<2v2^.#
 #<>.>2.#
 #..<>..#
@@ -190,7 +189,7 @@ Minute 10, move right:
 
 Minute 11, wait:
 #.######
-#2^<em>E</em>^2>#
+#2^<b>E</b>^2>#
 #<v<.^<#
 #..2.>2#
 #.<..>.#
@@ -199,7 +198,7 @@ Minute 11, wait:
 Minute 12, move down:
 #.######
 #>>.<^<#
-#.<<em>E</em>.<<#
+#.<<b>E</b>.<<#
 #>v.><>#
 #<^v^^>#
 ######.#
@@ -208,7 +207,7 @@ Minute 13, move down:
 #.######
 #.>3.<.#
 #<..<<.#
-#>2<em>E</em>22.#
+#>2<b>E</b>22.#
 #>v..^<#
 ######.#
 
@@ -216,7 +215,7 @@ Minute 14, move right:
 #.######
 #.2>2..#
 #.^22^<#
-#.>2<em>E</em>^>#
+#.>2<b>E</b>^>#
 #.>..<.#
 ######.#
 
@@ -224,7 +223,7 @@ Minute 15, move right:
 #.######
 #<^<22.#
 #.2<.2.#
-#><2><em>E</em>.#
+#><2><b>E</b>.#
 #..><..#
 ######.#
 
@@ -232,7 +231,7 @@ Minute 16, move right:
 #.######
 #.<..22#
 #<<.<..#
-#<2.>><em>E</em>#
+#<2.>><b>E</b>#
 #.^22^.#
 ######.#
 
@@ -241,7 +240,7 @@ Minute 17, move down:
 #2.v.<>#
 #<.<..<#
 #.^>^22#
-#.2..2<em>E</em>#
+#.2..2<b>E</b>#
 ######.#
 
 Minute 18, move down:
@@ -250,7 +249,7 @@ Minute 18, move down:
 #.2v^2<#
 #>..>2>#
 #<....>#
-######<em>E</em>#
+######<b>E</b>#
 </code></pre>
 
 **What is the fewest number of minutes required to avoid the blizzards and reach the goal?**
@@ -271,5 +270,4 @@ In the above example, the first trip to the goal takes `18` minutes, the trip ba
 
 Your puzzle answer was `798`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

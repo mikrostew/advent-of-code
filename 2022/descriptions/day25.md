@@ -116,5 +116,4 @@ Only ***49 stars*** to go.
 
 If you like, you can [[Start The Blender Again]](#).
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

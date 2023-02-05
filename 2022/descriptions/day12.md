@@ -10,10 +10,9 @@ You'd like to reach `E`, but to save energy, you should do it in **as few steps 
 
 For example:
 
-<pre><code>
-<em>S</em>abqponm
+<pre><code><b>S</b>abqponm
 abcryxxl
-accsz<em>E</em>xk
+accsz<b>E</b>xk
 acctuvwj
 abdefghi
 </code></pre>
@@ -44,10 +43,9 @@ To maximize exercise while hiking, the trail should start as low as possible: el
 
 Again consider the example from above:
 
-<pre><code>
-<em>S</em>abqponm
+<pre><code><b>S</b>abqponm
 abcryxxl
-accsz<em>E</em>xk
+accsz<b>E</b>xk
 acctuvwj
 abdefghi
 </code></pre>
@@ -68,5 +66,4 @@ This path reaches the goal in only **`29`** steps, the fewest possible.
 
 Your puzzle answer was `354`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

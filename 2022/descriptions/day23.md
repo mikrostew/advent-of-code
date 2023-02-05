@@ -246,5 +246,4 @@ Figure out where the Elves need to go. **What is the number of the first round w
 
 Your puzzle answer was `933`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

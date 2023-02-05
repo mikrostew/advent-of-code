@@ -44,8 +44,7 @@ A unit of sand always falls **down one step** if possible. If the tile immediate
 
 So, drawing sand that has come to rest as `o`, the first unit of sand simply falls straight down and then stops:
 
-<pre><code>
-......+...
+<pre><code>......+...
 ..........
 ..........
 ..........
@@ -53,7 +52,7 @@ So, drawing sand that has come to rest as `o`, the first unit of sand simply fal
 ....#...#.
 ..###...#.
 ........#.
-......<em>o</em>.#.
+......<b>o</b>.#.
 #########.
 </code></pre>
 
@@ -104,16 +103,15 @@ After a total of 22 units of sand:
 
 Finally, only two more units of sand can possibly come to rest:
 
-<pre><code>
-......+...
+<pre><code>......+...
 ..........
 ......o...
 .....ooo..
 ....#ooo##
-...<em>o</em>#ooo#.
+...<b>o</b>#ooo#.
 ..###ooo#.
 ....oooo#.
-.<em>o</em>.ooooo#.
+.<b>o</b>.ooooo#.
 #########.
 </code></pre>
 
@@ -183,5 +181,4 @@ Using your scan, simulate the falling sand until the source of the sand becomes 
 
 Your puzzle answer was `24943`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

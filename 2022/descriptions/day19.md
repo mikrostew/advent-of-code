@@ -387,5 +387,4 @@ Don't worry about quality levels; instead, just determine the largest number of 
 
 Your puzzle answer was `3168`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

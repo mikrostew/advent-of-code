@@ -25,12 +25,11 @@ Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II
 ```
 
-All of the valves begin **closed**. You start at valve `AA`, but it must be damaged or [jammed](# "Wait, sir! The valve, sir! it appears to be... jammed!") or something: its flow rate is `0`, so there's no point in opening it. However, you could spend one minute moving to valve `BB` and another minute opening it; doing so would release pressure during the remaining **28 minutes** at a flow rate of `13`, a total eventual pressure release of <code>28 * 13 = <em>364</em></code>. Then, you could spend your third minute moving to valve `CC` and your fourth minute opening it, providing an additional **26 minutes** of eventual pressure release at a flow rate of `2`, or **`52`** total pressure released by valve `CC`.
+All of the valves begin **closed**. You start at valve `AA`, but it must be damaged or [jammed](# "Wait, sir! The valve, sir! it appears to be... jammed!") or something: its flow rate is `0`, so there's no point in opening it. However, you could spend one minute moving to valve `BB` and another minute opening it; doing so would release pressure during the remaining **28 minutes** at a flow rate of `13`, a total eventual pressure release of <code>28 * 13 = <b>364</b></code>. Then, you could spend your third minute moving to valve `CC` and your fourth minute opening it, providing an additional **26 minutes** of eventual pressure release at a flow rate of `2`, or **`52`** total pressure released by valve `CC`.
 
 Making your way through the tunnels like this, you could probably open many or all of the valves by the time 30 minutes have elapsed. However, you need to release as much pressure as possible, so you'll need to be methodical. Instead, consider this approach:
 
-<pre><code>
-== Minute 1 ==
+<pre><code>== Minute 1 ==
 No valves are open.
 You move to valve DD.
 
@@ -39,110 +38,110 @@ No valves are open.
 You open valve DD.
 
 == Minute 3 ==
-Valve DD is open, releasing <em>20</em> pressure.
+Valve DD is open, releasing <b>20</b> pressure.
 You move to valve CC.
 
 == Minute 4 ==
-Valve DD is open, releasing <em>20</em> pressure.
+Valve DD is open, releasing <b>20</b> pressure.
 You move to valve BB.
 
 == Minute 5 ==
-Valve DD is open, releasing <em>20</em> pressure.
+Valve DD is open, releasing <b>20</b> pressure.
 You open valve BB.
 
 == Minute 6 ==
-Valves BB and DD are open, releasing <em>33</em> pressure.
+Valves BB and DD are open, releasing <b>33</b> pressure.
 You move to valve AA.
 
 == Minute 7 ==
-Valves BB and DD are open, releasing <em>33</em> pressure.
+Valves BB and DD are open, releasing <b>33</b> pressure.
 You move to valve II.
 
 == Minute 8 ==
-Valves BB and DD are open, releasing <em>33</em> pressure.
+Valves BB and DD are open, releasing <b>33</b> pressure.
 You move to valve JJ.
 
 == Minute 9 ==
-Valves BB and DD are open, releasing <em>33</em> pressure.
+Valves BB and DD are open, releasing <b>33</b> pressure.
 You open valve JJ.
 
 == Minute 10 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You move to valve II.
 
 == Minute 11 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You move to valve AA.
 
 == Minute 12 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You move to valve DD.
 
 == Minute 13 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You move to valve EE.
 
 == Minute 14 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You move to valve FF.
 
 == Minute 15 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You move to valve GG.
 
 == Minute 16 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You move to valve HH.
 
 == Minute 17 ==
-Valves BB, DD, and JJ are open, releasing <em>54</em> pressure.
+Valves BB, DD, and JJ are open, releasing <b>54</b> pressure.
 You open valve HH.
 
 == Minute 18 ==
-Valves BB, DD, HH, and JJ are open, releasing <em>76</em> pressure.
+Valves BB, DD, HH, and JJ are open, releasing <b>76</b> pressure.
 You move to valve GG.
 
 == Minute 19 ==
-Valves BB, DD, HH, and JJ are open, releasing <em>76</em> pressure.
+Valves BB, DD, HH, and JJ are open, releasing <b>76</b> pressure.
 You move to valve FF.
 
 == Minute 20 ==
-Valves BB, DD, HH, and JJ are open, releasing <em>76</em> pressure.
+Valves BB, DD, HH, and JJ are open, releasing <b>76</b> pressure.
 You move to valve EE.
 
 == Minute 21 ==
-Valves BB, DD, HH, and JJ are open, releasing <em>76</em> pressure.
+Valves BB, DD, HH, and JJ are open, releasing <b>76</b> pressure.
 You open valve EE.
 
 == Minute 22 ==
-Valves BB, DD, EE, HH, and JJ are open, releasing <em>79</em> pressure.
+Valves BB, DD, EE, HH, and JJ are open, releasing <b>79</b> pressure.
 You move to valve DD.
 
 == Minute 23 ==
-Valves BB, DD, EE, HH, and JJ are open, releasing <em>79</em> pressure.
+Valves BB, DD, EE, HH, and JJ are open, releasing <b>79</b> pressure.
 You move to valve CC.
 
 == Minute 24 ==
-Valves BB, DD, EE, HH, and JJ are open, releasing <em>79</em> pressure.
+Valves BB, DD, EE, HH, and JJ are open, releasing <b>79</b> pressure.
 You open valve CC.
 
 == Minute 25 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 
 == Minute 26 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 
 == Minute 27 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 
 == Minute 28 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 
 == Minute 29 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 
 == Minute 30 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 </code></pre>
 
 This approach lets you release the most pressure possible in 30 minutes with this valve layout, **`1651`**.
@@ -159,8 +158,7 @@ It would take you 4 minutes to teach an elephant how to open the right valves in
 
 In the example above, you could teach the elephant to help you as follows:
 
-<pre><code>
-== Minute 1 ==
+<pre><code>== Minute 1 ==
 No valves are open.
 You move to valve II.
 The elephant moves to valve DD.
@@ -171,62 +169,62 @@ You move to valve JJ.
 The elephant opens valve DD.
 
 == Minute 3 ==
-Valve DD is open, releasing <em>20</em> pressure.
+Valve DD is open, releasing <b>20</b> pressure.
 You open valve JJ.
 The elephant moves to valve EE.
 
 == Minute 4 ==
-Valves DD and JJ are open, releasing <em>41</em> pressure.
+Valves DD and JJ are open, releasing <b>41</b> pressure.
 You move to valve II.
 The elephant moves to valve FF.
 
 == Minute 5 ==
-Valves DD and JJ are open, releasing <em>41</em> pressure.
+Valves DD and JJ are open, releasing <b>41</b> pressure.
 You move to valve AA.
 The elephant moves to valve GG.
 
 == Minute 6 ==
-Valves DD and JJ are open, releasing <em>41</em> pressure.
+Valves DD and JJ are open, releasing <b>41</b> pressure.
 You move to valve BB.
 The elephant moves to valve HH.
 
 == Minute 7 ==
-Valves DD and JJ are open, releasing <em>41</em> pressure.
+Valves DD and JJ are open, releasing <b>41</b> pressure.
 You open valve BB.
 The elephant opens valve HH.
 
 == Minute 8 ==
-Valves BB, DD, HH, and JJ are open, releasing <em>76</em> pressure.
+Valves BB, DD, HH, and JJ are open, releasing <b>76</b> pressure.
 You move to valve CC.
 The elephant moves to valve GG.
 
 == Minute 9 ==
-Valves BB, DD, HH, and JJ are open, releasing <em>76</em> pressure.
+Valves BB, DD, HH, and JJ are open, releasing <b>76</b> pressure.
 You open valve CC.
 The elephant moves to valve FF.
 
 == Minute 10 ==
-Valves BB, CC, DD, HH, and JJ are open, releasing <em>78</em> pressure.
+Valves BB, CC, DD, HH, and JJ are open, releasing <b>78</b> pressure.
 The elephant moves to valve EE.
 
 == Minute 11 ==
-Valves BB, CC, DD, HH, and JJ are open, releasing <em>78</em> pressure.
+Valves BB, CC, DD, HH, and JJ are open, releasing <b>78</b> pressure.
 The elephant opens valve EE.
 
 (At this point, all valves are open.)
 
 == Minute 12 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 
 ...
 
 == Minute 20 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 
 ...
 
 == Minute 26 ==
-Valves BB, CC, DD, EE, HH, and JJ are open, releasing <em>81</em> pressure.
+Valves BB, CC, DD, EE, HH, and JJ are open, releasing <b>81</b> pressure.
 </code></pre>
 
 With the elephant helping, after 26 minutes, the best you could do would release a total of **`1707`** pressure.
@@ -235,5 +233,4 @@ With the elephant helping, after 26 minutes, the best you could do would release
 
 Your puzzle answer was `2189`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

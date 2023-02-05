@@ -66,5 +66,4 @@ So, in this example, the number of overlapping assignment pairs is **`4`**.
 
 Your puzzle answer was `792`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

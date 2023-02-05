@@ -44,9 +44,8 @@ The Elves don't care about distant trees taller than those found by the rules ab
 
 In the example above, consider the middle `5` in the second row:
 
-<pre><code>
-30373
-25<em>5</em>12
+<pre><code>30373
+25<b>5</b>12
 65332
 33549
 35390
@@ -61,11 +60,10 @@ A tree's **scenic score** is found by **multiplying together** its viewing dista
 
 However, you can do even better: consider the tree of height `5` in the middle of the fourth row:
 
-<pre><code>
-30373
+<pre><code>30373
 25512
 65332
-33<em>5</em>49
+33<b>5</b>49
 35390
 </code></pre>
 
@@ -80,5 +78,4 @@ Consider each tree on your map. **What is the highest scenic score possible for 
 
 Your puzzle answer was `263670`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**

@@ -12,7 +12,7 @@ When you were still back at the camp, you overheard some Elves talking about coo
 
 The encrypted file is a list of numbers. To **mix** the file, move each number forward or backward in the file a number of positions equal to the value of the number being moved. The list is **circular**, so moving a number off one end of the list wraps back around to the other end as if the ends were connected.
 
-For example, to move the `1` in a sequence like <code>4, 5, 6, <em>1</em>, 7, 8, 9</code>, the `1` moves one position forward: <code>4, 5, 6, 7, <em>1</em>, 8, 9</code>. To move the `-2` in a sequence like <code>4, <em>-2</em>, 5, 6, 7, 8, 9</code>, the `-2` moves two positions backward, wrapping around: <code>4, 5, 6, 7, 8, <em>-2</em>, 9</code>.
+For example, to move the `1` in a sequence like <code>4, 5, 6, <b>1</b>, 7, 8, 9</code>, the `1` moves one position forward: <code>4, 5, 6, 7, <b>1</b>, 8, 9</code>. To move the `-2` in a sequence like <code>4, <b>-2</b>, 5, 6, 7, 8, 9</code>, the `-2` moves two positions backward, wrapping around: <code>4, 5, 6, 7, 8, <b>-2</b>, 9</code>.
 
 The numbers should be moved **in the order they originally appear** in the encrypted file. Numbers moving around during the mixing process do not change the order in which the numbers are moved.
 
@@ -113,5 +113,4 @@ Apply the decryption key and mix your encrypted file ten times. **What is the su
 
 Your puzzle answer was `10626948369382`.
 
-**Both parts of this puzzle are complete! They provide two gold stars: &ast;&ast; **
-
+**Both parts of this puzzle are complete! They provide two gold stars: ⭐️⭐️**
